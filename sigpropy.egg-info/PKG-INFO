@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: sigpropy
+Version: 0.0.1
+Summary: Tools for digital signal processing.
+Home-page: https://github.com/jpvantassel/signal-processing
+Author: Joseh P Vantassel
+Author-email: jvantassel@utexas.edu
+License: UNKNOWN
+Description: # SigProPy - A python module for digital signal processing
+        
+        > Joseph Vantassel, University of Texas at Austin
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Liscence :: OSI Approvied :: MIT Liscence
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown.-
