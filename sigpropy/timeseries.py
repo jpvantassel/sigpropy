@@ -4,6 +4,7 @@ time series objects.
 
 import numpy as np
 from scipy.signal.windows import tukey
+from scipy.signal import butter, filtfilt
 import logging
 logger = logging.getLogger(__name__)
 
@@ -253,6 +254,26 @@ class TimeSeries():
             npts = self.n_samples
             self.amp = self.amp * tukey(npts, alpha=width)
 
+    def bandpassfilter(self, flow, fhigh, order=5):
+        """Bandpass filter TimeSeries.
+
+        Args:
+            flow: float
+                Low cut-off frequency for filter (content below flow is 
+                filtered).
+            fhigh: float
+                High cut-off frequency for filter (content above fhigh is
+                filtered).
+            order: int
+                Filter order
+
+        Returns:
+            Returns `None`, perform filter operation on attribute `amp`. 
+        """
+        b, a = butter(order, [flow/self.fnyq, fhigh/self.fnyq], btype='bandpass')
+        # TODO (jpv): Research padlen arguement
+        self.amp = filtfilt(b, a, self.amp, padlen=3*(max(len(b), len(a))-1))
+
     @classmethod
     def from_trace(cls, trace, nstacks=1, delay=0):
         """Initialize a TimeSeries object from a trace object.
@@ -283,5 +304,5 @@ class TimeSeries():
                    delay=delay)
 
     def __repr__(self):
-        # """Valid python expression to reproduce the object"""
+        """Valid python expression to reproduce the object"""
         return f"TimeSeries(dt={self.dt}, amplitude={str(self.amp[0:3])[:-1]} ... {str(self.amp[-3:])[1:]})"

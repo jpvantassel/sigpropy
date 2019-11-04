@@ -54,22 +54,26 @@ class FourierTransform():
                 fft[cwindow] = 2/npts * np.fft.fft(amplitude)[0:nfrqs]
             return (fft, frq)
 
-    def __init__(self, amplitude, frq):
+    def __init__(self, amplitude, frq, fnyq=None):
         """Initialize a FourierTransform object.
 
         Args:
             amplitude: np.array
                 Fourier transform amplitude.
             frq: np.array 
-                Frequency vector for fourier transform
+                Linearly spaced frequency vector for fourier transform.
+            fnyq: float, optional
+                Nyquist frequency of Fourier Transform (by default the
+                maximum value of frq vector is used)
 
         Returns:
             An initialized FourierTransform object.
         """
         self.amp = amplitude
         self.frq = frq
+        self.fnyq = fnyq if fnyq!=None else np.max(self.frq)
 
-    def smooth_konno_ohmachi(self, bandwidth=40.0, normalize=False):
+    def smooth_konno_ohmachi(self, bandwidth=40.0):
         self.amp = konno_ohmachi_smoothing(self.mag, self.frq, bandwidth)
 
     def resample(self, minf, maxf, nf, res_type="log", inplace=False):
@@ -106,6 +110,10 @@ class FourierTransform():
         if nf < 0:
             raise TypeError("`nf` must be postive integer")
         types = {"log": "log", "linear": "linear"}
+        if maxf > self.fnyq:
+            raise ValueError("`maxf` is out of range.")
+        if minf < 0:
+            raise ValueError("`minf` is out of range.")
 
         if types[res_type] == types["log"]:
             xx = np.logspace(np.log10(minf), np.log10(maxf), nf)
@@ -115,7 +123,9 @@ class FourierTransform():
             raise NotImplementedError(
                 f"{res_type} resampling has not been implemented.")
 
-        interp_amp = sp.interp1d(self.frq, self.amp, kind="linear")
+        interp_amp = sp.interp1d(self.frq, self.amp, kind="linear",
+                                 fill_value="extrapolate",
+                                 bounds_error=False)
         interped_amp = interp_amp(xx)
 
         if inplace:
@@ -136,7 +146,7 @@ class FourierTransform():
             An initialized FourierTransform object.
         """
         amp, frq = cls.fft(timeseries.amp, timeseries.dt)
-        return cls(amp, frq)
+        return cls(amp, frq, timeseries.fnyq)
 
     @property
     def mag(self):
