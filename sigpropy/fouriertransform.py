@@ -4,7 +4,36 @@ working with fourier transform objects."""
 import numpy as np
 from obspy.signal.konnoohmachismoothing import konno_ohmachi_smoothing
 import scipy.interpolate as sp
+# from numba import jit
 
+def center_zero(frequencies):
+    smoothing_window = np.zeros(len(frequencies), dtype=frequencies.dtype)
+    smoothing_window[frequencies == 0.0] = 1.0
+    return smoothing_window
+
+# @jit(nopython=True)
+def parta(frequencies, center_frequency, bandwidth):
+    return bandwidth * np.log10(frequencies / center_frequency)
+
+# @jit(nopython=True)
+def partb(frequencies, center_frequency, bandwidth, smoothing_window):
+    return np.sin(smoothing_window) / smoothing_window
+
+# @jit(nopython=True)
+def partc(frequencies, center_frequency, bandwidth, smoothing_window):
+    return smoothing_window * smoothing_window * smoothing_window * smoothing_window
+
+def makewindow(frequencies, center_frequency, bandwidth=40.0):
+    with np.errstate(divide='ignore', invalid='ignore'):
+        smoothing_window = parta(frequencies, center_frequency, bandwidth)
+        smoothing_window = partb(frequencies, center_frequency, bandwidth, smoothing_window)
+        smoothing_window = partc(frequencies, center_frequency, bandwidth, smoothing_window)
+    return smoothing_window
+
+def fix_window(frequencies, center_frequency, smoothing_window):
+    smoothing_window[frequencies == center_frequency] = 1.0
+    smoothing_window[frequencies == 0.0] = 0.0
+    return smoothing_window
 
 class FourierTransform():
     """A class for editing and manipulating fourier transforms.
@@ -71,10 +100,77 @@ class FourierTransform():
         """
         self.amp = amplitude
         self.frq = frq
-        self.fnyq = fnyq if fnyq!=None else np.max(self.frq)
+        self.fnyq = fnyq if fnyq != None else np.max(self.frq)
 
     def smooth_konno_ohmachi(self, bandwidth=40.0):
-        self.amp = konno_ohmachi_smoothing(self.mag, self.frq, bandwidth)
+        # self.amp = konno_ohmachi_smoothing(self.mag, self.frq, bandwidth,
+        #                                    enforce_no_matrix=False, max_memory_usage=2048)
+        self.amp = self.mag
+        smooth_amp = np.zeros(self.amp.shape)
+        if len(self.amp.shape) == 1:
+            for cid, cfrq in enumerate(self.frq):
+                smoothing_window = self._k_and_o_window(self.frq, cfrq,
+                                                        bandwidth=bandwidth)
+                smooth_amp[cid] = np.dot(self.amp, smoothing_window)
+        else:
+            for c_col, cfrq in enumerate(self.frq):
+                smoothing_window = self._k_and_o_window(self.frq, cfrq,
+                                                        bandwidth=bandwidth)
+                for c_row, c_amp in enumerate(self.amp):
+                    smooth_amp[c_row, c_col] = np.dot(c_amp, smoothing_window)
+        self.amp = smooth_amp
+
+    @staticmethod
+    def _k_and_o_window(frequencies, center_frequency,
+                        bandwidth=40.0, normalize=False):
+        if frequencies.dtype != np.float32 and frequencies.dtype != np.float64:
+            msg = 'frequencies needs to have a dtype of float32/64.'
+            raise ValueError(msg)
+
+        if center_frequency == 0:
+            return center_zero(frequencies) 
+
+        smoothing_window = makewindow(frequencies, center_frequency)
+
+        smoothing_window = fix_window(frequencies, center_frequency, smoothing_window)
+
+        if normalize:
+            smoothing_window /= smoothing_window.sum()
+
+        return smoothing_window
+
+    # @staticmethod
+    # def _k_and_o_window(frequencies, center_frequency, bandwidth=40.0):
+    #     # if frequencies.dtype != np.float32 and frequencies.dtype != np.float64:
+    #     #     msg = 'frequencies needs to have a dtype of float32/64.'
+    #     #     raise ValueError(msg)
+    #     # If the center_frequency is 0 return an array with zero everywhere except
+    #     # at zero.
+
+    #     if center_frequency == 0:
+    #         # smoothing_window = np.zeros(len(frequencies), dtype=frequencies.dtype)
+    #         # smoothing_window[frequencies == 0.0] = 1.0
+    #         return center_zero(frequencies, center_frequency, bandwidth)
+
+    #     # Disable div by zero errors and return zero instead
+    #     # with np.errstate(divide='ignore', invalid='ignore'):
+    #     #     # Calculate the bandwidth*log10(f/f_c)
+    #     #     # smoothing_window = bandwidth * np.log10(frequencies / center_frequency)
+    #     #     # # Just the Konno-Ohmachi formulae.
+    #     #     # smoothing_window[:] = (np.sin(smoothing_window) / smoothing_window) ** 4
+
+    #     #     # Calculate the bandwidth*log10(f/f_c)
+    #     #     smoothing_window = bandwidth * np.log10(frequencies / center_frequency)
+    #     #     # # Just the Konno-Ohmachi formulae.
+    #     #     smoothing_window = (np.sin(smoothing_window) / smoothing_window) ** 4
+
+    #     smoothing_window = makewindow(frequencies, center_frequency, bandwidth)
+
+    #     smoothing_window = fix_window(frequencies, center_frequency, smoothing_window)
+    #     # Normalize to one if wished.
+    #     # if normalize:
+    #     #     smoothing_window /= smoothing_window.sum()
+    #     return smoothing_window
 
     def resample(self, minf, maxf, nf, res_type="log", inplace=False):
         """Resample FourierTransform over a specified range.

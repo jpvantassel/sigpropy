@@ -246,13 +246,15 @@ class TimeSeries():
             Returns `None`, instead applies cosine taper to attribute
             `amp`.
         """
-        if self.n_windows > 1:
-            npts = self.amp.shape[1]
-            self.amp = np.matmul(self.amp,
-                                 tukey(npts, alpha=width)*np.eye(npts))
-        else:
+        
+        if self.n_windows == 1:
             npts = self.n_samples
             self.amp = self.amp * tukey(npts, alpha=width)
+        else:
+            npts = self.amp.shape[1]
+            cos_taper = tukey(npts, alpha=width)
+            for c_window, c_amp in enumerate(self.amp):
+                self.amp[c_window] = c_amp*cos_taper
 
     def bandpassfilter(self, flow, fhigh, order=5):
         """Bandpass filter TimeSeries.
