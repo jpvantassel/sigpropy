@@ -1,3 +1,20 @@
+# This file is part of SigProPy a module for digital signal processing
+# in python.
+# Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
+
 """Tests for TimeSeries class. """
 
 import matplotlib.pyplot as plt
@@ -15,16 +32,16 @@ class TestTimeSeries(unittest.TestCase):
     def test_check(self):
         for value in [True, "values", 1, 1.57]:
             self.assertRaises(TypeError,
-                              sigpropy.TimeSeries.check_input,
+                              sigpropy.TimeSeries._check_input,
                               name="blah",
                               values=value)
         for value in [[1, 2, 3], (1, 2, 3)]:
-            value = sigpropy.TimeSeries.check_input(name="blah", values=value)
+            value = sigpropy.TimeSeries._check_input(name="blah", values=value)
             self.assertTrue(isinstance(value, np.ndarray))
 
         for value in [[[1, 2], [3, 4]], ((1, 2), (3, 4)), np.array([[1, 2], [3, 4]])]:
             self.assertRaises(TypeError,
-                              sigpropy.TimeSeries.check_input,
+                              sigpropy.TimeSeries._check_input,
                               name="blah",
                               values=value)
 

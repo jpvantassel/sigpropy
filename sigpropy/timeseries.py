@@ -1,3 +1,20 @@
+# This file is part of SigProPy a module for digital signal processing
+# in python.
+# Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
+
 """This file contains the class TimeSeries for creating and manipulating
 time series objects.
 """
@@ -14,18 +31,32 @@ class TimeSeries():
 
     Attributes:
         amp: np.array
-            Denotes the time series amplitude.
+            Denotes the time series amplitude. If amp is 1d each sample
+            corresponds to a single time step. If amp is 2d each row 
+            corresponds to a particular section of the time record 
+            (i.e., time window) and each column corresponds to a single
+            time step.
         dt: float 
             Denotes the time step between samples in seconds.
+        n_windows : int
+            Number of time windows that the time series has been split
+            into (i.e., number of rows of amp if 2d).
+        n_samples : int
+            Number of samples in time series (i.e., `len(amp)` if `amp`
+            is 1d or number of columns if `amp` is 2d).
+        fs : float
+            Sampling frequency in Hz equal to `1/dt`.
+        fny : float
+            Nyquist frequency in Hz equal to `fs/2`. 
     """
     @staticmethod
-    def check_input(name, values):
+    def _check_input(name, values):
         """Perform simple checks on values of parameter `name`.
 
         Specifically:
-            1. Check `values` is `np.ndarray`, `list`, or `tuple`. 
-            2. If `list` or `tuple` convert to a `np.ndarray`.
-            3. Check `values` is one-dimensional `np.ndarray`.
+            1. Check `values` is `ndarray`, `list`, or `tuple`. 
+            2. If `list` or `tuple` convert to a `ndarray`.
+            3. Check `values` is one-dimensional `ndarray`.
 
         Args:
             name : str
@@ -35,48 +66,61 @@ class TimeSeries():
                 value of parameter to be checked.
 
         Returns:
-            `values` which may be transformed to an `np.array`.
+            `values` as an `ndarray`.
+
+        Raises:
+            TypeError
+                If entries do not comply with checks 1. and 2. listed 
+                above.
         """
         if type(values) not in [np.ndarray, list, tuple]:
-            raise TypeError(
-                f"{name} must be of type np.array, list, or tuple not {type(values)}.")
+            msg = f"{name} must be of type ndarray, list, or tuple not {type(values)}."
+            raise TypeError(msg)
 
         if isinstance(values, (list, tuple)):
             values = np.array(values)
 
         if len(values.shape) > 1:
-            raise TypeError(
-                f"{name} must be 1-dimensional, not {values.shape}-dimensional.")
+            msg = f"{name} must be 1-dimensional, not {values.shape}-dimensional."
+            raise TypeError(msg)
+
         return values
 
     def __init__(self, amplitude, dt, nstacks=1, delay=0):
         """Initialize a TimeSeries object.
 
         Args:
-            amplitude : np.1darray 
-                Amplitude of the timeseries with time. The amplitude[0]
-                is associated with first and amplitude[-1] is 
-                associated with the final time sample.
-            dt: float
+            amplitude : 1d - ndarray 
+                Amplitude of the timeseries at each time step. Meaning 
+                `amplitude[0]` is associated with first and 
+                `amplitude[-1]` is associated with the final time 
+                sample.
+            dt : float
                 Time step between samples in seconds.
-            nstacks: int, optional
+            nstacks : int, optional
                 Number of stacks used to produce the amplitude (the
-                default value is 1, denoting a single recording).
-            delay: float
+                default value is 1, denoting a single unstacked 
+                recording).
+            delay : float, optional
                 Indicates the pre-event delay in seconds.
 
         Returns:
             Intialized TimeSeries object.
+
+        Raises:
+            ValueError
+                If delay is greater than 0.
         """
-        self.amp = TimeSeries.check_input("amplitude", amplitude)
+        self.amp = TimeSeries._check_input("amplitude", amplitude)
         self.n_windows = 1
         self.n_samples = len(self.amp)
         self.dt = dt
         self.fs = 1/self.dt
         self.fnyq = 0.5*self.fs
-        self.df = self.fs/self.n_samples
+        self._df = self.fs/self.n_samples
         self._nstack = 1
-        assert(delay <= 0)
+        if delay>0:
+            raise ValueError("`delay` must not be > 0")
         self.delay = delay
         self.multiple = 1
 
@@ -95,7 +139,7 @@ class TimeSeries():
         """Trim excess from TimeSeries object in the half-open interval
         [start_time, end_time).
 
-        Args: 
+        Args:
             start_time : float
                 New time zero in seconds.
             end_time : float
@@ -103,21 +147,24 @@ class TimeSeries():
                 half-open.
 
         Returns:
-            Returns `None`, but may update the attributes: `n_samples`, 
-            `delay`, and `df`.
+            `None`, instead updates the attributes: `n_samples`, `delay`
+            , and `df`.
 
         Raises:
-            IndexError If the start_time and end_time is illogical.
-                For example, start_time is before the start of the
-                pretrigger delay or after end_time, or the end_time is
-                before the start_time or after the end of the record.
+            IndexError 
+                If the `start_time` and `end_time` is illogical.
+                For example, `start_time` is before the start of the
+                `delay` or after `end_time`, or the `end_time` is
+                before the `start_time` or after the end of the record.
         """
         current_time = self.time
         start = min(current_time)
         end = max(current_time)
+
         if start_time < start or start_time > end_time:
             logger.debug(f"{start} < {start_time} < {end_time}: Must be True.")
             raise IndexError("Illogical start_time, see doctring.")
+
         if end_time > end or end_time < start_time:
             logger.debug(f"{start_time} < {end_time} < {end}: Must be True.")
             raise IndexError("Illogical end_time, see doctring.")
@@ -133,24 +180,24 @@ class TimeSeries():
 
         self.amp = self.amp[start_index:end_index]
         self.n_samples = len(self.amp)
-        self.df = self.fs/self.n_samples
+        self._df = self.fs/self.n_samples
         self.delay = 0 if start_time >= 0 else start_time
 
         logger.info(f"n_samples = {self.n_samples}")
-        logger.info(f"df = {self.df}")
+        logger.info(f"df = {self._df}")
         logger.info(f"delay = {self.delay}")
 
-    def zero_pad(self, df=0.2):
+    def zero_pad(self, df):
         """Append zeros to the end of the TimeSeries object to achieve a
         desired frequency step.
 
         Args:
             df : float
-                Frequency step in Hertz must be positive.
+                Desired frequency step in Hertz. Must be positive.
 
         Returns:
-            Returns `None`, instead modifies attributes: `amp`,
-            `n_samples`, and `multiple`.
+            `None`, instead modifies attributes: `amp`, `n_samples`, and
+            `multiple`.
 
         Raises:
             TypeError
@@ -174,8 +221,9 @@ class TimeSeries():
                                        np.zeros(nreq - self.n_samples)))
             self.n_samples = nreq
 
-        # If nreq <= n_samples, padd zeros to achieve a fraction of df (e.g., df/2)
-        # After processing, extract the results at the frequencies of interest
+        # If nreq <= n_samples, padd zeros to achieve a fraction of df 
+        # (e.g., df/2). After processing, extract the results at the 
+        # frequencies of interest
         else:
             # Multiples of df and nreq
             multiples = np.array([1, 2, 4, 8, 16, 32], int)
@@ -194,17 +242,17 @@ class TimeSeries():
             logging.debug(f"n_samples = {self.n_samples}")
 
     def split(self, windowlength):
-        """Split TimeSeries into windows of length windowlength.
+        """Split TimeSeries into windows of duration windowlength.
 
         Args:
-            windowlength : int
-                Integer defining length of window in seconds. If 
-                `windowlength` is not integer multiple of dt, the 
+            windowlength : float
+                Duration of desired window length in seconds. If 
+                `windowlength` is not an integer multiple of dt, the 
                 window length is rounded to up to the next integer
                 multiple of dt.
 
         Returns:
-            Returns `None`, reshapes attribute `amp` into a 2D array 
+            `None`, reshapes attribute `amp` into a 2D array 
             where each row is a different consecutive time window and 
             each column denotes a time step. 
 
@@ -239,14 +287,12 @@ class TimeSeries():
 
         Args:
             width : float {0.-1.} 
-                Amount of the TimeSeries to be tapered. 0 represents a 
-                rectangular window and 1 a Hann window.
+                Amount of the TimeSeries to be tapered.
+                0. is equal to a rectangular, and 1. a Hann window.
 
         Returns:
-            Returns `None`, instead applies cosine taper to attribute
-            `amp`.
+            `None`, instead applies cosine taper to attribute `amp`.
         """
-        
         if self.n_windows == 1:
             npts = self.n_samples
             self.amp = self.amp * tukey(npts, alpha=width)
@@ -257,22 +303,21 @@ class TimeSeries():
                 self.amp[c_window] = c_amp*cos_taper
 
     def bandpassfilter(self, flow, fhigh, order=5):
-        """Bandpass filter TimeSeries.
+        """Apply bandpass Butterworth filter to TimeSeries.
 
         Args:
-            flow: float
-                Low cut-off frequency for filter (content below flow is 
-                filtered).
-            fhigh: float
-                High cut-off frequency for filter (content above fhigh is
-                filtered).
-            order: int
-                Filter order
+            flow : float
+                Low-cut frequency (content below `flow` is filtered).
+            fhigh : float
+                High-cut frequency (content above `fhigh` is filtered).
+            order : int, optional
+                Filter order, the default is a 5th order filter.
 
         Returns:
-            Returns `None`, perform filter operation on attribute `amp`. 
+            `None`, insteal filters attribute `amp`. 
         """
-        b, a = butter(order, [flow/self.fnyq, fhigh/self.fnyq], btype='bandpass')
+        b, a = butter(order, [flow/self.fnyq, fhigh /
+                              self.fnyq], btype='bandpass')
         # TODO (jpv): Research padlen arguement
         self.amp = filtfilt(b, a, self.amp, padlen=3*(max(len(b), len(a))-1))
 
@@ -280,25 +325,25 @@ class TimeSeries():
     def from_trace(cls, trace, nstacks=1, delay=0):
         """Initialize a TimeSeries object from a trace object.
 
-        This method is a more general method than from_trace_seg2, which
-        does not attempt to extract anything from the trace object 
-        except for its data and sampling step.
+        This method is a more general method than `from_trace_seg2`, 
+        as it does not attempt to extract any metadata about the Trace 
+        object.
 
         Args:
-            trace: Trace object.
+            trace : Trace 
+                Refer to obspy documentation for more information
+                (https://github.com/obspy/obspy/wiki).
 
-            nstacks: Integer representing the number of stacks. Default 
-                value is one (i.e., only a single recording was made).
+            nstacks : int, optional
+                Number of stacks the time series represents, (default is
+                1, signifying a single unstacked time record).
 
-            delay: Number that is less than or equal to zero, denoting
-                the pre-trigger delay. Default value is zero (i.e., no
-                pre-trigger delay was recorded).
+            delay : float {<=0.}, optional
+                Denotes the pre-event delay, (default is zero, 
+                signifying no pre-event recording is included).
 
         Returns:
             Initialized TimeSeries object.
-
-        Raises:
-            This method raises no exceptions.
         """
         return cls(amplitude=trace.data,
                    dt=trace.stats.delta,

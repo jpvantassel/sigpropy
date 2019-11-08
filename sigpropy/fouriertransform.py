@@ -1,73 +1,99 @@
+# This file is part of SigProPy a module for digital signal processing
+# in python.
+# Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
+
 """This file contains the class FourierTransform for creating and 
-working with fourier transform objects."""
+working with Fourier transform objects."""
 
 import numpy as np
 from obspy.signal.konnoohmachismoothing import konno_ohmachi_smoothing
 import scipy.interpolate as sp
 # from numba import jit
 
-def center_zero(frequencies):
+# @jit(nopython=True)
+def _center_zero(frequencies):
     smoothing_window = np.zeros(len(frequencies), dtype=frequencies.dtype)
     smoothing_window[frequencies == 0.0] = 1.0
     return smoothing_window
 
 # @jit(nopython=True)
-def parta(frequencies, center_frequency, bandwidth):
+def _parta(frequencies, center_frequency, bandwidth):
     return bandwidth * np.log10(frequencies / center_frequency)
 
 # @jit(nopython=True)
-def partb(frequencies, center_frequency, bandwidth, smoothing_window):
+def _partb(frequencies, center_frequency, bandwidth, smoothing_window):
     return np.sin(smoothing_window) / smoothing_window
 
 # @jit(nopython=True)
-def partc(frequencies, center_frequency, bandwidth, smoothing_window):
+def _partc(frequencies, center_frequency, bandwidth, smoothing_window):
     return smoothing_window * smoothing_window * smoothing_window * smoothing_window
 
-def makewindow(frequencies, center_frequency, bandwidth=40.0):
+def _makewindow(frequencies, center_frequency, bandwidth=40.0):
     with np.errstate(divide='ignore', invalid='ignore'):
-        smoothing_window = parta(frequencies, center_frequency, bandwidth)
-        smoothing_window = partb(frequencies, center_frequency, bandwidth, smoothing_window)
-        smoothing_window = partc(frequencies, center_frequency, bandwidth, smoothing_window)
+        smoothing_window = _parta(frequencies, center_frequency, bandwidth)
+        smoothing_window = _partb(
+            frequencies, center_frequency, bandwidth, smoothing_window)
+        smoothing_window = _partc(
+            frequencies, center_frequency, bandwidth, smoothing_window)
     return smoothing_window
 
-def fix_window(frequencies, center_frequency, smoothing_window):
+def _fix_window(frequencies, center_frequency, smoothing_window):
     smoothing_window[frequencies == center_frequency] = 1.0
     smoothing_window[frequencies == 0.0] = 0.0
     return smoothing_window
 
+
 class FourierTransform():
-    """A class for editing and manipulating fourier transforms.
+    """A class for editing and manipulating Fourier transforms.
 
     Attributes:
-        frq : np.array
+        frq : ndarray
             Frequency vector of the transform in Hertz.
-
-        amp : np.array
+        amp : ndarray
             The transform's amplitude in the same units as the input.
+        fny : float
+            The nyquist frequency associate with time series used to
+            generate the Fourier transform. Note this may or may not be
+            equal to `frq[-1]`.
     """
 
     @staticmethod
     def fft(amplitude, dt):
-        """Compute the fast-fourier transform of a time series.
+        """Compute the fast-Fourier transform of a time series.
 
         Args:
-            amplitude : np.array
-                Time series amplitudes (one per time step). Can be a 2D
-                array where each row is a valid time series.
-
+            amplitude : ndarray
+                Denotes the time series amplitude. If amp is 1d each
+                sample corresponds to a single time step. If amp is 2d
+                each row corresponds to a particular section of the time
+                record (i.e., time window) and each column corresponds
+                to a single time step.
             dt : float
-                Indicating the time step in seconds.
+                Denotes the time step between samples in seconds.
 
         Returns:
             Tuple of the form (frq, fft) where:
-            frq is an np.array containing the positve frequency vector
-                between zero and the nyquist frequency (if even) or near
-                the nyquist (if odd) in Hertz.
-            fft is an np.array of complex amplitudes for the frequencies
-                between zero and the nyquist with units of the input 
-                ampltiude. If `amplitude` is a 2D array `fft` will also 
-                be a 2D array where each row is the fft of each row of
-                `amplitude`.
+                `frq` is an ndrray containing the positve frequency
+                    vector between zero and the nyquist frequency (if 
+                    even) or near the nyquist (if odd) in Hertz.
+                `fft` is an np.array of complex amplitudes for the
+                    frequencies between zero and the nyquist with units
+                    of the input ampltiude. If `amplitude` is a 2D array
+                    `fft` will also be a 2D array where each row is the
+                    fft of each row of `amplitude`.
         """
         if len(amplitude.shape) > 2:
             raise TypeError("`amplitude` cannot have dimension > 2.")
@@ -87,10 +113,10 @@ class FourierTransform():
         """Initialize a FourierTransform object.
 
         Args:
-            amplitude: np.array
+            amplitude : ndarray
                 Fourier transform amplitude.
-            frq: np.array 
-                Linearly spaced frequency vector for fourier transform.
+            frq : ndarray 
+                Linearly spaced frequency vector for Fourier transform.
             fnyq: float, optional
                 Nyquist frequency of Fourier Transform (by default the
                 maximum value of frq vector is used)
@@ -103,8 +129,19 @@ class FourierTransform():
         self.fnyq = fnyq if fnyq != None else np.max(self.frq)
 
     def smooth_konno_ohmachi(self, bandwidth=40.0):
+        """ Apply Konno and Ohmachi smoothing.
+
+        Args:
+            bandwidth : float
+                Width of smoothing window.
+
+        Returns:
+            `None`, instead modifies the internal attribute
+            `amp` to equal the smoothed value of `mag`.
+        """
         # self.amp = konno_ohmachi_smoothing(self.mag, self.frq, bandwidth,
-        #                                    enforce_no_matrix=False, max_memory_usage=2048)
+        #                                    enforce_no_matrix=False, max_memory_usage=2048,
+        #                                    normalize=True)
         self.amp = self.mag
         smooth_amp = np.zeros(self.amp.shape)
         if len(self.amp.shape) == 1:
@@ -122,55 +159,23 @@ class FourierTransform():
 
     @staticmethod
     def _k_and_o_window(frequencies, center_frequency,
-                        bandwidth=40.0, normalize=False):
+                        bandwidth=40.0, normalize=True):
         if frequencies.dtype != np.float32 and frequencies.dtype != np.float64:
             msg = 'frequencies needs to have a dtype of float32/64.'
             raise ValueError(msg)
 
         if center_frequency == 0:
-            return center_zero(frequencies) 
+            return _center_zero(frequencies)
 
-        smoothing_window = makewindow(frequencies, center_frequency)
+        smoothing_window = _makewindow(frequencies, center_frequency)
 
-        smoothing_window = fix_window(frequencies, center_frequency, smoothing_window)
+        smoothing_window = _fix_window(
+            frequencies, center_frequency, smoothing_window)
 
         if normalize:
             smoothing_window /= smoothing_window.sum()
 
         return smoothing_window
-
-    # @staticmethod
-    # def _k_and_o_window(frequencies, center_frequency, bandwidth=40.0):
-    #     # if frequencies.dtype != np.float32 and frequencies.dtype != np.float64:
-    #     #     msg = 'frequencies needs to have a dtype of float32/64.'
-    #     #     raise ValueError(msg)
-    #     # If the center_frequency is 0 return an array with zero everywhere except
-    #     # at zero.
-
-    #     if center_frequency == 0:
-    #         # smoothing_window = np.zeros(len(frequencies), dtype=frequencies.dtype)
-    #         # smoothing_window[frequencies == 0.0] = 1.0
-    #         return center_zero(frequencies, center_frequency, bandwidth)
-
-    #     # Disable div by zero errors and return zero instead
-    #     # with np.errstate(divide='ignore', invalid='ignore'):
-    #     #     # Calculate the bandwidth*log10(f/f_c)
-    #     #     # smoothing_window = bandwidth * np.log10(frequencies / center_frequency)
-    #     #     # # Just the Konno-Ohmachi formulae.
-    #     #     # smoothing_window[:] = (np.sin(smoothing_window) / smoothing_window) ** 4
-
-    #     #     # Calculate the bandwidth*log10(f/f_c)
-    #     #     smoothing_window = bandwidth * np.log10(frequencies / center_frequency)
-    #     #     # # Just the Konno-Ohmachi formulae.
-    #     #     smoothing_window = (np.sin(smoothing_window) / smoothing_window) ** 4
-
-    #     smoothing_window = makewindow(frequencies, center_frequency, bandwidth)
-
-    #     smoothing_window = fix_window(frequencies, center_frequency, smoothing_window)
-    #     # Normalize to one if wished.
-    #     # if normalize:
-    #     #     smoothing_window /= smoothing_window.sum()
-    #     return smoothing_window
 
     def resample(self, minf, maxf, nf, res_type="log", inplace=False):
         """Resample FourierTransform over a specified range.
@@ -182,20 +187,27 @@ class FourierTransform():
                 Maximum value or resample.
             nf : int
                 Number of resamples.
-            res_type : {"log", "linear"}
-                Type of resampling.
-            inplace : bool
+            res_type : {"log", "linear"}, optional
+                Type of resampling, default value is `log`.
+            inplace : bool, optional
                 Determines whether resampling is done in place or 
-                if a copy should be returned.
+                if a copy is returned be returned. By default the
+                resampling is not done inplace (i.e., `inplace=False`).
 
         Returns:
-            If inplace=True, None.
-
-            If inplace=False, a tuple of the form (frequency, ) where each parameter is a list.
+            If `inplace=True`
+                `None`, instead edits the internal attribute
+                `amp`.
+            If `inplace=False`
+                A tuple of the form (`frequency`, `amplitude`)
+                where `frequency` is the resampled frequency vector and 
+                `amplitude` is the resampled ampltidue vector if 
+                `amp` is 1d or array if `amp` is 2d. 
 
         Raises:
             ValueError
-                If `maxf`, `minf`, or `nf` are illogical.
+                If `maxf`, `minf`, or `nf` are illogical. Refer to
+                documentation.
             NotImplementedError
                 If `res_type` is not amoung those options specified.
         """
@@ -216,10 +228,12 @@ class FourierTransform():
         elif types[res_type] == types["linear"]:
             xx = np.linspace(minf, maxf, nf)
         else:
-            raise NotImplementedError(
-                f"{res_type} resampling has not been implemented.")
+            msg = f"{res_type} resampling has not been implemented."
+            raise NotImplementedError(msg)
 
-        interp_amp = sp.interp1d(self.frq, self.amp, kind="linear",
+        interp_amp = sp.interp1d(self.frq,
+                                 self.amp,
+                                 kind="linear",
                                  fill_value="extrapolate",
                                  bounds_error=False)
         interped_amp = interp_amp(xx)
@@ -232,10 +246,10 @@ class FourierTransform():
 
     @classmethod
     def from_timeseries(cls, timeseries):
-        """Compute the Fast Fourier Transform from a timeseries.
+        """Create a FourierTransform object from a TimeSeries object.
 
         Args:
-            timeseries: TimeSeries 
+            timeseries : TimeSeries 
                 TimeSeries object to be transformed.
 
         Returns:
