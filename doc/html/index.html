@@ -1,0 +1,586 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>SigProPy Documentation &#8212; SigProPy 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sigpropy-documentation">
+<h1>SigProPy Documentation<a class="headerlink" href="#sigpropy-documentation" title="Permalink to this headline">¶</a></h1>
+<p>SigProPy is a digital signal processing module for python. The module includes
+two main class definitons a <cite>TimeSeries</cite> and <cite>FourierTransform</cite> class.
+These classes include various methods for creating and manipulating time
+series and fourier transforms.</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="timeseries-class">
+<h1>TimeSeries Class<a class="headerlink" href="#timeseries-class" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="sigpropy.TimeSeries">
+<em class="property">class </em><code class="sig-name descname">TimeSeries</code><span class="sig-paren">(</span><em class="sig-param">amplitude</em>, <em class="sig-param">dt</em>, <em class="sig-param">nstacks=1</em>, <em class="sig-param">delay=0</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.TimeSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for editing and manipulating time series.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><dl class="simple">
+<dt>amp: np.array</dt><dd><p>Denotes the time series amplitude. If amp is 1d each sample
+corresponds to a single time step. If amp is 2d each row 
+corresponds to a particular section of the time record 
+(i.e., time window) and each column corresponds to a single
+time step.</p>
+</dd>
+<dt>dt: float </dt><dd><p>Denotes the time step between samples in seconds.</p>
+</dd>
+<dt>n_windows<span class="classifier">int</span></dt><dd><p>Number of time windows that the time series has been split
+into (i.e., number of rows of amp if 2d).</p>
+</dd>
+<dt>n_samples<span class="classifier">int</span></dt><dd><p>Number of samples in time series (i.e., <cite>len(amp)</cite> if <cite>amp</cite>
+is 1d or number of columns if <cite>amp</cite> is 2d).</p>
+</dd>
+<dt>fs<span class="classifier">float</span></dt><dd><p>Sampling frequency in Hz equal to <cite>1/dt</cite>.</p>
+</dd>
+<dt>fny<span class="classifier">float</span></dt><dd><p>Nyquist frequency in Hz equal to <cite>fs/2</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="sigpropy.TimeSeries.bandpassfilter">
+<code class="sig-name descname">bandpassfilter</code><span class="sig-paren">(</span><em class="sig-param">flow</em>, <em class="sig-param">fhigh</em>, <em class="sig-param">order=5</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.TimeSeries.bandpassfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply bandpass Butterworth filter to TimeSeries.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>flow<span class="classifier">float</span></dt><dd><p>Low-cut frequency (content below <cite>flow</cite> is filtered).</p>
+</dd>
+<dt>fhigh<span class="classifier">float</span></dt><dd><p>High-cut frequency (content above <cite>fhigh</cite> is filtered).</p>
+</dd>
+<dt>order<span class="classifier">int, optional</span></dt><dd><p>Filter order, the default is a 5th order filter.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p><cite>None</cite>, insteal filters attribute <cite>amp</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.TimeSeries.cosine_taper">
+<code class="sig-name descname">cosine_taper</code><span class="sig-paren">(</span><em class="sig-param">width</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.TimeSeries.cosine_taper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply cosine taper to TimeSeries.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>width<span class="classifier">float {0.-1.} </span></dt><dd><p>Amount of the TimeSeries to be tapered.
+0. is equal to a rectangular, and 1. a Hann window.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p><cite>None</cite>, instead applies cosine taper to attribute <cite>amp</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.TimeSeries.from_trace">
+<em class="property">classmethod </em><code class="sig-name descname">from_trace</code><span class="sig-paren">(</span><em class="sig-param">trace</em>, <em class="sig-param">nstacks=1</em>, <em class="sig-param">delay=0</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.TimeSeries.from_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a TimeSeries object from a trace object.</p>
+<p>This method is a more general method than <cite>from_trace_seg2</cite>, 
+as it does not attempt to extract any metadata about the Trace 
+object.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>trace<span class="classifier">Trace </span></dt><dd><p>Refer to obspy documentation for more information
+(<a class="reference external" href="https://github.com/obspy/obspy/wiki">https://github.com/obspy/obspy/wiki</a>).</p>
+</dd>
+<dt>nstacks<span class="classifier">int, optional</span></dt><dd><p>Number of stacks the time series represents, (default is
+1, signifying a single unstacked time record).</p>
+</dd>
+<dt>delay<span class="classifier">float {&lt;=0.}, optional</span></dt><dd><p>Denotes the pre-event delay, (default is zero, 
+signifying no pre-event recording is included).</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>Initialized TimeSeries object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.TimeSeries.split">
+<code class="sig-name descname">split</code><span class="sig-paren">(</span><em class="sig-param">windowlength</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.TimeSeries.split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split TimeSeries into windows of duration windowlength.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>windowlength<span class="classifier">float</span></dt><dd><p>Duration of desired window length in seconds. If 
+<cite>windowlength</cite> is not an integer multiple of dt, the 
+window length is rounded to up to the next integer
+multiple of dt.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p><cite>None</cite>, reshapes attribute <cite>amp</cite> into a 2D array 
+where each row is a different consecutive time window and 
+each column denotes a time step.</p>
+</dd>
+<dt>Note:</dt><dd><p>The last sample of each window is repeated as the first
+sample of the following time window to ensure a logical
+number of windows. Without this a 10 minute record could
+not be broken into 10 1-minute records.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sigpropy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">amp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tseries</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="n">amp</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tseries</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tseries</span><span class="o">.</span><span class="n">amp</span>
+<span class="go">array([[0, 1, 2],</span>
+<span class="go">    [2, 3, 4],</span>
+<span class="go">    [4, 5, 6],</span>
+<span class="go">    [6, 7, 8]])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.TimeSeries.time">
+<em class="property">property </em><code class="sig-name descname">time</code><a class="headerlink" href="#sigpropy.TimeSeries.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return time vector for TimeSeries object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.TimeSeries.trim">
+<code class="sig-name descname">trim</code><span class="sig-paren">(</span><em class="sig-param">start_time</em>, <em class="sig-param">end_time</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.TimeSeries.trim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trim excess from TimeSeries object in the half-open interval
+[start_time, end_time).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>start_time<span class="classifier">float</span></dt><dd><p>New time zero in seconds.</p>
+</dd>
+<dt>end_time<span class="classifier">float</span></dt><dd><p>New end time in seconds. Note that the interval is
+half-open.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p><cite>None</cite>, instead updates the attributes: <cite>n_samples</cite>, <cite>delay</cite>
+, and <cite>df</cite>.</p>
+</dd>
+<dt>Raises:</dt><dd><dl class="simple">
+<dt>IndexError </dt><dd><p>If the <cite>start_time</cite> and <cite>end_time</cite> is illogical.
+For example, <cite>start_time</cite> is before the start of the
+<cite>delay</cite> or after <cite>end_time</cite>, or the <cite>end_time</cite> is
+before the <cite>start_time</cite> or after the end of the record.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.TimeSeries.zero_pad">
+<code class="sig-name descname">zero_pad</code><span class="sig-paren">(</span><em class="sig-param">df</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.TimeSeries.zero_pad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append zeros to the end of the TimeSeries object to achieve a
+desired frequency step.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>df<span class="classifier">float</span></dt><dd><p>Desired frequency step in Hertz. Must be positive.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p><cite>None</cite>, instead modifies attributes: <cite>amp</cite>, <cite>n_samples</cite>, and
+<cite>multiple</cite>.</p>
+</dd>
+<dt>Raises:</dt><dd><dl class="simple">
+<dt>TypeError</dt><dd><p>If <cite>df</cite> is not a float.</p>
+</dd>
+<dt>ValueError</dt><dd><p>If <cite>df</cite> is not positive.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="fouriertransform-class">
+<h1>FourierTransform Class<a class="headerlink" href="#fouriertransform-class" title="Permalink to this headline">¶</a></h1>
+<p>This file contains the class FourierTransform for creating and 
+working with fourier transform objects.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-name descname">FourierTransform</code><span class="sig-paren">(</span><em class="sig-param">amplitude</em>, <em class="sig-param">frq</em>, <em class="sig-param">fnyq=None</em><span class="sig-paren">)</span></dt>
+<dd><p>A class for editing and manipulating fourier transforms.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><dl class="simple">
+<dt>frq<span class="classifier">ndarray</span></dt><dd><p>Frequency vector of the transform in Hertz.</p>
+</dd>
+<dt>amp<span class="classifier">ndarray</span></dt><dd><p>The transform’s amplitude in the same units as the input.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">fft</code><span class="sig-paren">(</span><em class="sig-param">amplitude</em>, <em class="sig-param">dt</em><span class="sig-paren">)</span></dt>
+<dd><p>Compute the fast-fourier transform of a time series.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>amplitude<span class="classifier">ndarray</span></dt><dd><p>Denotes the time series amplitude. If amp is 1d each
+sample corresponds to a single time step. If amp is 2d
+each row corresponds to a particular section of the time
+record (i.e., time window) and each column corresponds
+to a single time step.</p>
+</dd>
+<dt>dt<span class="classifier">float</span></dt><dd><p>Denotes the time step between samples in seconds.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>Tuple of the form (frq, fft) where:</dt><dd><dl class="simple">
+<dt><cite>frq</cite> is an ndrray containing the positve frequency</dt><dd><p>vector between zero and the nyquist frequency (if 
+even) or near the nyquist (if odd) in Hertz.</p>
+</dd>
+<dt><cite>fft</cite> is an np.array of complex amplitudes for the</dt><dd><p>frequencies between zero and the nyquist with units
+of the input ampltiude. If <cite>amplitude</cite> is a 2D array
+<cite>fft</cite> will also be a 2D array where each row is the
+fft of each row of <cite>amplitude</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_timeseries</code><span class="sig-paren">(</span><em class="sig-param">timeseries</em><span class="sig-paren">)</span></dt>
+<dd><p>Compute the Fast Fourier Transform from a Timeseries object.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>timeseries<span class="classifier">TimeSeries </span></dt><dd><p>TimeSeries object to be transformed.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>An initialized FourierTransform object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">imag</code></dt>
+<dd><p>Imaginary component of complex fft amplitude.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">mag</code></dt>
+<dd><p>Magnitude of complex fft amplitude.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">phase</code></dt>
+<dd><p>Phase of complex fft amplitude in radians.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">real</code></dt>
+<dd><p>Real component of complex fft amplitude.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">resample</code><span class="sig-paren">(</span><em class="sig-param">minf</em>, <em class="sig-param">maxf</em>, <em class="sig-param">nf</em>, <em class="sig-param">res_type='log'</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span></dt>
+<dd><p>Resample FourierTransform over a specified range.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>minf<span class="classifier">float </span></dt><dd><p>Minimum value of resample.</p>
+</dd>
+<dt>maxf<span class="classifier">float</span></dt><dd><p>Maximum value or resample.</p>
+</dd>
+<dt>nf<span class="classifier">int</span></dt><dd><p>Number of resamples.</p>
+</dd>
+<dt>res_type<span class="classifier">{“log”, “linear”}, optional</span></dt><dd><p>Type of resampling, default value is <cite>log</cite>.</p>
+</dd>
+<dt>inplace<span class="classifier">bool, optional</span></dt><dd><p>Determines whether resampling is done in place or 
+if a copy is returned be returned. By default the
+resampling is not done inplace (i.e., <cite>inplace=False</cite>).</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>If <cite>inplace=True</cite></dt><dd><p><cite>None</cite>, instead edits the internal attribute
+<cite>amp</cite>.</p>
+</dd>
+<dt>If <cite>inplace=False</cite></dt><dd><p>A tuple of the form (<cite>frequency</cite>, <cite>amplitude</cite>)
+where <cite>frequency</cite> is the resampled frequency vector and 
+<cite>amplitude</cite> is the resampled ampltidue vector if 
+<cite>amp</cite> is 1d or array if <cite>amp</cite> is 2d.</p>
+</dd>
+</dl>
+</dd>
+<dt>Raises:</dt><dd><dl class="simple">
+<dt>ValueError</dt><dd><p>If <cite>maxf</cite>, <cite>minf</cite>, or <cite>nf</cite> are illogical. Refer to
+documentation.</p>
+</dd>
+<dt>NotImplementedError</dt><dd><p>If <cite>res_type</cite> is not amoung those options specified.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">smooth_konno_ohmachi</code><span class="sig-paren">(</span><em class="sig-param">bandwidth=40.0</em><span class="sig-paren">)</span></dt>
+<dd><p>Apply Konno and Ohmachi smoothing.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>bandwidth<span class="classifier">float</span></dt><dd><p>Width of smoothing window.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p><cite>None</cite>, instead modifies the internal attribute
+<cite>amp</cite> to equal the smoothed value of <cite>mag</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sigpropy.FourierTransform">
+<em class="property">class </em><code class="sig-name descname">FourierTransform</code><span class="sig-paren">(</span><em class="sig-param">amplitude</em>, <em class="sig-param">frq</em>, <em class="sig-param">fnyq=None</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.FourierTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for editing and manipulating fourier transforms.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><dl class="simple">
+<dt>frq<span class="classifier">ndarray</span></dt><dd><p>Frequency vector of the transform in Hertz.</p>
+</dd>
+<dt>amp<span class="classifier">ndarray</span></dt><dd><p>The transform’s amplitude in the same units as the input.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="sigpropy.FourierTransform.fft">
+<em class="property">static </em><code class="sig-name descname">fft</code><span class="sig-paren">(</span><em class="sig-param">amplitude</em>, <em class="sig-param">dt</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.FourierTransform.fft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the fast-fourier transform of a time series.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>amplitude<span class="classifier">ndarray</span></dt><dd><p>Denotes the time series amplitude. If amp is 1d each
+sample corresponds to a single time step. If amp is 2d
+each row corresponds to a particular section of the time
+record (i.e., time window) and each column corresponds
+to a single time step.</p>
+</dd>
+<dt>dt<span class="classifier">float</span></dt><dd><p>Denotes the time step between samples in seconds.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>Tuple of the form (frq, fft) where:</dt><dd><dl class="simple">
+<dt><cite>frq</cite> is an ndrray containing the positve frequency</dt><dd><p>vector between zero and the nyquist frequency (if 
+even) or near the nyquist (if odd) in Hertz.</p>
+</dd>
+<dt><cite>fft</cite> is an np.array of complex amplitudes for the</dt><dd><p>frequencies between zero and the nyquist with units
+of the input ampltiude. If <cite>amplitude</cite> is a 2D array
+<cite>fft</cite> will also be a 2D array where each row is the
+fft of each row of <cite>amplitude</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.FourierTransform.from_timeseries">
+<em class="property">classmethod </em><code class="sig-name descname">from_timeseries</code><span class="sig-paren">(</span><em class="sig-param">timeseries</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.FourierTransform.from_timeseries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Fast Fourier Transform from a Timeseries object.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>timeseries<span class="classifier">TimeSeries </span></dt><dd><p>TimeSeries object to be transformed.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>An initialized FourierTransform object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.FourierTransform.imag">
+<em class="property">property </em><code class="sig-name descname">imag</code><a class="headerlink" href="#sigpropy.FourierTransform.imag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imaginary component of complex fft amplitude.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.FourierTransform.mag">
+<em class="property">property </em><code class="sig-name descname">mag</code><a class="headerlink" href="#sigpropy.FourierTransform.mag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Magnitude of complex fft amplitude.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.FourierTransform.phase">
+<em class="property">property </em><code class="sig-name descname">phase</code><a class="headerlink" href="#sigpropy.FourierTransform.phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Phase of complex fft amplitude in radians.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.FourierTransform.real">
+<em class="property">property </em><code class="sig-name descname">real</code><a class="headerlink" href="#sigpropy.FourierTransform.real" title="Permalink to this definition">¶</a></dt>
+<dd><p>Real component of complex fft amplitude.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.FourierTransform.resample">
+<code class="sig-name descname">resample</code><span class="sig-paren">(</span><em class="sig-param">minf</em>, <em class="sig-param">maxf</em>, <em class="sig-param">nf</em>, <em class="sig-param">res_type='log'</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.FourierTransform.resample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resample FourierTransform over a specified range.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>minf<span class="classifier">float </span></dt><dd><p>Minimum value of resample.</p>
+</dd>
+<dt>maxf<span class="classifier">float</span></dt><dd><p>Maximum value or resample.</p>
+</dd>
+<dt>nf<span class="classifier">int</span></dt><dd><p>Number of resamples.</p>
+</dd>
+<dt>res_type<span class="classifier">{“log”, “linear”}, optional</span></dt><dd><p>Type of resampling, default value is <cite>log</cite>.</p>
+</dd>
+<dt>inplace<span class="classifier">bool, optional</span></dt><dd><p>Determines whether resampling is done in place or 
+if a copy is returned be returned. By default the
+resampling is not done inplace (i.e., <cite>inplace=False</cite>).</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>If <cite>inplace=True</cite></dt><dd><p><cite>None</cite>, instead edits the internal attribute
+<cite>amp</cite>.</p>
+</dd>
+<dt>If <cite>inplace=False</cite></dt><dd><p>A tuple of the form (<cite>frequency</cite>, <cite>amplitude</cite>)
+where <cite>frequency</cite> is the resampled frequency vector and 
+<cite>amplitude</cite> is the resampled ampltidue vector if 
+<cite>amp</cite> is 1d or array if <cite>amp</cite> is 2d.</p>
+</dd>
+</dl>
+</dd>
+<dt>Raises:</dt><dd><dl class="simple">
+<dt>ValueError</dt><dd><p>If <cite>maxf</cite>, <cite>minf</cite>, or <cite>nf</cite> are illogical. Refer to
+documentation.</p>
+</dd>
+<dt>NotImplementedError</dt><dd><p>If <cite>res_type</cite> is not amoung those options specified.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sigpropy.FourierTransform.smooth_konno_ohmachi">
+<code class="sig-name descname">smooth_konno_ohmachi</code><span class="sig-paren">(</span><em class="sig-param">bandwidth=40.0</em><span class="sig-paren">)</span><a class="headerlink" href="#sigpropy.FourierTransform.smooth_konno_ohmachi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply Konno and Ohmachi smoothing.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>bandwidth<span class="classifier">float</span></dt><dd><p>Width of smoothing window.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p><cite>None</cite>, instead modifies the internal attribute
+<cite>amp</cite> to equal the smoothed value of <cite>mag</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">SigProPy Documentation</a></li>
+<li><a class="reference internal" href="#timeseries-class">TimeSeries Class</a></li>
+<li><a class="reference internal" href="#fouriertransform-class">FourierTransform Class</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Joseph P. Vantassel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

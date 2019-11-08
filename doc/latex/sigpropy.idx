@@ -1,0 +1,17 @@
+\indexentry{TimeSeries (class in sigpropy)@\spxentry{TimeSeries}\spxextra{class in sigpropy}|hyperpage}{5}
+\indexentry{bandpassfilter() (TimeSeries method)@\spxentry{bandpassfilter()}\spxextra{TimeSeries method}|hyperpage}{5}
+\indexentry{check\_input() (TimeSeries static method)@\spxentry{check\_input()}\spxextra{TimeSeries static method}|hyperpage}{5}
+\indexentry{cosine\_taper() (TimeSeries method)@\spxentry{cosine\_taper()}\spxextra{TimeSeries method}|hyperpage}{6}
+\indexentry{from\_trace() (TimeSeries class method)@\spxentry{from\_trace()}\spxextra{TimeSeries class method}|hyperpage}{6}
+\indexentry{split() (TimeSeries method)@\spxentry{split()}\spxextra{TimeSeries method}|hyperpage}{6}
+\indexentry{time() (TimeSeries property)@\spxentry{time()}\spxextra{TimeSeries property}|hyperpage}{7}
+\indexentry{trim() (TimeSeries method)@\spxentry{trim()}\spxextra{TimeSeries method}|hyperpage}{7}
+\indexentry{zero\_pad() (TimeSeries method)@\spxentry{zero\_pad()}\spxextra{TimeSeries method}|hyperpage}{7}
+\indexentry{FourierTransform (class in sigpropy)@\spxentry{FourierTransform}\spxextra{class in sigpropy}|hyperpage}{10}
+\indexentry{fft() (FourierTransform static method)@\spxentry{fft()}\spxextra{FourierTransform static method}|hyperpage}{10}
+\indexentry{from\_timeseries() (FourierTransform class method)@\spxentry{from\_timeseries()}\spxextra{FourierTransform class method}|hyperpage}{10}
+\indexentry{imag() (FourierTransform property)@\spxentry{imag()}\spxextra{FourierTransform property}|hyperpage}{10}
+\indexentry{mag() (FourierTransform property)@\spxentry{mag()}\spxextra{FourierTransform property}|hyperpage}{10}
+\indexentry{phase() (FourierTransform property)@\spxentry{phase()}\spxextra{FourierTransform property}|hyperpage}{10}
+\indexentry{real() (FourierTransform property)@\spxentry{real()}\spxextra{FourierTransform property}|hyperpage}{11}
+\indexentry{resample() (FourierTransform method)@\spxentry{resample()}\spxextra{FourierTransform method}|hyperpage}{11}
