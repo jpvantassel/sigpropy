@@ -31,7 +31,6 @@ def main():
     timeseries.cosine_taper(width=0.2)
 
     fft = sp.FourierTransform.from_timeseries(timeseries)
-    # fft.resample(minf=0.01, maxf=max(fft.frq), nf=3000, res_type="linear", inplace=True)
     fft.smooth_konno_ohmachi(bandwidth=40.)
     fft.resample(minf=0.1, maxf=50, nf=512, res_type="log", inplace=True)
 

@@ -24,22 +24,31 @@ import scipy.interpolate as sp
 # from numba import jit
 
 # @jit(nopython=True)
+
+
 def _center_zero(frequencies):
     smoothing_window = np.zeros(len(frequencies), dtype=frequencies.dtype)
     smoothing_window[frequencies == 0.0] = 1.0
     return smoothing_window
 
 # @jit(nopython=True)
+
+
 def _parta(frequencies, center_frequency, bandwidth):
     return bandwidth * np.log10(frequencies / center_frequency)
 
 # @jit(nopython=True)
+
+
 def _partb(frequencies, center_frequency, bandwidth, smoothing_window):
     return np.sin(smoothing_window) / smoothing_window
 
 # @jit(nopython=True)
+
+
 def _partc(frequencies, center_frequency, bandwidth, smoothing_window):
     return smoothing_window * smoothing_window * smoothing_window * smoothing_window
+
 
 def _makewindow(frequencies, center_frequency, bandwidth=40.0):
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -49,6 +58,7 @@ def _makewindow(frequencies, center_frequency, bandwidth=40.0):
         smoothing_window = _partc(
             frequencies, center_frequency, bandwidth, smoothing_window)
     return smoothing_window
+
 
 def _fix_window(frequencies, center_frequency, smoothing_window):
     smoothing_window[frequencies == center_frequency] = 1.0
@@ -69,6 +79,38 @@ class FourierTransform():
             generate the Fourier transform. Note this may or may not be
             equal to `frq[-1]`.
     """
+
+    @staticmethod
+    def _check_input(name, values):
+        """Perform simple checks on values of parameter `name`.
+
+        Specifically:
+            1. Check `values` is `ndarray`, `list`, or `tuple`. 
+            2. If `list` or `tuple` convert to a `ndarray`.
+
+        Args:
+            name : str
+                `name` of parameter to be check. Only used to raise 
+                easily understood exceptions.
+            values : any
+                value of parameter to be checked.
+
+        Returns:
+            `values` as an `ndarray`.
+
+        Raises:
+            TypeError
+                If entries do not comply with checks 1. and 2. listed 
+                above.
+        """
+        if type(values) not in [np.ndarray, list, tuple]:
+            msg = f"{name} must be of type ndarray, list, or tuple not {type(values)}."
+            raise TypeError(msg)
+
+        if isinstance(values, (list, tuple)):
+            values = np.array(values)
+
+        return values
 
     @staticmethod
     def fft(amplitude, dt):
@@ -119,13 +161,14 @@ class FourierTransform():
                 Linearly spaced frequency vector for Fourier transform.
             fnyq: float, optional
                 Nyquist frequency of Fourier Transform (by default the
-                maximum value of frq vector is used)
+                maximum value of frq vector is used).
 
         Returns:
             An initialized FourierTransform object.
         """
-        self.amp = amplitude
-        self.frq = frq
+        # TODO (jpv): Remove inconsistency between freq and amp.
+        self.amp = FourierTransform._check_input("amplitude", amplitude)
+        self.frq = FourierTransform._check_input("frq", frq)
         self.fnyq = fnyq if fnyq != None else np.max(self.frq)
 
     def smooth_konno_ohmachi(self, bandwidth=40.0):

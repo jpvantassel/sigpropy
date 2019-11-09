@@ -351,5 +351,4 @@ class TimeSeries():
                    delay=delay)
 
     def __repr__(self):
-        """Valid python expression to reproduce the object"""
         return f"TimeSeries(dt={self.dt}, amplitude={str(self.amp[0:3])[:-1]} ... {str(self.amp[-3:])[1:]})"

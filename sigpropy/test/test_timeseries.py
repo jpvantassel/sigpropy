@@ -101,23 +101,40 @@ class TestTimeSeries(unittest.TestCase):
                              thist.amp.tolist())
 
     def test_cosine_taper(self):
-        # Typical TimeSeries
-        amp = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        # 0% Window - (i.e., no taper)
+        amp = np.ones(10)
         dt = 1
         thist = sigpropy.TimeSeries(amp, dt)
-        thist.cosine_taper(1)
-        # print(thist.amp)
-        # plt.plot(thist.time, thist.amp)
-        # plt.show()
+        thist.cosine_taper(0)
+        sol = amp
+        for test, known in zip(thist.amp, sol):
+            self.assertAlmostEqual(test, known, places=6)
 
-        # Windowed Timeseries
-        amp = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        # 50% window
+        amp = np.ones(10)
         dt = 1
         thist = sigpropy.TimeSeries(amp, dt)
-        thist.split(3)
-        # print(thist.amp)
+        thist.cosine_taper(0.5)
+        sol = [0.000000000000000e+00, 4.131759111665348e-01,
+               9.698463103929542e-01, 1.000000000000000e+00,
+               1.000000000000000e+00, 1.000000000000000e+00,
+               1.000000000000000e+00, 9.698463103929542e-01,
+               4.131759111665348e-01, 0.000000000000000e+00]
+        for test, known in zip(thist.amp, sol):
+            self.assertAlmostEqual(test, known, places=6)
+
+        # 100% Window
+        amp = np.ones(10)
+        dt = 1
+        thist = sigpropy.TimeSeries(amp, dt)
         thist.cosine_taper(1)
-        # print(thist.amp)
+        sol = [0.000000000000000e+00, 1.169777784405110e-01,
+               4.131759111665348e-01, 7.499999999999999e-01,
+               9.698463103929542e-01, 9.698463103929542e-01,
+               7.500000000000002e-01, 4.131759111665350e-01,
+               1.169777784405111e-01, 0.000000000000000e+00]
+        for test, known in zip(thist.amp, sol):
+            self.assertAlmostEqual(test, known, places=6)
 
     def test_from_trace(self):
         with warnings.catch_warnings():
@@ -167,6 +184,7 @@ class TestTimeSeries(unittest.TestCase):
         thist.trim(0, 0.2)
         self.assertEqual(thist.n_samples, 20)
         self.assertEqual(thist.delay, 0)
+
 
 if __name__ == '__main__':
     unittest.main()
