@@ -165,25 +165,30 @@ class TestTimeSeries(unittest.TestCase):
 
     def test_trim(self):
         # Standard
-        thist = sigpropy.TimeSeries(amplitude=list(np.arange(0, 2, 0.01)),
-                                    dt=0.01)
-        self.assertEqual(len(thist.amp), 200)
+        thist = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3, 4],
+                                    dt=0.5)
         thist.trim(0, 1)
-        self.assertEqual(len(thist.amp), 100)
-        self.assertEqual(thist.n_samples, 100)
+        self.assertListEqual(thist.amp.tolist(), [0, 1, 2])
+        self.assertEqual(thist.n_samples, 3)
+        self.assertEqual(min(thist.time), 0)
+        self.assertEqual(max(thist.time), 1)
 
         # With pre-trigger delay
-        thist = sigpropy.TimeSeries(amplitude=list(np.arange(0, 2, 0.01)),
-                                    dt=0.01,
+        thist = sigpropy.TimeSeries(amplitude=[0,1,2,3,4,5,6],
+                                    dt=0.25,
                                     delay=-.5)
         # Remove part of pre-trigger
         thist.trim(-0.25, 0.25)
-        self.assertEqual(thist.n_samples, 50)
+        self.assertEqual(thist.n_samples, 3)
         self.assertEqual(thist.delay, -0.25)
+        self.assertEqual(min(thist.time), -0.25)
+        self.assertEqual(max(thist.time), 0.25)
         # Remove all of pre-trigger
-        thist.trim(0, 0.2)
-        self.assertEqual(thist.n_samples, 20)
+        thist.trim(0, 0.25)
+        self.assertEqual(thist.n_samples, 2)
         self.assertEqual(thist.delay, 0)
+        self.assertEqual(min(thist.time), 0.)
+        self.assertEqual(max(thist.time), 0.25)
 
 
 if __name__ == '__main__':

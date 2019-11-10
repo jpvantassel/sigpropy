@@ -154,7 +154,7 @@ class TimeSeries():
                 If the `start_time` and `end_time` is illogical.
                 For example, `start_time` is before the start of the
                 `delay` or after `end_time`, or the `end_time` is
-                before the `start_time` or after the end of the record.
+                after the end of the record.
         """
         current_time = self.time
         start = min(current_time)
@@ -177,7 +177,7 @@ class TimeSeries():
         logger.debug(f"start_index = {start_index}")
         logger.debug(f"start_index = {end_index}")
 
-        self.amp = self.amp[start_index:end_index]
+        self.amp = self.amp[start_index:end_index+1]
         self.n_samples = len(self.amp)
         self._df = self.fs/self.n_samples
         self.delay = 0 if start_time >= 0 else start_time
