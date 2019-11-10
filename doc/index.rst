@@ -5,15 +5,34 @@
 SigProPy Documentation
 ======================
 
+Summary
+-------
 SigProPy is a digital signal processing module for python. The module includes
-two main class definitons a `TimeSeries` and `FourierTransform` class.
-These classes include various methods for creating and manipulating time
-series and fourier transforms.
+two main class definitons `TimeSeries` and `FourierTransform`. These classes
+include various methods for creating and manipulating time series and Fourier
+transforms.
+
+License Information
+-------------------
+
+   Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
 
 TimeSeries Class
 ================
@@ -25,18 +44,23 @@ TimeSeries Class
 .. autoclass:: sigpropy.TimeSeries
    :members:
 
+   .. automethod:: __init__
+
 FourierTransform Class
 ======================
 .. automodule:: sigpropy.fouriertransform
+   :attributes:
    :members:
    :noindex:
 
 .. autoclass:: sigpropy.FourierTransform
    :members:
 
-Indices and tables
-==================
+   .. automethod:: __init__
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. Indices and tables
+.. ==================
+
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`

@@ -67,17 +67,19 @@ def _fix_window(frequencies, center_frequency, smoothing_window):
 
 
 class FourierTransform():
-    """A class for editing and manipulating Fourier transforms.
+    """A class for manipulating Fourier transforms.
 
     Attributes:
         frq : ndarray
-            Frequency vector of the transform in Hertz.
+            Frequency vector of the transform in Hz.
         amp : ndarray
-            The transform's amplitude in the same units as the input.
-        fny : float
-            The nyquist frequency associate with time series used to
-            generate the Fourier transform. Note this may or may not be
-            equal to `frq[-1]`.
+            The transform's amplitude is in the same units as the input.
+            May be 1D or 2D. If 2D each row corresponds to a unique FFT,
+            where each column correpsonds to an entry in `frq`.
+        fnyq : float
+            The Nyquist frequency associated with the time series used
+            to generate the Fourier transform. Note this may or may not
+            be equal to `frq[-1]`.
     """
 
     @staticmethod
@@ -99,7 +101,7 @@ class FourierTransform():
             `values` as an `ndarray`.
 
         Raises:
-            TypeError
+            TypeError:
                 If entries do not comply with checks 1. and 2. listed 
                 above.
         """
@@ -114,28 +116,31 @@ class FourierTransform():
 
     @staticmethod
     def fft(amplitude, dt):
-        """Compute the fast-Fourier transform of a time series.
+        """Compute the fast-Fourier transform (FFT) of a time series.
 
         Args:
             amplitude : ndarray
-                Denotes the time series amplitude. If amp is 1d each
-                sample corresponds to a single time step. If amp is 2d
-                each row corresponds to a particular section of the time
-                record (i.e., time window) and each column corresponds
-                to a single time step.
+                Denotes the time series amplitude. If `amplitude` is 1D
+                each sample corresponds to a single time step. If
+                `amplitude` is 2D each row corresponds to a particular
+                section of the time record (i.e., time window) and each
+                column corresponds to a single time step.
             dt : float
                 Denotes the time step between samples in seconds.
 
         Returns:
             Tuple of the form (frq, fft) where:
-                `frq` is an ndrray containing the positve frequency
-                    vector between zero and the nyquist frequency (if 
-                    even) or near the nyquist (if odd) in Hertz.
-                `fft` is an np.array of complex amplitudes for the
-                    frequencies between zero and the nyquist with units
-                    of the input ampltiude. If `amplitude` is a 2D array
-                    `fft` will also be a 2D array where each row is the
-                    fft of each row of `amplitude`.
+                `frq` : ndarray
+                    Positve frequency vector between zero and the
+                    Nyquist frequency (if even) or near the Nyquist
+                    (if odd) in Hz.
+                `fft` : ndarray
+                    Complex amplitudes for the frequencies between zero
+                    and the Nyquist (if even) or near the Nyquist 
+                    (if odd) with units of the input ampltiude.
+                    If `amplitude` is a 2D array `fft` will also be a 2D
+                    array where each row is the FFT of each row of 
+                    `amplitude`.
         """
         if len(amplitude.shape) > 2:
             raise TypeError("`amplitude` cannot have dimension > 2.")
@@ -156,12 +161,13 @@ class FourierTransform():
 
         Args:
             amplitude : ndarray
-                Fourier transform amplitude.
+                Fourier transform amplitude. Refer to attribute `amp`
+                for more details.
             frq : ndarray 
                 Linearly spaced frequency vector for Fourier transform.
-            fnyq: float, optional
+            fnyq : float, optional
                 Nyquist frequency of Fourier Transform (by default the
-                maximum value of frq vector is used).
+                maximum value of `frq` vector is used).
 
         Returns:
             An initialized FourierTransform object.
@@ -175,12 +181,12 @@ class FourierTransform():
         """ Apply Konno and Ohmachi smoothing.
 
         Args:
-            bandwidth : float
-                Width of smoothing window.
+            bandwidth : float, optional
+                Width of smoothing window, by default this is set to 40.
 
         Returns:
-            `None`, instead modifies the internal attribute
-            `amp` to equal the smoothed value of `mag`.
+            `None`, modifies the internal attribute `amp` to equal the
+            smoothed value of `mag`.
         """
         # self.amp = konno_ohmachi_smoothing(self.mag, self.frq, bandwidth,
         #                                    enforce_no_matrix=False, max_memory_usage=2048,
@@ -227,7 +233,7 @@ class FourierTransform():
             minf : float 
                 Minimum value of resample.
             maxf : float
-                Maximum value or resample.
+                Maximum value of resample.
             nf : int
                 Number of resamples.
             res_type : {"log", "linear"}, optional
@@ -239,19 +245,17 @@ class FourierTransform():
 
         Returns:
             If `inplace=True`
-                `None`, instead edits the internal attribute
-                `amp`.
+                `None`, method edits the internal attribute `amp`.
             If `inplace=False`
                 A tuple of the form (`frequency`, `amplitude`)
                 where `frequency` is the resampled frequency vector and 
-                `amplitude` is the resampled ampltidue vector if 
-                `amp` is 1d or array if `amp` is 2d. 
+                `amplitude` is the resampled amplitude vector if 
+                `amp` is 1D or array if `amp` is 2D. 
 
         Raises:
-            ValueError
-                If `maxf`, `minf`, or `nf` are illogical. Refer to
-                documentation.
-            NotImplementedError
+            ValueError:
+                If `maxf`, `minf`, or `nf` are illogical.
+            NotImplementedError:
                 If `res_type` is not amoung those options specified.
         """
         if maxf < minf:
@@ -303,22 +307,22 @@ class FourierTransform():
 
     @property
     def mag(self):
-        """Magnitude of complex fft amplitude."""
+        """Magnitude of complex FFT amplitude."""
         return np.abs(self.amp)
 
     @property
     def phase(self):
-        """Phase of complex fft amplitude in radians."""
+        """Phase of complex FFT amplitude in radians."""
         return np.angle(self.amp)
 
     @property
     def imag(self):
-        """Imaginary component of complex fft amplitude."""
+        """Imaginary component of complex FFT amplitude."""
         return np.imag(self.amp)
 
     @property
     def real(self):
-        """Real component of complex fft amplitude."""
+        """Real component of complex FFT amplitude."""
         return np.real(self.amp)
 
     def __repr__(self):

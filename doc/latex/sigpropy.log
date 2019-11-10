@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7140 64-bit) (preloaded format=pdflatex 2019.9.17)  8 NOV 2019 11:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7140 64-bit) (preloaded format=pdflatex 2019.9.17)  10 NOV 2019 12:08
 entering extended mode
 **./sigpropy.tex
 (sigpropy.tex
@@ -704,7 +704,7 @@ Package: sphinxmessages 2019/01/04 v2.0 Localized LaTeX macros (Sphinx team)
 
 
 Writing index file sigpropy.idx
-No file sigpropy.aux.
+(sigpropy.aux)
 \openout1 = `sigpropy.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 81.
@@ -721,6 +721,7 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 81.
 LaTeX Font Info:    ... okay on input line 81.
 LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 81.
 LaTeX Font Info:    Try loading font information for TS1+cmr on input line 81.
+
 ("C:\Users\Joe\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\ts1cmr.fd"
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
@@ -812,6 +813,7 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 81.
 LaTeX Info: Redefining \pageref on input line 81.
 LaTeX Info: Redefining \nameref on input line 81.
+ (sigpropy.out) (sigpropy.out)
 \@outlinefile=\write5
 \openout5 = `sigpropy.out'.
 
@@ -865,72 +867,66 @@ LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
 ]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 86.
+
+(sigpropy.toc
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 2.
+)
 \tf@toc=\write6
 \openout6 = `sigpropy.toc'.
 
+ [1
 
+] [2
+
+]
+Chapter 1.
 [1
 
 ] [2
 
-] [1] [2
+]
+Chapter 2.
+[3] [4
 
 ]
-Chapter 1.
-LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 103.
-LaTeX Font Info:    Try loading font information for T1+pcr on input line 103.
+Chapter 3.
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 124.
 ("C:\Users\Joe\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\t1pcr.fd"
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 )
 LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <10> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 103.
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 124.
 
-[3]
+[5]
 LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <9> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 285.
- [4] [5] [6] [7] [8
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 299.
+ [6] [7] [8
 
 ]
-Chapter 2.
-[9] [10] [11] [12
-
-]
-Chapter 3.
-LaTeX Font Info:    Try loading font information for TS1+ptm on input line 962.
-
-("C:\Users\Joe\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\ts1ptm.fd"
-File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
-)
+Chapter 4.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <10> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 464.
+[9]
 No file sigpropy.ind.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 977.
-[13]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 977.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 615.
+[10]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 615.
  (sigpropy.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 977.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 977.
-
-
-Package rerunfilecheck Warning: File `sigpropy.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `sigpropy.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  F14BB3F71597B8E0A918A73112DE004F;424.
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 977.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 615.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 615.
+Package rerunfilecheck Info: File `sigpropy.out' has not changed.
+(rerunfilecheck)             Checksum: 5D51C12F90FD4577C926807A9FE6B399;505.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 615.
  ) 
 Here is how much of TeX's memory you used:
- 13419 strings out of 492895
- 191733 string characters out of 3124669
- 300352 words of memory out of 3000000
- 17008 multiletter control sequences out of 15000+200000
- 46646 words of font info for 66 fonts, out of 3000000 for 9000
+ 13415 strings out of 492895
+ 191931 string characters out of 3124669
+ 301473 words of memory out of 3000000
+ 17000 multiletter control sequences out of 15000+200000
+ 48102 words of font info for 69 fonts, out of 3000000 for 9000
  1142 hyphenation exceptions out of 8191
- 37i,11n,45p,413b,682s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 37i,11n,45p,413b,617s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}<
 C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/courier/ucrb8a.p
 fb><C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/courier/ucrr
@@ -938,11 +934,12 @@ fb><C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/courier/ucrr
 /uhvb8a.pfb><C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/hel
 vetic/uhvbo8a.pfb><C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/u
 rw/times/utmb8a.pfb><C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/type1
-/urw/times/utmr8a.pfb><C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/typ
-e1/urw/times/utmri8a.pfb>
-Output written on sigpropy.pdf (17 pages, 119617 bytes).
+/urw/times/utmbi8a.pfb><C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/ty
+pe1/urw/times/utmr8a.pfb><C:/Users/Joe/AppData/Local/Programs/MiKTeX 2.9/fonts/
+type1/urw/times/utmri8a.pfb>
+Output written on sigpropy.pdf (14 pages, 128133 bytes).
 PDF statistics:
- 148 PDF objects out of 1000 (max. 8388607)
- 44 named destinations out of 1000 (max. 500000)
- 21 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 156 PDF objects out of 1000 (max. 8388607)
+ 38 named destinations out of 1000 (max. 500000)
+ 53 words of extra memory for PDF output out of 10000 (max. 10000000)
 

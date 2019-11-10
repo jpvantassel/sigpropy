@@ -72,7 +72,7 @@
 
 
 \title{SigProPy}
-\date{Nov 08, 2019}
+\date{Nov 10, 2019}
 \release{0.0.1}
 \author{Joseph P.\@{} Vantassel}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -88,112 +88,102 @@
 \phantomsection\label{\detokenize{index::doc}}
 
 
+
+\chapter{Summary}
+\label{\detokenize{index:summary}}
 SigProPy is a digital signal processing module for python. The module includes
-two main classes a TimeSeries and FourierTransform class. These classes include
-various methods for creating and manipulating time series and fourier transforms.
+two main class definitons \sphinxtitleref{TimeSeries} and \sphinxtitleref{FourierTransform}. These classes
+include various methods for creating and manipulating time series and Fourier
+transforms.
+
+
+\chapter{License Information}
+\label{\detokenize{index:license-information}}\begin{quote}
+
+Copyright (C) 2019 Joseph P. Vantassel (\sphinxhref{mailto:jvantassel@utexas.edu}{jvantassel@utexas.edu})
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see \textless{}https: //www.gnu.org/licenses/\textgreater{}.
+\end{quote}
 
 
 \chapter{TimeSeries Class}
-\label{\detokenize{index:timeseries-class}}
-This file contains the class TimeSeries for creating and manipulating
-time series objects.
-
+\label{\detokenize{index:timeseries-class}}\index{TimeSeries (class in sigpropy)@\spxentry{TimeSeries}\spxextra{class in sigpropy}}
 
 \begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxbfcode{\sphinxupquote{TimeSeries}}}{\emph{amplitude}, \emph{dt}, \emph{nstacks=1}, \emph{delay=0}}{}
-A class for editing and manipulating time series.
+\phantomsection\label{\detokenize{index:sigpropy.TimeSeries}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxbfcode{\sphinxupquote{TimeSeries}}}{\emph{amplitude}, \emph{dt}, \emph{n\_stacks=1}, \emph{delay=0}}{}
+A class for manipulating time series.
 \begin{description}
 \item[{Attributes:}] \leavevmode\begin{description}
-\item[{amp: np.array}] \leavevmode
-Denotes the time series amplitude. If amp is 1d each sample
-corresponds to a single time step. If amp is 2d each row 
-corresponds to a particular section of the time record 
-(i.e., time window) and each column corresponds to a single
-time step.
+\item[{amp}] \leavevmode{[}ndarray{]}
+Denotes the time series amplitude. If \sphinxtitleref{amp} is 1D each 
+sample corresponds to a single time step. If \sphinxtitleref{amp} is 2D 
+each row corresponds to a particular section of the time
+record (i.e., time window) and each column corresponds to a
+single time step.
 
-\item[{dt: float }] \leavevmode
+\item[{dt}] \leavevmode{[}float {]}
 Denotes the time step between samples in seconds.
 
 \item[{n\_windows}] \leavevmode{[}int{]}
 Number of time windows that the time series has been split
-into (i.e., number of rows of amp if 2d).
+into (i.e., number of rows of amp if 2D).
 
 \item[{n\_samples}] \leavevmode{[}int{]}
 Number of samples in time series (i.e., \sphinxtitleref{len(amp)} if \sphinxtitleref{amp}
-is 1d or number of columns if \sphinxtitleref{amp} is 2d).
+is 1D or number of columns if \sphinxtitleref{amp} is 2D).
 
 \item[{fs}] \leavevmode{[}float{]}
 Sampling frequency in Hz equal to \sphinxtitleref{1/dt}.
 
-\item[{fny}] \leavevmode{[}float{]}
+\item[{fnyq}] \leavevmode{[}float{]}
 Nyquist frequency in Hz equal to \sphinxtitleref{fs/2}.
 
 \end{description}
 
 \end{description}
-
+\index{\_\_init\_\_() (TimeSeries method)@\spxentry{\_\_init\_\_()}\spxextra{TimeSeries method}}
 
 \begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{bandpassfilter}}}{\emph{flow}, \emph{fhigh}, \emph{order=5}}{}
-Bandpass filter TimeSeries.
+\phantomsection\label{\detokenize{index:sigpropy.TimeSeries.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{amplitude}, \emph{dt}, \emph{n\_stacks=1}, \emph{delay=0}}{}
+Initialize a TimeSeries object.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
-\item[{flow: float}] \leavevmode
-Low cut-off frequency for filter (content below flow is 
-filtered).
+\item[{amplitude}] \leavevmode{[}1D - ndarray {]}
+Amplitude of the time series at each time step. Meaning 
+\sphinxtitleref{amplitude{[}0{]}} is associated with first and 
+\sphinxtitleref{amplitude{[}-1{]}} is associated with the final time 
+sample.
 
-\item[{fhigh: float}] \leavevmode
-High cut-off frequency for filter (content above fhigh is
-filtered).
+\item[{dt}] \leavevmode{[}float{]}
+Time step between samples in seconds.
 
-\item[{order: int}] \leavevmode
-Filter order
+\item[{n\_stacks}] \leavevmode{[}int, optional{]}
+Number of stacks used to produce the amplitude (the
+default value is 1, denoting a single unstacked 
+recording).
+
+\item[{delay}] \leavevmode{[}float \{\textless{}=0.\}, optional{]}
+Indicates the pre-event delay in seconds.
 
 \end{description}
 
 \item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, perform filter operation on attribute \sphinxtitleref{amp}.
-
-\end{description}
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{check\_input}}}{\emph{name}, \emph{values}}{}
-Perform simple checks on values of parameter \sphinxtitleref{name}.
-\begin{description}
-\item[{Specifically:}] \leavevmode\begin{enumerate}
-\sphinxsetlistlabels{\arabic}{enumi}{enumii}{}{.}%
-\item {} 
-Check \sphinxtitleref{values} is \sphinxtitleref{ndarray}, \sphinxtitleref{list}, or \sphinxtitleref{tuple}.
-
-\item {} 
-If \sphinxtitleref{list} or \sphinxtitleref{tuple} convert to a \sphinxtitleref{ndarray}.
-
-\item {} 
-Check \sphinxtitleref{values} is one-dimensional \sphinxtitleref{ndarray}.
-
-\end{enumerate}
-
-\item[{Args:}] \leavevmode\begin{description}
-\item[{name}] \leavevmode{[}str{]}
-\sphinxtitleref{name} of parameter to be check. Only used to raise 
-easily understood exceptions.
-
-\item[{values}] \leavevmode{[}any{]}
-value of parameter to be checked.
-
-\end{description}
-
-\item[{Returns:}] \leavevmode
-\sphinxtitleref{values} as an \sphinxtitleref{ndarray}.
+Intialized TimeSeries object.
 
 \item[{Raises:}] \leavevmode\begin{description}
-\item[{TypeError}] \leavevmode
-If entries do not comply with checks 1. and 2. listed 
-above.
+\item[{ValueError:}] \leavevmode
+If \sphinxtitleref{delay} is greater than 0.
 
 \end{description}
 
@@ -201,277 +191,26 @@ above.
 
 \end{fulllineitems}
 
-
-
-\begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{cosine\_taper}}}{\emph{width}}{}
-Apply cosine taper to TimeSeries.
-\begin{description}
-\item[{Args:}] \leavevmode\begin{description}
-\item[{width}] \leavevmode{[}float \{0.-1.\} {]}
-Amount of the TimeSeries to be tapered. 0 represents a 
-rectangular window and 1 a Hann window.
-
-\end{description}
-
-\item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, instead applies cosine taper to attribute
-\sphinxtitleref{amp}.
-
-\end{description}
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{classmethod }}\sphinxbfcode{\sphinxupquote{from\_trace}}}{\emph{trace}, \emph{nstacks=1}, \emph{delay=0}}{}
-Initialize a TimeSeries object from a trace object.
-
-This method is a more general method than from\_trace\_seg2, which
-does not attempt to extract anything from the trace object 
-except for its data and sampling step.
-\begin{description}
-\item[{Args:}] \leavevmode
-trace: Trace object.
-\begin{description}
-\item[{nstacks: Integer representing the number of stacks. Default }] \leavevmode
-value is one (i.e., only a single recording was made).
-
-\item[{delay: Number that is less than or equal to zero, denoting}] \leavevmode
-the pre-trigger delay. Default value is zero (i.e., no
-pre-trigger delay was recorded).
-
-\end{description}
-
-\item[{Returns:}] \leavevmode
-Initialized TimeSeries object.
-
-\item[{Raises:}] \leavevmode
-This method raises no exceptions.
-
-\end{description}
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{split}}}{\emph{windowlength}}{}
-Split TimeSeries into windows of length windowlength.
-\begin{description}
-\item[{Args:}] \leavevmode\begin{description}
-\item[{windowlength}] \leavevmode{[}int{]}
-Integer defining length of window in seconds. If 
-\sphinxtitleref{windowlength} is not integer multiple of dt, the 
-window length is rounded to up to the next integer
-multiple of dt.
-
-\end{description}
-
-\item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, reshapes attribute \sphinxtitleref{amp} into a 2D array 
-where each row is a different consecutive time window and 
-each column denotes a time step.
-
-\item[{Note:}] \leavevmode
-The last sample of each window is repeated as the first
-sample of the following time window to ensure a logical
-number of windows. Without this a 10 minute record could
-not be broken into 10 1-minute records.
-
-\item[{Example:}] \leavevmode
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k+kn}{import} \PYG{n+nn}{sigpropy} \PYG{k}{as} \PYG{n+nn}{sp}
-\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k}{as} \PYG{n+nn}{np}
-\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{amp} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{l+m+mi}{3}\PYG{p}{,}\PYG{l+m+mi}{4}\PYG{p}{,}\PYG{l+m+mi}{5}\PYG{p}{,}\PYG{l+m+mi}{6}\PYG{p}{,}\PYG{l+m+mi}{7}\PYG{p}{,}\PYG{l+m+mi}{8}\PYG{p}{,}\PYG{l+m+mi}{9}\PYG{p}{]}\PYG{p}{)}
-\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{tseries} \PYG{o}{=} \PYG{n}{sp}\PYG{o}{.}\PYG{n}{TimeSeries}\PYG{p}{(}\PYG{n}{amp}\PYG{p}{,} \PYG{n}{dt}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{)} 
-\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{tseries}\PYG{o}{.}\PYG{n}{split}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{)}
-\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{tseries}\PYG{o}{.}\PYG{n}{amp}
-\PYG{g+go}{array([[0, 1, 2],}
-\PYG{g+go}{    [2, 3, 4],}
-\PYG{g+go}{    [4, 5, 6],}
-\PYG{g+go}{    [6, 7, 8]])}
-\end{sphinxVerbatim}
-
-\end{description}
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{time}}}
-Return time vector for TimeSeries object.
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{trim}}}{\emph{start\_time}, \emph{end\_time}}{}
-Trim excess from TimeSeries object in the half-open interval
-{[}start\_time, end\_time).
-\begin{description}
-\item[{Args: }] \leavevmode\begin{description}
-\item[{start\_time}] \leavevmode{[}float{]}
-New time zero in seconds.
-
-\item[{end\_time}] \leavevmode{[}float{]}
-New end time in seconds. Note that the interval is
-half-open.
-
-\end{description}
-
-\item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, instead updates the attributes: \sphinxtitleref{n\_samples}, 
-\sphinxtitleref{delay}, and \sphinxtitleref{df}.
-
-\item[{Raises:}] \leavevmode\begin{description}
-\item[{IndexError }] \leavevmode
-If the \sphinxtitleref{start\_time} and \sphinxtitleref{end\_time} is illogical.
-For example, \sphinxtitleref{start\_time} is before the start of the
-\sphinxtitleref{delay} or after \sphinxtitleref{end\_time}, or the \sphinxtitleref{end\_time} is
-before the \sphinxtitleref{start\_time} or after the end of the record.
-
-\end{description}
-
-\end{description}
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{zero\_pad}}}{\emph{df=0.2}}{}
-Append zeros to the end of the TimeSeries object to achieve a
-desired frequency step.
-\begin{description}
-\item[{Args:}] \leavevmode\begin{description}
-\item[{df}] \leavevmode{[}float{]}
-Desired frequency step in Hertz. Must be positive.
-
-\end{description}
-
-\item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, instead modifies attributes: \sphinxtitleref{amp},
-\sphinxtitleref{n\_samples}, and \sphinxtitleref{multiple}.
-
-\item[{Raises:}] \leavevmode\begin{description}
-\item[{TypeError}] \leavevmode
-If \sphinxtitleref{df} is not a float.
-
-\item[{ValueError}] \leavevmode
-If \sphinxtitleref{df} is not positive.
-
-\end{description}
-
-\end{description}
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-\index{TimeSeries (class in sigpropy)@\spxentry{TimeSeries}\spxextra{class in sigpropy}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{index:sigpropy.TimeSeries}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxbfcode{\sphinxupquote{TimeSeries}}}{\emph{amplitude}, \emph{dt}, \emph{nstacks=1}, \emph{delay=0}}{}
-A class for editing and manipulating time series.
-\begin{description}
-\item[{Attributes:}] \leavevmode\begin{description}
-\item[{amp: np.array}] \leavevmode
-Denotes the time series amplitude. If amp is 1d each sample
-corresponds to a single time step. If amp is 2d each row 
-corresponds to a particular section of the time record 
-(i.e., time window) and each column corresponds to a single
-time step.
-
-\item[{dt: float }] \leavevmode
-Denotes the time step between samples in seconds.
-
-\item[{n\_windows}] \leavevmode{[}int{]}
-Number of time windows that the time series has been split
-into (i.e., number of rows of amp if 2d).
-
-\item[{n\_samples}] \leavevmode{[}int{]}
-Number of samples in time series (i.e., \sphinxtitleref{len(amp)} if \sphinxtitleref{amp}
-is 1d or number of columns if \sphinxtitleref{amp} is 2d).
-
-\item[{fs}] \leavevmode{[}float{]}
-Sampling frequency in Hz equal to \sphinxtitleref{1/dt}.
-
-\item[{fny}] \leavevmode{[}float{]}
-Nyquist frequency in Hz equal to \sphinxtitleref{fs/2}.
-
-\end{description}
-
-\end{description}
 \index{bandpassfilter() (TimeSeries method)@\spxentry{bandpassfilter()}\spxextra{TimeSeries method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.TimeSeries.bandpassfilter}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{bandpassfilter}}}{\emph{flow}, \emph{fhigh}, \emph{order=5}}{}
-Bandpass filter TimeSeries.
+Apply bandpass Butterworth filter to time series.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
-\item[{flow: float}] \leavevmode
-Low cut-off frequency for filter (content below flow is 
-filtered).
+\item[{flow}] \leavevmode{[}float{]}
+Low-cut frequency (content below \sphinxtitleref{flow} is filtered).
 
-\item[{fhigh: float}] \leavevmode
-High cut-off frequency for filter (content above fhigh is
-filtered).
+\item[{fhigh}] \leavevmode{[}float{]}
+High-cut frequency (content above \sphinxtitleref{fhigh} is filtered).
 
-\item[{order: int}] \leavevmode
-Filter order
+\item[{order}] \leavevmode{[}int, optional{]}
+Filter order (default is 5th).
 
 \end{description}
 
 \item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, perform filter operation on attribute \sphinxtitleref{amp}.
-
-\end{description}
-
-\end{fulllineitems}
-
-\index{check\_input() (TimeSeries static method)@\spxentry{check\_input()}\spxextra{TimeSeries static method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{index:sigpropy.TimeSeries.check_input}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{check\_input}}}{\emph{name}, \emph{values}}{}
-Perform simple checks on values of parameter \sphinxtitleref{name}.
-\begin{description}
-\item[{Specifically:}] \leavevmode\begin{enumerate}
-\sphinxsetlistlabels{\arabic}{enumi}{enumii}{}{.}%
-\item {} 
-Check \sphinxtitleref{values} is \sphinxtitleref{ndarray}, \sphinxtitleref{list}, or \sphinxtitleref{tuple}.
-
-\item {} 
-If \sphinxtitleref{list} or \sphinxtitleref{tuple} convert to a \sphinxtitleref{ndarray}.
-
-\item {} 
-Check \sphinxtitleref{values} is one-dimensional \sphinxtitleref{ndarray}.
-
-\end{enumerate}
-
-\item[{Args:}] \leavevmode\begin{description}
-\item[{name}] \leavevmode{[}str{]}
-\sphinxtitleref{name} of parameter to be check. Only used to raise 
-easily understood exceptions.
-
-\item[{values}] \leavevmode{[}any{]}
-value of parameter to be checked.
-
-\end{description}
-
-\item[{Returns:}] \leavevmode
-\sphinxtitleref{values} as an \sphinxtitleref{ndarray}.
-
-\item[{Raises:}] \leavevmode\begin{description}
-\item[{TypeError}] \leavevmode
-If entries do not comply with checks 1. and 2. listed 
-above.
-
-\end{description}
+\sphinxtitleref{None}, instead filters attribute \sphinxtitleref{amp}.
 
 \end{description}
 
@@ -481,18 +220,17 @@ above.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.TimeSeries.cosine_taper}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{cosine\_taper}}}{\emph{width}}{}
-Apply cosine taper to TimeSeries.
+Apply cosine taper to time series.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
-\item[{width}] \leavevmode{[}float \{0.-1.\} {]}
-Amount of the TimeSeries to be tapered. 0 represents a 
-rectangular window and 1 a Hann window.
+\item[{width}] \leavevmode{[}float \{0.-1.\}{]}
+Amount of the time series to be tapered.
+0. is equal to a rectangular and 1. a Hann window.
 
 \end{description}
 
 \item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, instead applies cosine taper to attribute
-\sphinxtitleref{amp}.
+\sphinxtitleref{None}, applies cosine taper to attribute \sphinxtitleref{amp}.
 
 \end{description}
 
@@ -501,30 +239,30 @@ Returns \sphinxtitleref{None}, instead applies cosine taper to attribute
 \index{from\_trace() (TimeSeries class method)@\spxentry{from\_trace()}\spxextra{TimeSeries class method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{index:sigpropy.TimeSeries.from_trace}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{classmethod }}\sphinxbfcode{\sphinxupquote{from\_trace}}}{\emph{trace}, \emph{nstacks=1}, \emph{delay=0}}{}
+\phantomsection\label{\detokenize{index:sigpropy.TimeSeries.from_trace}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{classmethod }}\sphinxbfcode{\sphinxupquote{from\_trace}}}{\emph{trace}, \emph{n\_stacks=1}, \emph{delay=0}}{}
 Initialize a TimeSeries object from a trace object.
 
-This method is a more general method than from\_trace\_seg2, which
-does not attempt to extract anything from the trace object 
-except for its data and sampling step.
+This method is a more general method than \sphinxtitleref{from\_trace\_seg2}, 
+as it does not attempt to extract any metadata from the Trace 
+object.
 \begin{description}
-\item[{Args:}] \leavevmode
-trace: Trace object.
-\begin{description}
-\item[{nstacks: Integer representing the number of stacks. Default }] \leavevmode
-value is one (i.e., only a single recording was made).
+\item[{Args:}] \leavevmode\begin{description}
+\item[{trace}] \leavevmode{[}Trace{]}
+Refer to obspy documentation for more information
+(\sphinxurl{https://github.com/obspy/obspy/wiki}).
 
-\item[{delay: Number that is less than or equal to zero, denoting}] \leavevmode
-the pre-trigger delay. Default value is zero (i.e., no
-pre-trigger delay was recorded).
+\item[{n\_stacks}] \leavevmode{[}int, optional{]}
+Number of stacks the time series represents, (default is
+1, signifying a single unstacked time record).
+
+\item[{delay}] \leavevmode{[}float \{\textless{}=0.\}, optional{]}
+Denotes the pre-event delay, (default is zero, 
+signifying no pre-event recording is included).
 
 \end{description}
 
 \item[{Returns:}] \leavevmode
 Initialized TimeSeries object.
-
-\item[{Raises:}] \leavevmode
-This method raises no exceptions.
 
 \end{description}
 
@@ -534,26 +272,26 @@ This method raises no exceptions.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.TimeSeries.split}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{split}}}{\emph{windowlength}}{}
-Split TimeSeries into windows of length windowlength.
+Split time series into windows of duration \sphinxtitleref{windowlength}.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
-\item[{windowlength}] \leavevmode{[}int{]}
-Integer defining length of window in seconds. If 
-\sphinxtitleref{windowlength} is not integer multiple of dt, the 
+\item[{windowlength}] \leavevmode{[}float{]}
+Duration of desired window length in seconds. If 
+\sphinxtitleref{windowlength} is not an integer multiple of \sphinxtitleref{dt}, the 
 window length is rounded to up to the next integer
-multiple of dt.
+multiple of \sphinxtitleref{dt}.
 
 \end{description}
 
 \item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, reshapes attribute \sphinxtitleref{amp} into a 2D array 
+\sphinxtitleref{None}, reshapes attribute \sphinxtitleref{amp} into a 2D array 
 where each row is a different consecutive time window and 
 each column denotes a time step.
 
 \item[{Note:}] \leavevmode
 The last sample of each window is repeated as the first
 sample of the following time window to ensure a logical
-number of windows. Without this a 10 minute record could
+number of windows. Without this, a 10 minute record could
 not be broken into 10 1-minute records.
 
 \item[{Example:}] \leavevmode
@@ -586,10 +324,10 @@ Return time vector for TimeSeries object.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.TimeSeries.trim}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{trim}}}{\emph{start\_time}, \emph{end\_time}}{}
-Trim excess from TimeSeries object in the half-open interval
+Trim excess from time series in the half-open interval
 {[}start\_time, end\_time).
 \begin{description}
-\item[{Args: }] \leavevmode\begin{description}
+\item[{Args:}] \leavevmode\begin{description}
 \item[{start\_time}] \leavevmode{[}float{]}
 New time zero in seconds.
 
@@ -600,11 +338,11 @@ half-open.
 \end{description}
 
 \item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, instead updates the attributes: \sphinxtitleref{n\_samples}, 
-\sphinxtitleref{delay}, and \sphinxtitleref{df}.
+\sphinxtitleref{None},updates the attributes: \sphinxtitleref{n\_samples}, \sphinxtitleref{delay}, and
+\sphinxtitleref{df}.
 
 \item[{Raises:}] \leavevmode\begin{description}
-\item[{IndexError }] \leavevmode
+\item[{IndexError:}] \leavevmode
 If the \sphinxtitleref{start\_time} and \sphinxtitleref{end\_time} is illogical.
 For example, \sphinxtitleref{start\_time} is before the start of the
 \sphinxtitleref{delay} or after \sphinxtitleref{end\_time}, or the \sphinxtitleref{end\_time} is
@@ -619,25 +357,25 @@ before the \sphinxtitleref{start\_time} or after the end of the record.
 \index{zero\_pad() (TimeSeries method)@\spxentry{zero\_pad()}\spxextra{TimeSeries method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{index:sigpropy.TimeSeries.zero_pad}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{zero\_pad}}}{\emph{df=0.2}}{}
+\phantomsection\label{\detokenize{index:sigpropy.TimeSeries.zero_pad}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{zero\_pad}}}{\emph{df}}{}
 Append zeros to the end of the TimeSeries object to achieve a
 desired frequency step.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
 \item[{df}] \leavevmode{[}float{]}
-Desired frequency step in Hertz. Must be positive.
+Desired frequency step in Hz. Must be positive.
 
 \end{description}
 
 \item[{Returns:}] \leavevmode
-Returns \sphinxtitleref{None}, instead modifies attributes: \sphinxtitleref{amp},
-\sphinxtitleref{n\_samples}, and \sphinxtitleref{multiple}.
+\sphinxtitleref{None}, modifies attributes: \sphinxtitleref{amp}, \sphinxtitleref{n\_samples}, and
+\sphinxtitleref{multiple}.
 
 \item[{Raises:}] \leavevmode\begin{description}
-\item[{TypeError}] \leavevmode
+\item[{TypeError:}] \leavevmode
 If \sphinxtitleref{df} is not a float.
 
-\item[{ValueError}] \leavevmode
+\item[{ValueError:}] \leavevmode
 If \sphinxtitleref{df} is not positive.
 
 \end{description}
@@ -652,71 +390,46 @@ If \sphinxtitleref{df} is not positive.
 
 
 \chapter{FourierTransform Class}
-\label{\detokenize{index:fouriertransform-class}}
-This file contains the class FourierTransform for creating and 
-working with fourier transform objects.
-
+\label{\detokenize{index:fouriertransform-class}}\index{FourierTransform (class in sigpropy)@\spxentry{FourierTransform}\spxextra{class in sigpropy}}
 
 \begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxbfcode{\sphinxupquote{FourierTransform}}}{\emph{amplitude}, \emph{frq}, \emph{fnyq=None}}{}
-A class for editing and manipulating fourier transforms.
+\phantomsection\label{\detokenize{index:sigpropy.FourierTransform}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxbfcode{\sphinxupquote{FourierTransform}}}{\emph{amplitude}, \emph{frq}, \emph{fnyq=None}}{}
+A class for manipulating Fourier transforms.
 \begin{description}
 \item[{Attributes:}] \leavevmode\begin{description}
-\item[{frq}] \leavevmode{[}np.array{]}
-Frequency vector of the transform in Hertz.
+\item[{frq}] \leavevmode{[}ndarray{]}
+Frequency vector of the transform in Hz.
 
-\item[{amp}] \leavevmode{[}np.array{]}
-The transform’s amplitude in the same units as the input.
+\item[{amp}] \leavevmode{[}ndarray{]}
+The transform’s amplitude is in the same units as the input.
+May be 1D or 2D. If 2D each row corresponds to a unique FFT,
+where each column correpsonds to an entry in \sphinxtitleref{frq}.
+
+\item[{fnyq}] \leavevmode{[}float{]}
+The Nyquist frequency associated with the time series used
+to generate the Fourier transform. Note this may or may not
+be equal to \sphinxtitleref{frq{[}-1{]}}.
 
 \end{description}
 
 \end{description}
-
+\index{\_\_init\_\_() (FourierTransform method)@\spxentry{\_\_init\_\_()}\spxextra{FourierTransform method}}
 
 \begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{fft}}}{\emph{amplitude}, \emph{dt}}{}
-Compute the fast-fourier transform of a time series.
+\phantomsection\label{\detokenize{index:sigpropy.FourierTransform.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{amplitude}, \emph{frq}, \emph{fnyq=None}}{}
+Initialize a FourierTransform object.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
-\item[{amplitude}] \leavevmode{[}np.array{]}
-Time series amplitudes (one per time step). Can be a 2D
-array where each row is a valid time series.
+\item[{amplitude}] \leavevmode{[}ndarray{]}
+Fourier transform amplitude. Refer to attribute \sphinxtitleref{amp}
+for more details.
 
-\item[{dt}] \leavevmode{[}float{]}
-Indicating the time step in seconds.
+\item[{frq}] \leavevmode{[}ndarray {]}
+Linearly spaced frequency vector for Fourier transform.
 
-\end{description}
-
-\item[{Returns:}] \leavevmode
-Tuple of the form (frq, fft) where:
-frq is an np.array containing the positve frequency vector
-\begin{quote}
-
-between zero and the nyquist frequency (if even) or near
-the nyquist (if odd) in Hertz.
-\end{quote}
-\begin{description}
-\item[{fft is an np.array of complex amplitudes for the frequencies}] \leavevmode
-between zero and the nyquist with units of the input 
-ampltiude. If \sphinxtitleref{amplitude} is a 2D array \sphinxtitleref{fft} will also 
-be a 2D array where each row is the fft of each row of
-\sphinxtitleref{amplitude}.
-
-\end{description}
-
-\end{description}
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{classmethod }}\sphinxbfcode{\sphinxupquote{from\_timeseries}}}{\emph{timeseries}}{}
-Compute the Fast Fourier Transform from a timeseries.
-\begin{description}
-\item[{Args:}] \leavevmode\begin{description}
-\item[{timeseries: TimeSeries }] \leavevmode
-TimeSeries object to be transformed.
+\item[{fnyq}] \leavevmode{[}float, optional{]}
+Nyquist frequency of Fourier Transform (by default the
+maximum value of \sphinxtitleref{frq} vector is used).
 
 \end{description}
 
@@ -727,130 +440,41 @@ An initialized FourierTransform object.
 
 \end{fulllineitems}
 
-
-
-\begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{imag}}}
-Imaginary component of complex fft amplitude.
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{mag}}}
-Magnitude of complex fft amplitude.
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{phase}}}
-Phase of complex fft amplitude in radians.
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{real}}}
-Real component of complex fft amplitude.
-
-\end{fulllineitems}
-
-
-
-\begin{fulllineitems}
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{resample}}}{\emph{minf}, \emph{maxf}, \emph{nf}, \emph{res\_type='log'}, \emph{inplace=False}}{}
-Resample FourierTransform over a specified range.
-\begin{description}
-\item[{Args:}] \leavevmode\begin{description}
-\item[{minf}] \leavevmode{[}float {]}
-Minimum value of resample.
-
-\item[{maxf}] \leavevmode{[}float{]}
-Maximum value or resample.
-
-\item[{nf}] \leavevmode{[}int{]}
-Number of resamples.
-
-\item[{res\_type}] \leavevmode{[}\{“log”, “linear”\}{]}
-Type of resampling.
-
-\item[{inplace}] \leavevmode{[}bool{]}
-Determines whether resampling is done in place or 
-if a copy should be returned.
-
-\end{description}
-
-\item[{Returns:}] \leavevmode
-If inplace=True, None.
-
-If inplace=False, a tuple of the form (frequency, ) where each parameter is a list.
-
-\item[{Raises:}] \leavevmode\begin{description}
-\item[{ValueError}] \leavevmode
-If \sphinxtitleref{maxf}, \sphinxtitleref{minf}, or \sphinxtitleref{nf} are illogical.
-
-\item[{NotImplementedError}] \leavevmode
-If \sphinxtitleref{res\_type} is not amoung those options specified.
-
-\end{description}
-
-\end{description}
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-\index{FourierTransform (class in sigpropy)@\spxentry{FourierTransform}\spxextra{class in sigpropy}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{index:sigpropy.FourierTransform}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxbfcode{\sphinxupquote{FourierTransform}}}{\emph{amplitude}, \emph{frq}, \emph{fnyq=None}}{}
-A class for editing and manipulating fourier transforms.
-\begin{description}
-\item[{Attributes:}] \leavevmode\begin{description}
-\item[{frq}] \leavevmode{[}np.array{]}
-Frequency vector of the transform in Hertz.
-
-\item[{amp}] \leavevmode{[}np.array{]}
-The transform’s amplitude in the same units as the input.
-
-\end{description}
-
-\end{description}
 \index{fft() (FourierTransform static method)@\spxentry{fft()}\spxextra{FourierTransform static method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.FourierTransform.fft}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{fft}}}{\emph{amplitude}, \emph{dt}}{}
-Compute the fast-fourier transform of a time series.
+Compute the fast-Fourier transform (FFT) of a time series.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
-\item[{amplitude}] \leavevmode{[}np.array{]}
-Time series amplitudes (one per time step). Can be a 2D
-array where each row is a valid time series.
+\item[{amplitude}] \leavevmode{[}ndarray{]}
+Denotes the time series amplitude. If \sphinxtitleref{amplitude} is 1D
+each sample corresponds to a single time step. If
+\sphinxtitleref{amplitude} is 2D each row corresponds to a particular
+section of the time record (i.e., time window) and each
+column corresponds to a single time step.
 
 \item[{dt}] \leavevmode{[}float{]}
-Indicating the time step in seconds.
+Denotes the time step between samples in seconds.
 
 \end{description}
 
-\item[{Returns:}] \leavevmode
-Tuple of the form (frq, fft) where:
-frq is an np.array containing the positve frequency vector
-\begin{quote}
+\item[{Returns:}] \leavevmode\begin{description}
+\item[{Tuple of the form (frq, fft) where:}] \leavevmode\begin{description}
+\item[{\sphinxtitleref{frq}}] \leavevmode{[}ndarray{]}
+Positve frequency vector between zero and the
+Nyquist frequency (if even) or near the Nyquist
+(if odd) in Hz.
 
-between zero and the nyquist frequency (if even) or near
-the nyquist (if odd) in Hertz.
-\end{quote}
-\begin{description}
-\item[{fft is an np.array of complex amplitudes for the frequencies}] \leavevmode
-between zero and the nyquist with units of the input 
-ampltiude. If \sphinxtitleref{amplitude} is a 2D array \sphinxtitleref{fft} will also 
-be a 2D array where each row is the fft of each row of
+\item[{\sphinxtitleref{fft}}] \leavevmode{[}ndarray{]}
+Complex amplitudes for the frequencies between zero
+and the Nyquist (if even) or near the Nyquist 
+(if odd) with units of the input ampltiude.
+If \sphinxtitleref{amplitude} is a 2D array \sphinxtitleref{fft} will also be a 2D
+array where each row is the FFT of each row of 
 \sphinxtitleref{amplitude}.
+
+\end{description}
 
 \end{description}
 
@@ -862,10 +486,10 @@ be a 2D array where each row is the fft of each row of
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.FourierTransform.from_timeseries}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{classmethod }}\sphinxbfcode{\sphinxupquote{from\_timeseries}}}{\emph{timeseries}}{}
-Compute the Fast Fourier Transform from a timeseries.
+Create a FourierTransform object from a TimeSeries object.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
-\item[{timeseries: TimeSeries }] \leavevmode
+\item[{timeseries}] \leavevmode{[}TimeSeries {]}
 TimeSeries object to be transformed.
 
 \end{description}
@@ -881,7 +505,7 @@ An initialized FourierTransform object.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.FourierTransform.imag}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{imag}}}
-Imaginary component of complex fft amplitude.
+Imaginary component of complex FFT amplitude.
 
 \end{fulllineitems}
 
@@ -889,7 +513,7 @@ Imaginary component of complex fft amplitude.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.FourierTransform.mag}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{mag}}}
-Magnitude of complex fft amplitude.
+Magnitude of complex FFT amplitude.
 
 \end{fulllineitems}
 
@@ -897,7 +521,7 @@ Magnitude of complex fft amplitude.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.FourierTransform.phase}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{phase}}}
-Phase of complex fft amplitude in radians.
+Phase of complex FFT amplitude in radians.
 
 \end{fulllineitems}
 
@@ -905,7 +529,7 @@ Phase of complex fft amplitude in radians.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.FourierTransform.real}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{real}}}
-Real component of complex fft amplitude.
+Real component of complex FFT amplitude.
 
 \end{fulllineitems}
 
@@ -920,30 +544,38 @@ Resample FourierTransform over a specified range.
 Minimum value of resample.
 
 \item[{maxf}] \leavevmode{[}float{]}
-Maximum value or resample.
+Maximum value of resample.
 
 \item[{nf}] \leavevmode{[}int{]}
 Number of resamples.
 
-\item[{res\_type}] \leavevmode{[}\{“log”, “linear”\}{]}
-Type of resampling.
+\item[{res\_type}] \leavevmode{[}\{“log”, “linear”\}, optional{]}
+Type of resampling, default value is \sphinxtitleref{log}.
 
-\item[{inplace}] \leavevmode{[}bool{]}
+\item[{inplace}] \leavevmode{[}bool, optional{]}
 Determines whether resampling is done in place or 
-if a copy should be returned.
+if a copy is returned be returned. By default the
+resampling is not done inplace (i.e., \sphinxtitleref{inplace=False}).
 
 \end{description}
 
-\item[{Returns:}] \leavevmode
-If inplace=True, None.
+\item[{Returns:}] \leavevmode\begin{description}
+\item[{If \sphinxtitleref{inplace=True}}] \leavevmode
+\sphinxtitleref{None}, method edits the internal attribute \sphinxtitleref{amp}.
 
-If inplace=False, a tuple of the form (frequency, ) where each parameter is a list.
+\item[{If \sphinxtitleref{inplace=False}}] \leavevmode
+A tuple of the form (\sphinxtitleref{frequency}, \sphinxtitleref{amplitude})
+where \sphinxtitleref{frequency} is the resampled frequency vector and 
+\sphinxtitleref{amplitude} is the resampled amplitude vector if 
+\sphinxtitleref{amp} is 1D or array if \sphinxtitleref{amp} is 2D.
+
+\end{description}
 
 \item[{Raises:}] \leavevmode\begin{description}
-\item[{ValueError}] \leavevmode
+\item[{ValueError:}] \leavevmode
 If \sphinxtitleref{maxf}, \sphinxtitleref{minf}, or \sphinxtitleref{nf} are illogical.
 
-\item[{NotImplementedError}] \leavevmode
+\item[{NotImplementedError:}] \leavevmode
 If \sphinxtitleref{res\_type} is not amoung those options specified.
 
 \end{description}
@@ -952,23 +584,29 @@ If \sphinxtitleref{res\_type} is not amoung those options specified.
 
 \end{fulllineitems}
 
+\index{smooth\_konno\_ohmachi() (FourierTransform method)@\spxentry{smooth\_konno\_ohmachi()}\spxextra{FourierTransform method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:sigpropy.FourierTransform.smooth_konno_ohmachi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{smooth\_konno\_ohmachi}}}{\emph{bandwidth=40.0}}{}
+Apply Konno and Ohmachi smoothing.
+\begin{description}
+\item[{Args:}] \leavevmode\begin{description}
+\item[{bandwidth}] \leavevmode{[}float, optional{]}
+Width of smoothing window, by default this is set to 40.
+
+\end{description}
+
+\item[{Returns:}] \leavevmode
+\sphinxtitleref{None}, modifies the internal attribute \sphinxtitleref{amp} to equal the
+smoothed value of \sphinxtitleref{mag}.
+
+\end{description}
 
 \end{fulllineitems}
 
 
+\end{fulllineitems}
 
-\chapter{Indices and tables}
-\label{\detokenize{index:indices-and-tables}}\begin{itemize}
-\item {} 
-\DUrole{xref,std,std-ref}{genindex}
-
-\item {} 
-\DUrole{xref,std,std-ref}{modindex}
-
-\item {} 
-\DUrole{xref,std,std-ref}{search}
-
-\end{itemize}
 
 
 
