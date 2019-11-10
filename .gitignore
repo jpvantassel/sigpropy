@@ -4,5 +4,5 @@ __pycache__
 # File Types
 *.egg-info
 *.json
-*.txt
 *.tmp_profiler_run
+venv

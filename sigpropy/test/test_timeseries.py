@@ -17,7 +17,7 @@
 
 """Tests for TimeSeries class. """
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import unittest
 import sigpropy
 import obspy

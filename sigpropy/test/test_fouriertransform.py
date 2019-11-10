@@ -21,7 +21,7 @@ import unittest
 import sigpropy
 import obspy
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 class TestFourierTransform(unittest.TestCase):
