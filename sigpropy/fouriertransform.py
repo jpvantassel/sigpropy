@@ -21,6 +21,7 @@ working with Fourier transform objects."""
 import numpy as np
 from obspy.signal.konnoohmachismoothing import konno_ohmachi_smoothing
 import scipy.interpolate as sp
+import scipy.fftpack as fftpack
 # from numba import jit
 
 # @jit(nopython=True)
@@ -146,14 +147,16 @@ class FourierTransform():
             raise TypeError("`amplitude` cannot have dimension > 2.")
 
         npts = amplitude.shape[-1]
-        nfrqs = int(npts/2)+1 if (npts % 2) != 0 else int(npts+1/2)
+        nfrqs = int(npts/2)+1 if (npts % 2) == 0 else int((npts+1)/2)
         frq = np.abs(np.fft.fftfreq(npts, dt))[0:nfrqs]
         if len(amplitude.shape) == 1:
-            return(2/npts * np.fft.fft(amplitude)[0:nfrqs], frq)
+            # return(2/npts * np.fft.fft(amplitude)[0:nfrqs], frq)
+            return(2/npts * fftpack.fft(amplitude)[0:nfrqs], frq)
         else:
             fft = np.zeros((amplitude.shape[0], nfrqs), dtype=complex)
             for cwindow, amplitude in enumerate(amplitude):
-                fft[cwindow] = 2/npts * np.fft.fft(amplitude)[0:nfrqs]
+                # fft[cwindow] = 2/npts * np.fft.fft(amplitude)[0:nfrqs]
+                fft[cwindow] = 2/npts * fftpack.fft(amplitude)[0:nfrqs]
             return (fft, frq)
 
     def __init__(self, amplitude, frq, fnyq=None):
@@ -216,7 +219,7 @@ class FourierTransform():
         if center_frequency == 0:
             return _center_zero(frequencies)
 
-        smoothing_window = _makewindow(frequencies, center_frequency)
+        smoothing_window = _makewindow(frequencies, center_frequency, bandwidth)
 
         smoothing_window = _fix_window(
             frequencies, center_frequency, smoothing_window)

@@ -17,7 +17,7 @@
 
 """Tests for TimeSeries class. """
 
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import unittest
 import sigpropy
 import obspy
@@ -39,11 +39,11 @@ class TestTimeSeries(unittest.TestCase):
             value = sigpropy.TimeSeries._check_input(name="blah", values=value)
             self.assertTrue(isinstance(value, np.ndarray))
 
-        for value in [[[1, 2], [3, 4]], ((1, 2), (3, 4)), np.array([[1, 2], [3, 4]])]:
-            self.assertRaises(TypeError,
-                              sigpropy.TimeSeries._check_input,
-                              name="blah",
-                              values=value)
+        # for value in [[[1, 2], [3, 4]], ((1, 2), (3, 4)), np.array([[1, 2], [3, 4]])]:
+        #     self.assertRaises(TypeError,
+        #                       sigpropy.TimeSeries._check_input,
+        #                       name="blah",
+        #                       values=value)
 
     def test_init(self):
         dt = 1
@@ -174,7 +174,7 @@ class TestTimeSeries(unittest.TestCase):
         self.assertEqual(max(thist.time), 1)
 
         # With pre-trigger delay
-        thist = sigpropy.TimeSeries(amplitude=[0,1,2,3,4,5,6],
+        thist = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3, 4, 5, 6],
                                     dt=0.25,
                                     delay=-.5)
         # Remove part of pre-trigger
@@ -189,6 +189,30 @@ class TestTimeSeries(unittest.TestCase):
         self.assertEqual(thist.delay, 0)
         self.assertEqual(min(thist.time), 0.)
         self.assertEqual(max(thist.time), 0.25)
+
+    def test_detrend(self):
+        # 1d amp
+        signal =np.array([0., .2, 0., -.2]*5)
+        trend = np.arange(0,20,1)
+        amp = signal + trend
+        dt = 1
+        tseries = sigpropy.TimeSeries(amp, dt)
+        tseries.detrend()
+        for true, test in zip(signal, tseries.amp):
+            self.assertAlmostEqual(true, test, delta=0.03)
+
+        # 2d amp
+        signal = np.array([0., .2, 0., -.2]*5)
+        trend = np.arange(0,20,1)
+        amp = signal + trend
+        amp = np.vstack((amp, amp))
+        dt = 1
+        tseries = sigpropy.TimeSeries(amp, dt)
+        tseries.detrend()
+        for row in tseries.amp:
+            print(row)
+            for true, test in zip(signal, row):
+                self.assertAlmostEqual(true, test, delta=0.03)
 
 
 if __name__ == '__main__':

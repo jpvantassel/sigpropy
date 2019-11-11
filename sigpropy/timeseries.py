@@ -20,7 +20,7 @@ time series objects."""
 
 import numpy as np
 from scipy.signal.windows import tukey
-from scipy.signal import butter, filtfilt
+from scipy.signal import butter, filtfilt, detrend
 import logging
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,6 @@ class TimeSeries():
         Specifically:
             1. Check `values` is `ndarray`, `list`, or `tuple`. 
             2. If `list` or `tuple` convert to a `ndarray`.
-            3. Check `values` is one-dimensional `ndarray`.
 
         Args:
             name : str
@@ -79,8 +78,8 @@ class TimeSeries():
         if isinstance(values, (list, tuple)):
             values = np.array(values)
 
-        if len(values.shape) > 1:
-            msg = f"{name} must be 1-dimensional, not {values.shape}-dimensional."
+        if len(values.shape) > 2:
+            msg = f"{name} must be 1D or 2D, not {values.shape}-dimensional."
             raise TypeError(msg)
 
         return values
@@ -89,11 +88,9 @@ class TimeSeries():
         """Initialize a TimeSeries object.
 
         Args:
-            amplitude : 1D - ndarray 
-                Amplitude of the time series at each time step. Meaning 
-                `amplitude[0]` is associated with first and 
-                `amplitude[-1]` is associated with the final time 
-                sample.
+            amplitude : ndarray 
+                Amplitude of the time series at each time step. Refer to
+                attribute definition for details.
             dt : float
                 Time step between samples in seconds.
             n_stacks : int, optional
@@ -111,7 +108,7 @@ class TimeSeries():
                 If `delay` is greater than 0.
         """
         self.amp = TimeSeries._check_input("amplitude", amplitude)
-        self.n_windows = 1
+        self.n_windows = 1 if len(self.amp.shape) == 1 else self.amp.shape[0]
         self.n_samples = len(self.amp)
         self.dt = dt
         self.fs = 1/self.dt
@@ -239,6 +236,18 @@ class TimeSeries():
             self.n_samples = nreq*self.multiple
 
             logging.debug(f"n_samples = {self.n_samples}")
+        
+    def detrend(self):
+        """Remove linear trend from time series.
+
+        Returns:
+            `None`, remove linear trend from attribute `amp`.
+        """
+        if self.n_windows==1:
+            self.amp = detrend(self.amp)
+        else:
+            for row, amp in enumerate(self.amp):
+                self.amp[row] = detrend(amp)
 
     def split(self, windowlength):
         """Split time series into windows of duration `windowlength`.
