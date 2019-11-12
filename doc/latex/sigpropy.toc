@@ -1,5 +1,5 @@
 \babel@toc {english}{}
 \contentsline {chapter}{\numberline {1}Summary}{1}{chapter.1}% 
-\contentsline {chapter}{\numberline {2}License Information}{3}{chapter.2}% 
-\contentsline {chapter}{\numberline {3}TimeSeries Class}{5}{chapter.3}% 
-\contentsline {chapter}{\numberline {4}FourierTransform Class}{9}{chapter.4}% 
+\contentsline {chapter}{\numberline {2}License Information}{2}{chapter.2}% 
+\contentsline {chapter}{\numberline {3}TimeSeries Class}{3}{chapter.3}% 
+\contentsline {chapter}{\numberline {4}FourierTransform Class}{6}{chapter.4}% 

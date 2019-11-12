@@ -7,7 +7,7 @@ SigProPy Documentation
 
 Summary
 -------
-SigProPy is a digital signal processing module for python. The module includes
+SigProPy is Python module for digital signal processing. The module includes
 two main class definitons `TimeSeries` and `FourierTransform`. These classes
 include various methods for creating and manipulating time series and Fourier
 transforms.

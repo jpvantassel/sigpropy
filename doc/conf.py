@@ -41,6 +41,10 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 add_module_names = False
 
+latex_elements = {
+  'extraclassoptions': 'openany,oneside'
+}
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
