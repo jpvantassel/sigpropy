@@ -268,7 +268,7 @@ class FourierTransform():
         if nf < 0:
             raise TypeError("`nf` must be postive integer")
         types = {"log": "log", "linear": "linear"}
-        if maxf > self.fnyq:
+        if maxf > self.fnyq*1.05:
             raise ValueError("`maxf` is out of range.")
         if minf < 0:
             raise ValueError("`minf` is out of range.")
