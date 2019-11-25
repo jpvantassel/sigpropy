@@ -71,6 +71,25 @@ class TestTimeSeries(unittest.TestCase):
         test = sigpropy.TimeSeries(amp, dt, delay=-0.5)
         self.assertListEqual(test.time.tolist(), true_time)
 
+        # 2d amp
+        dt = 1
+        amp = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        test = sigpropy.TimeSeries(amp, dt)
+        test.split(3)
+        self.assertListEqual(test.time.tolist(), [[0, 1, 2, 3],
+                                                  [3, 4, 5, 6],
+                                                  [6, 7, 8, 9]])
+        self.assertEqual(test.time.size, test.amp.size)
+
+        # 2d amp
+        dt = 1
+        amp = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        test = sigpropy.TimeSeries(amp, dt)
+        test.split(4)
+        self.assertListEqual(test.time.tolist(), [[0, 1, 2, 3, 4],
+                                                  [4, 5, 6, 7, 8]])
+        self.assertEqual(test.time.size, test.amp.size)
+
     def test_split(self):
         amp = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         dt = 1
@@ -192,8 +211,8 @@ class TestTimeSeries(unittest.TestCase):
 
     def test_detrend(self):
         # 1d amp
-        signal =np.array([0., .2, 0., -.2]*5)
-        trend = np.arange(0,20,1)
+        signal = np.array([0., .2, 0., -.2]*5)
+        trend = np.arange(0, 20, 1)
         amp = signal + trend
         dt = 1
         tseries = sigpropy.TimeSeries(amp, dt)
@@ -203,14 +222,13 @@ class TestTimeSeries(unittest.TestCase):
 
         # 2d amp
         signal = np.array([0., .2, 0., -.2]*5)
-        trend = np.arange(0,20,1)
+        trend = np.arange(0, 20, 1)
         amp = signal + trend
         amp = np.vstack((amp, amp))
         dt = 1
         tseries = sigpropy.TimeSeries(amp, dt)
         tseries.detrend()
         for row in tseries.amp:
-            print(row)
             for true, test in zip(signal, row):
                 self.assertAlmostEqual(true, test, delta=0.03)
 

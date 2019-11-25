@@ -115,7 +115,7 @@ class TimeSeries():
         self.fnyq = 0.5*self.fs
         self._df = self.fs/self.n_samples
         self._nstack = 1
-        if delay>0:
+        if delay > 0:
             raise ValueError("`delay` must not be > 0")
         self.delay = delay
         self.multiple = 1
@@ -129,7 +129,16 @@ class TimeSeries():
     @property
     def time(self):
         """Return time vector for TimeSeries object."""
-        return np.arange(0, self.n_samples*self.dt, self.dt) + self.delay
+        if self.n_windows == 1:
+            return np.arange(0, self.n_samples*self.dt, self.dt) + self.delay
+        else:
+            samples_per_window = (self.n_samples//self.n_windows)+1
+            time = np.zeros((self.n_windows, samples_per_window))
+            for cwindow in range(self.n_windows):
+                start_time = cwindow*(samples_per_window-1)*self.dt
+                stop_time = start_time + (samples_per_window-1)*self.dt
+                time[cwindow] = np.linspace(start_time, stop_time, samples_per_window)
+            return time
 
     def trim(self, start_time, end_time):
         """Trim excess from time series in the half-open interval
@@ -217,8 +226,8 @@ class TimeSeries():
                                        np.zeros(nreq - self.n_samples)))
             self.n_samples = nreq
 
-        # If nreq <= n_samples, padd zeros to achieve a fraction of df 
-        # (e.g., df/2). After processing, extract the results at the 
+        # If nreq <= n_samples, padd zeros to achieve a fraction of df
+        # (e.g., df/2). After processing, extract the results at the
         # frequencies of interest
         else:
             # Multiples of df and nreq
@@ -236,14 +245,14 @@ class TimeSeries():
             self.n_samples = nreq*self.multiple
 
             logging.debug(f"n_samples = {self.n_samples}")
-        
+
     def detrend(self):
         """Remove linear trend from time series.
 
         Returns:
             `None`, remove linear trend from attribute `amp`.
         """
-        if self.n_windows==1:
+        if self.n_windows == 1:
             self.amp = detrend(self.amp)
         else:
             for row, amp in enumerate(self.amp):
