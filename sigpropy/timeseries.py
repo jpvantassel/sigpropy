@@ -15,7 +15,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""This file contains the class TimeSeries for creating and manipulating
+"""This file contains the class `TimeSeries` for creating and manipulating
 time series objects."""
 
 import numpy as np
@@ -85,7 +85,7 @@ class TimeSeries():
         return values
 
     def __init__(self, amplitude, dt, n_stacks=1, delay=0):
-        """Initialize a TimeSeries object.
+        """Initialize a `TimeSeries` object.
 
         Args:
             amplitude : ndarray 
@@ -101,7 +101,7 @@ class TimeSeries():
                 Indicates the pre-event delay in seconds.
 
         Returns:
-            Intialized TimeSeries object.
+            Intialized `TimeSeries` object.
 
         Raises:
             ValueError:
@@ -128,7 +128,7 @@ class TimeSeries():
 
     @property
     def time(self):
-        """Return time vector for TimeSeries object."""
+        """Return time vector for `TimeSeries` object."""
         if self.n_windows == 1:
             return np.arange(0, self.n_samples*self.dt, self.dt) + self.delay
         else:
@@ -152,7 +152,7 @@ class TimeSeries():
                 half-open.
 
         Returns:
-            `None`,updates the attributes: `n_samples`, `delay`, and
+            `None`, updates the attributes: `n_samples`, `delay`, and
             `df`.
 
         Raises:
@@ -193,7 +193,7 @@ class TimeSeries():
         logger.info(f"delay = {self.delay}")
 
     def zero_pad(self, df):
-        """Append zeros to the end of the TimeSeries object to achieve a
+        """Append zeros to the end of the `TimeSeries` object to achieve a
         desired frequency step.
 
         Args:
@@ -303,9 +303,9 @@ class TimeSeries():
         """Apply cosine taper to time series.
 
         Args:
-            width : float {0.-1.}
+            width : {0.-1.}
                 Amount of the time series to be tapered.
-                0. is equal to a rectangular and 1. a Hann window.
+                `0` is equal to a rectangular and `1` a Hann window.
 
         Returns:
             `None`, applies cosine taper to attribute `amp`.
@@ -328,10 +328,10 @@ class TimeSeries():
             fhigh : float
                 High-cut frequency (content above `fhigh` is filtered).
             order : int, optional
-                Filter order (default is 5th).
+                Filter order, default is 5.
 
         Returns:
-            `None`, instead filters attribute `amp`. 
+            `None`, filters attribute `amp`. 
         """
         b, a = butter(order, [flow/self.fnyq, fhigh /
                               self.fnyq], btype='bandpass')
@@ -340,7 +340,7 @@ class TimeSeries():
 
     @classmethod
     def from_trace(cls, trace, n_stacks=1, delay=0):
-        """Initialize a TimeSeries object from a trace object.
+        """Initialize a `TimeSeries` object from a trace object.
 
         This method is a more general method than `from_trace_seg2`, 
         as it does not attempt to extract any metadata from the Trace 
@@ -348,8 +348,9 @@ class TimeSeries():
 
         Args:
             trace : Trace
-                Refer to obspy documentation for more information
-                (https://github.com/obspy/obspy/wiki).
+                Refer to obspy
+                `documentation <https://github.com/obspy/obspy/wiki>`_
+                for more information
 
             n_stacks : int, optional
                 Number of stacks the time series represents, (default is
@@ -360,7 +361,7 @@ class TimeSeries():
                 signifying no pre-event recording is included).
 
         Returns:
-            Initialized TimeSeries object.
+            Initialized `TimeSeries` object.
         """
         return cls(amplitude=trace.data,
                    dt=trace.stats.delta,

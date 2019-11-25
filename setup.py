@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="sigpropy",
-    version="0.0.1",
+    version="0.1.0",
     author="Joseh P Vantassel",
     author_email="jvantassel@utexas.edu",
     description="Tools for digital signal processing.",

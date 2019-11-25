@@ -15,7 +15,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""This file contains the class FourierTransform for creating and 
+"""This file contains the class `FourierTransform` for creating and 
 working with Fourier transform objects."""
 
 import numpy as np
@@ -160,7 +160,7 @@ class FourierTransform():
             return (fft, frq)
 
     def __init__(self, amplitude, frq, fnyq=None):
-        """Initialize a FourierTransform object.
+        """Initialize a `FourierTransform` object.
 
         Args:
             amplitude : ndarray
@@ -169,11 +169,11 @@ class FourierTransform():
             frq : ndarray 
                 Linearly spaced frequency vector for Fourier transform.
             fnyq : float, optional
-                Nyquist frequency of Fourier Transform (by default the
-                maximum value of `frq` vector is used).
+                Nyquist frequency of Fourier transform, default is 
+                `max(frq)`.
 
         Returns:
-            An initialized FourierTransform object.
+            An initialized `FourierTransform` object.
         """
         # TODO (jpv): Remove inconsistency between freq and amp.
         self.amp = FourierTransform._check_input("amplitude", amplitude)
@@ -185,7 +185,7 @@ class FourierTransform():
 
         Args:
             bandwidth : float, optional
-                Width of smoothing window, by default this is set to 40.
+                Width of smoothing window, default is 40.
 
         Returns:
             `None`, modifies the internal attribute `amp` to equal the
@@ -230,7 +230,7 @@ class FourierTransform():
         return smoothing_window
 
     def resample(self, minf, maxf, nf, res_type="log", inplace=False):
-        """Resample FourierTransform over a specified range.
+        """Resample `FourierTransform` over a specified range.
 
         Args:
             minf : float 
@@ -296,14 +296,15 @@ class FourierTransform():
 
     @classmethod
     def from_timeseries(cls, timeseries):
-        """Create a FourierTransform object from a TimeSeries object.
+        """Create a `FourierTransform` object from a `TimeSeries`
+        object.
 
         Args:
             timeseries : TimeSeries 
-                TimeSeries object to be transformed.
+                `TimeSeries` object to be transformed.
 
         Returns:
-            An initialized FourierTransform object.
+            An initialized `FourierTransform` object.
         """
         amp, frq = cls.fft(timeseries.amp, timeseries.dt)
         return cls(amp, frq, timeseries.fnyq)

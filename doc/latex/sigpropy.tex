@@ -72,8 +72,8 @@
 
 
 \title{SigProPy}
-\date{Nov 12, 2019}
-\release{0.0.1}
+\date{Nov 25, 2019}
+\release{0.1.0}
 \author{Joseph P.\@{} Vantassel}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -91,10 +91,13 @@
 
 \chapter{Summary}
 \label{\detokenize{index:summary}}
-SigProPy is Python module for digital signal processing. The module includes
-two main class definitons \sphinxtitleref{TimeSeries} and \sphinxtitleref{FourierTransform}. These classes
-include various methods for creating and manipulating time series and Fourier
-transforms.
+\sphinxtitleref{SigProPy} is Python module for digital signal processing. \sphinxtitleref{SigProPy} was
+developed by Joseph P. Vantassel under the supervision of Professor Brady R.
+Cox at the University of Texas at Austin.
+
+The module includes two main class definitons \sphinxtitleref{TimeSeries} and
+\sphinxtitleref{FourierTransform}. These classes include various methods for creating and
+manipulating time series and Fourier transforms, respectively.
 
 
 \chapter{License Information}
@@ -156,7 +159,7 @@ Nyquist frequency in Hz equal to \sphinxtitleref{fs/2}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.TimeSeries.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{amplitude}, \emph{dt}, \emph{n\_stacks=1}, \emph{delay=0}}{}
-Initialize a TimeSeries object.
+Initialize a \sphinxtitleref{TimeSeries} object.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
 \item[{amplitude}] \leavevmode{[}ndarray {]}
@@ -177,7 +180,7 @@ Indicates the pre-event delay in seconds.
 \end{description}
 
 \item[{Returns:}] \leavevmode
-Intialized TimeSeries object.
+Intialized \sphinxtitleref{TimeSeries} object.
 
 \item[{Raises:}] \leavevmode\begin{description}
 \item[{ValueError:}] \leavevmode
@@ -203,12 +206,12 @@ Low-cut frequency (content below \sphinxtitleref{flow} is filtered).
 High-cut frequency (content above \sphinxtitleref{fhigh} is filtered).
 
 \item[{order}] \leavevmode{[}int, optional{]}
-Filter order (default is 5th).
+Filter order, default is 5.
 
 \end{description}
 
 \item[{Returns:}] \leavevmode
-\sphinxtitleref{None}, instead filters attribute \sphinxtitleref{amp}.
+\sphinxtitleref{None}, filters attribute \sphinxtitleref{amp}.
 
 \end{description}
 
@@ -221,9 +224,9 @@ Filter order (default is 5th).
 Apply cosine taper to time series.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
-\item[{width}] \leavevmode{[}float \{0.-1.\}{]}
+\item[{width}] \leavevmode{[}\{0.-1.\}{]}
 Amount of the time series to be tapered.
-0. is equal to a rectangular and 1. a Hann window.
+\sphinxtitleref{0} is equal to a rectangular and \sphinxtitleref{1} a Hann window.
 
 \end{description}
 
@@ -251,7 +254,7 @@ Remove linear trend from time series.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.TimeSeries.from_trace}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{classmethod }}\sphinxbfcode{\sphinxupquote{from\_trace}}}{\emph{trace}, \emph{n\_stacks=1}, \emph{delay=0}}{}
-Initialize a TimeSeries object from a trace object.
+Initialize a \sphinxtitleref{TimeSeries} object from a trace object.
 
 This method is a more general method than \sphinxtitleref{from\_trace\_seg2}, 
 as it does not attempt to extract any metadata from the Trace 
@@ -259,8 +262,9 @@ object.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
 \item[{trace}] \leavevmode{[}Trace{]}
-Refer to obspy documentation for more information
-(\sphinxurl{https://github.com/obspy/obspy/wiki}).
+Refer to obspy
+\sphinxhref{https://github.com/obspy/obspy/wiki}{documentation}
+for more information
 
 \item[{n\_stacks}] \leavevmode{[}int, optional{]}
 Number of stacks the time series represents, (default is
@@ -273,7 +277,7 @@ signifying no pre-event recording is included).
 \end{description}
 
 \item[{Returns:}] \leavevmode
-Initialized TimeSeries object.
+Initialized \sphinxtitleref{TimeSeries} object.
 
 \end{description}
 
@@ -327,7 +331,7 @@ not be broken into 10 1-minute records.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.TimeSeries.time}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{time}}}
-Return time vector for TimeSeries object.
+Return time vector for \sphinxtitleref{TimeSeries} object.
 
 \end{fulllineitems}
 
@@ -349,7 +353,7 @@ half-open.
 \end{description}
 
 \item[{Returns:}] \leavevmode
-\sphinxtitleref{None},updates the attributes: \sphinxtitleref{n\_samples}, \sphinxtitleref{delay}, and
+\sphinxtitleref{None}, updates the attributes: \sphinxtitleref{n\_samples}, \sphinxtitleref{delay}, and
 \sphinxtitleref{df}.
 
 \item[{Raises:}] \leavevmode\begin{description}
@@ -369,7 +373,7 @@ after the end of the record.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.TimeSeries.zero_pad}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{zero\_pad}}}{\emph{df}}{}
-Append zeros to the end of the TimeSeries object to achieve a
+Append zeros to the end of the \sphinxtitleref{TimeSeries} object to achieve a
 desired frequency step.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
@@ -428,7 +432,7 @@ be equal to \sphinxtitleref{frq{[}-1{]}}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.FourierTransform.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{amplitude}, \emph{frq}, \emph{fnyq=None}}{}
-Initialize a FourierTransform object.
+Initialize a \sphinxtitleref{FourierTransform} object.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
 \item[{amplitude}] \leavevmode{[}ndarray{]}
@@ -439,13 +443,13 @@ for more details.
 Linearly spaced frequency vector for Fourier transform.
 
 \item[{fnyq}] \leavevmode{[}float, optional{]}
-Nyquist frequency of Fourier Transform (by default the
-maximum value of \sphinxtitleref{frq} vector is used).
+Nyquist frequency of Fourier transform, default is 
+\sphinxtitleref{max(frq)}.
 
 \end{description}
 
 \item[{Returns:}] \leavevmode
-An initialized FourierTransform object.
+An initialized \sphinxtitleref{FourierTransform} object.
 
 \end{description}
 
@@ -497,16 +501,17 @@ array where each row is the FFT of each row of
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.FourierTransform.from_timeseries}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{classmethod }}\sphinxbfcode{\sphinxupquote{from\_timeseries}}}{\emph{timeseries}}{}
-Create a FourierTransform object from a TimeSeries object.
+Create a \sphinxtitleref{FourierTransform} object from a \sphinxtitleref{TimeSeries}
+object.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
 \item[{timeseries}] \leavevmode{[}TimeSeries {]}
-TimeSeries object to be transformed.
+\sphinxtitleref{TimeSeries} object to be transformed.
 
 \end{description}
 
 \item[{Returns:}] \leavevmode
-An initialized FourierTransform object.
+An initialized \sphinxtitleref{FourierTransform} object.
 
 \end{description}
 
@@ -548,7 +553,7 @@ Real component of complex FFT amplitude.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:sigpropy.FourierTransform.resample}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{resample}}}{\emph{minf}, \emph{maxf}, \emph{nf}, \emph{res\_type='log'}, \emph{inplace=False}}{}
-Resample FourierTransform over a specified range.
+Resample \sphinxtitleref{FourierTransform} over a specified range.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
 \item[{minf}] \leavevmode{[}float {]}
@@ -603,7 +608,7 @@ Apply Konno and Ohmachi smoothing.
 \begin{description}
 \item[{Args:}] \leavevmode\begin{description}
 \item[{bandwidth}] \leavevmode{[}float, optional{]}
-Width of smoothing window, by default this is set to 40.
+Width of smoothing window, default is 40.
 
 \end{description}
 
