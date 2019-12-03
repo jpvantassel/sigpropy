@@ -21,7 +21,6 @@ import unittest
 import sigpropy
 import obspy
 import numpy as np
-# import matplotlib.pyplot as plt
 
 
 class TestFourierTransform(unittest.TestCase):
@@ -60,8 +59,11 @@ class TestFourierTransform(unittest.TestCase):
                              0.1467467171062613+0.3213304885841657*1j,
                              -0.08296449829374097+-0.5770307602665046*1j])
         true_amp *= 2/len(amp)
-        self.assertListEqual(myfft.frq.tolist(), true_frq.tolist())
-        self.assertListEqual(myfft.amp.tolist(), true_amp.tolist())
+        for true, test in [(true_frq.tolist(),myfft.frq.tolist()), (true_amp.tolist(),myfft.amp.tolist())]:
+            for true_val, test_val in zip(true, test):
+                self.assertAlmostEqual(true_val, test_val)
+
+            
 
     def test_smooth_konno_ohmachi(self):
         # 1d amp

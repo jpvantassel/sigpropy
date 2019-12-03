@@ -17,7 +17,6 @@
 
 """Tests for TimeSeries class. """
 
-import matplotlib.pyplot as plt
 import unittest
 import sigpropy
 import obspy
@@ -26,6 +25,8 @@ import warnings
 import logging
 logging.basicConfig(level=logging.WARNING)
 
+file_name = __file__.split("/")[-1]
+full_path = __file__[:-len(file_name)]
 
 class TestTimeSeries(unittest.TestCase):
 
@@ -158,7 +159,7 @@ class TestTimeSeries(unittest.TestCase):
     def test_from_trace(self):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            trace = obspy.read("test/data/vuws/1.dat")[0]
+            trace = obspy.read(full_path+"data/vuws/1.dat")[0]
         tseries = sigpropy.TimeSeries.from_trace(trace, delay=-0.5)
         self.assertListEqual(tseries.amp.tolist(), trace.data.tolist())
         self.assertEqual(tseries.dt, trace.stats.delta)

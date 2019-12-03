@@ -1,5 +1,8 @@
 # Folders
 __pycache__
+build
+dist
+.tox
 
 # File Types
 *.egg-info
