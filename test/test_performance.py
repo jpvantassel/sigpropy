@@ -22,8 +22,11 @@ import obspy
 import cProfile
 import pstats
 
+file_name = __file__.split("/")[-1]
+full_path = __file__[:-len(file_name)]
+
 def main():
-    fname = "test/data/a2/UT.STN11.A2_C50.miniseed"
+    fname = full_path+"data/a2/UT.STN11.A2_C50.miniseed"
     traces = obspy.read(fname)
     timeseries = sp.TimeSeries.from_trace(traces[0])
     timeseries.split(windowlength=120)
@@ -34,7 +37,7 @@ def main():
     fft.smooth_konno_ohmachi(bandwidth=40.)
     fft.resample(minf=0.1, maxf=50, nf=512, res_type="log", inplace=True)
 
-fname = "test/.tmp_profiler_run"
+fname = full_path+".tmp_profiler_run"
 data = cProfile.run('main()', filename=fname)
 stat = pstats.Stats(fname)
 stat.sort_stats('tottime')

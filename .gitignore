@@ -1,7 +1,7 @@
 # Folders
 __pycache__
-dist
 build
+dist
 .tox
 
 # File Types

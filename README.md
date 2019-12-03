@@ -1,4 +1,4 @@
-# SigProPy - A Python module for digital signal processing
+# SigProPy - A Python package for digital signal processing
 
 > Joseph Vantassel, University of Texas at Austin
 
