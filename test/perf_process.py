@@ -1,6 +1,6 @@
-# This file is part of SigProPy a module for digital signal processing
-# in python.
-# Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
+# This file is part of SigProPy, a Python package for digital signal
+# processing.
+# Copyright (C) 2019-2020 Joseph P. Vantassel (jvantassel@utexas.edu)
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -15,15 +15,15 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""This file contains a speed test for the main hvsr calculation."""
+"""This file contains a speed test to perform fft and smoothing."""
 
 import sigpropy as sp
 import obspy
 import cProfile
 import pstats
+from testtools import get_full_path
 
-file_name = __file__.split("/")[-1]
-full_path = __file__[:-len(file_name)]
+full_path = get_full_path(__file__)
 
 def main():
     fname = full_path+"data/a2/UT.STN11.A2_C50.miniseed"
@@ -42,3 +42,7 @@ data = cProfile.run('main()', filename=fname)
 stat = pstats.Stats(fname)
 stat.sort_stats('tottime')
 stat.print_stats(0.01)
+
+# YEAR - MO - DY : TIME UNIT
+# -------------------------
+# 2020 - 02 - 10 :  1.532s -> Baseline

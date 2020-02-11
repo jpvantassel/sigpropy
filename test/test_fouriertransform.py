@@ -1,6 +1,6 @@
-# This file is part of SigProPy a module for digital signal processing
-# in python.
-# Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
+# This file is part of SigProPy, a Python package for digital signal
+# processing.
+# Copyright (C) 2019-2020 Joseph P. Vantassel (jvantassel@utexas.edu)
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -17,13 +17,14 @@
 
 """Tests for FourierTransform class."""
 
-import unittest
 import sigpropy
 import obspy
 import numpy as np
+from testtools import unittest, TestCase
 
 
-class TestFourierTransform(unittest.TestCase):
+class Test_FourierTransform(TestCase):
+
     def test_init(self):
         frq = np.array([0.00000000000000000, 0.090909090909090910,
                         0.18181818181818182, 0.272727272727272700,
@@ -59,49 +60,41 @@ class TestFourierTransform(unittest.TestCase):
                              0.1467467171062613+0.3213304885841657*1j,
                              -0.08296449829374097+-0.5770307602665046*1j])
         true_amp *= 2/len(amp)
-        for true, test in [(true_frq.tolist(),myfft.frq.tolist()), (true_amp.tolist(),myfft.amp.tolist())]:
-            for true_val, test_val in zip(true, test):
-                self.assertAlmostEqual(true_val, test_val)
-
-            
+        for expected, returned in [(true_frq, myfft.frq), (true_amp, myfft.amp)]:
+            self.assertArrayAlmostEqual(expected, returned)
 
     def test_smooth_konno_ohmachi(self):
         # 1d amp
-        # amp = [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
-        # dt = 1
-        # tseries = sigpropy.TimeSeries(amp, dt)
         amp = [3.0+0.0*1j, 0.0+0.0*1j, 0.0+0.0*1j, -1.0+1.0*1j,
                0.0+0.0*1j, 0.0+0.0*1j, -1.0+0.0*1j, 0.0+0.0*1j,
                0.0+0.0*1j, -1.0+-1.0*1j, 0.0+0.0*1j, 0.0+0.0*1j]
         frq = [0.0, 0.08333333333333333, 0.16666666666666666,
                0.25, 0.3333333333333333, 0.41666666666666663,
                0.5, 0.41666666666666663, 0.3333333333333333,
-               0.25, 0.16666666666666666, 0.08333333333333333 ]
+               0.25, 0.16666666666666666, 0.08333333333333333]
 
         fseries = sigpropy.FourierTransform(amp, frq)
         fseries.smooth_konno_ohmachi(40)
-        true_mag = [3.000000000000000, 3.50436561989e-08,
+        expected = [3.000000000000000, 3.50436561989e-08,
                     0.000129672263813, 1.412146598800000,
                     0.001963869435750, 1.71009155425e-05,
                     0.999819070332000, 1.71009155425e-05,
                     0.001963869435750, 1.412146598800000,
                     0.000129672263813, 3.50436561989e-08]
-        for test, known in zip(fseries.amp, true_mag):
-            self.assertAlmostEqual(test, known)
+        self.assertListAlmostEqual(expected, fseries.amp.tolist())
 
         # 2d amp
         amp = np.array([amp, amp])
         fseries = sigpropy.FourierTransform(amp, frq)
         fseries.smooth_konno_ohmachi(40)
-        true_mag = [3.000000000000000, 3.50436561989e-08,
-                    0.000129672263813, 1.412146598800000,
-                    0.001963869435750, 1.71009155425e-05,
-                    0.999819070332000, 1.71009155425e-05,
-                    0.001963869435750, 1.412146598800000,
-                    0.000129672263813, 3.50436561989e-08]
+        expected = np.array([3.000000000000000, 3.50436561989e-08,
+                             0.000129672263813, 1.412146598800000,
+                             0.001963869435750, 1.71009155425e-05,
+                             0.999819070332000, 1.71009155425e-05,
+                             0.001963869435750, 1.412146598800000,
+                             0.000129672263813, 3.50436561989e-08])
         for row in range(amp.shape[0]):
-            for test, known in zip(fseries.amp[row], true_mag):
-                self.assertAlmostEqual(test, known)
+            self.assertArrayAlmostEqual(expected, fseries.amp[row])
 
     def test_resample(self):
         # 1d amp
@@ -125,17 +118,17 @@ class TestFourierTransform(unittest.TestCase):
         amp = np.array([[0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5]])
         fseries = sigpropy.FourierTransform(amp, frq)
 
-        known_frq = [0.5, 1.5, 2.5, 3.5, 4.5]
-        known_vals = [[0.5, 1.5, 2.5, 3.5, 4.5], [0.5, 1.5, 2.5, 3.5, 4.5]]
+        known_frq = np.array([0.5, 1.5, 2.5, 3.5, 4.5])
+        known_vals = np.array([[0.5, 1.5, 2.5, 3.5, 4.5],
+                               [0.5, 1.5, 2.5, 3.5, 4.5]])
 
         fseries.resample(minf=0.5, maxf=4.5, nf=5,
                          res_type='linear', inplace=True)
 
-        for known, test in zip(known_frq, fseries.frq):
-            self.assertAlmostEqual(known, test, places=1)
-        for known_row, test_row in zip(known_vals, fseries.amp):
-            for known_val, test_val in zip(known_row, test_row):
-                self.assertAlmostEqual(known_val, test_val, places=1)
+        for expected, returned in zip(known_frq, fseries.frq):
+            self.assertArrayAlmostEqual(expected, returned, places=1)
+        for expected, returned in zip(known_vals, fseries.amp):
+            self.assertArrayAlmostEqual(expected, returned, places=1)
 
 
 if __name__ == "__main__":
