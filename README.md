@@ -4,7 +4,7 @@
 
 ## Table of Contents
 
-- [About _sigpropy_](#About-_sigpropy_)
+- [About _sigpropy_](#About-sigpropy)
   - [TimeSeries](#TimeSeries)
   - [FourierTransform](#FourierTransform)
 
