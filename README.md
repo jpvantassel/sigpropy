@@ -2,6 +2,9 @@
 
 > Joseph Vantassel, The University of Texas at Austin
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/jpvantassel/sigpropy/blob/master/LICENSE.txt)
+[![CircleCI](https://circleci.com/gh/jpvantassel/sigpropy.svg?style=svg)](https://circleci.com/gh/jpvantassel/sigpropy)
+
 ## Table of Contents
 
 - [About _sigpropy_](#About-sigpropy)
