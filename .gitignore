@@ -8,4 +8,5 @@ dist
 *.egg-info
 *.json
 *.tmp_profiler_run
+*.ipynb_checkpoints
 venv
