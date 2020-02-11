@@ -4,9 +4,9 @@
 
 ## Table of Contents
 
-- [About _sigpropy_](#-About-_sigpropy_)
-  - [TimeSeries()](#-TimeSeries())
-  - [FourierTransform()](#-FourierTransform())
+- [About _sigpropy_](#About-_sigpropy_)
+  - [TimeSeries](#TimeSeries)
+  - [FourierTransform](#FourierTransform)
 
 ## About _sigpropy_
 
@@ -23,7 +23,7 @@ notified of future releases, you can either `watch` the repository on
 `Subscribe to releases` on the
 [Python Package Index (PyPI)](https://pypi.org/project/sigpropy/).
 
-## TimeSeries()
+## TimeSeries
 
 A simple example:
 
@@ -50,7 +50,7 @@ plt.show()
 
 <img src="https://github.com/jpvantassel/sigpropy/blob/master/figs/example_tseries.png?raw=true" width="425">
 
-## FourierTransform()
+## FourierTransform
 
 A simple example:
 
