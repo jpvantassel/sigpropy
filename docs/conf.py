@@ -18,18 +18,20 @@ sys.path.insert(0, os.path.abspath('../sigpropy'))
 # -- Project information -----------------------------------------------------
 
 project = 'SigProPy'
-copyright = '2019, Joseph P. Vantassel'
+copyright = '2019-2020, Joseph P. Vantassel'
 author = 'Joseph P. Vantassel'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = '0.1.1'
 
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.autosectionlabel',
+              ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -42,8 +44,10 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 add_module_names = False
 
 latex_elements = {
-  'extraclassoptions': 'openany,oneside'
+    'extraclassoptions': 'openany,oneside'
 }
+
+master_doc = 'index'
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -62,6 +66,6 @@ html_theme = 'alabaster'
 html_static_path = ['_static']
 
 html_sidebars = {
-   '**': ['localtoc.html', 'sourcelink.html', 'searchbox.html'],
-   'using/windows': ['windowssidebar.html', 'searchbox.html'],
+    '**': ['localtoc.html', 'sourcelink.html', 'searchbox.html'],
+    'using/windows': ['windowssidebar.html', 'searchbox.html'],
 }

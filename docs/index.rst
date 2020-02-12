@@ -7,18 +7,25 @@ SigProPy Documentation
 
 Summary
 -------
-`SigProPy` is Python module for digital signal processing. `SigProPy` was
-developed by Joseph P. Vantassel under the supervision of Professor Brady R.
-Cox at the University of Texas at Austin.
 
-The module includes two main class definitons `TimeSeries` and
-`FourierTransform`. These classes include various methods for creating and
-manipulating time series and Fourier transforms, respectively.
+`sigpropy` is a Python package for digital signal processing. It includes two
+main class definitions, `TimeSeries` and `FourierTransform`. These classes
+include methods to perform common signal processing techniques (e.g., trimming
+and resampling) and properties to make using them readable and intuitive.
+
+This package and the classes therein are being used in several other
+Python projects, some of which have been released publically and others are
+still in the development stage, so if you do not see a feature you would like
+it may very well be under development and released in the near future. To be
+notified of future releases, you can either `watch` the repository on
+`Github <https://github.com/jpvantassel/sigpropy>`_
+`Subscribe to releases` on the
+`Python Package Index (PyPI) <https://pypi.org/project/sigpropy/>`_.
 
 License Information
 -------------------
 
-   Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
+   Copyright (C) 2019-2020 Joseph P. Vantassel (jvantassel@utexas.edu)
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
