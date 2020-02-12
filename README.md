@@ -4,6 +4,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/jpvantassel/sigpropy/blob/master/LICENSE.txt)
 [![CircleCI](https://circleci.com/gh/jpvantassel/sigpropy.svg?style=svg)](https://circleci.com/gh/jpvantassel/sigpropy)
+[![Documentation Status](https://readthedocs.org/projects/sigpropy/badge/?version=latest)](https://sigpropy.readthedocs.io/en/latest/?badge=latest)
 
 ## Table of Contents
 
@@ -16,11 +17,12 @@
 _sigpropy_ is a Python package for digital signal processing. It includes two
 main class definitions, _TimeSeries_ and _FourierTransform_. These classes
 include methods to perform common signal processing techniques (e.g., trimming
-and resampling) and properties to make using them readable and inuitive. This
-package and the classes therein are being used in several other
+and resampling) and properties to make using them readable and intuitive.
+
+This package and the classes therein are being used in several other
 Python projects, some of which have been released publically and others are
 still in the development stage, so if you do not see a feature you would like
-it may very well be underdevelopment and released in the near future. To be
+it may very well be under development and released in the near future. To be
 notified of future releases, you can either `watch` the repository on
 [Github](https://github.com/jpvantassel/sigpropy) or
 `Subscribe to releases` on the

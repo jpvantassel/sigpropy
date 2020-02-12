@@ -31,7 +31,20 @@ release = '0.1.1'
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosectionlabel',
+              'sphinx.ext.napoleon'
               ]
+
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = True
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = False
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = True
+napoleon_use_param = False
+napoleon_use_rtype = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -53,9 +66,7 @@ master_doc = 'index'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-html_theme = 'alabaster'
-# html_theme = "classic"
+html_theme = "sphinx_rtd_theme"
 # html_theme_options = {
 #     "rightsidebar": "",
 # }

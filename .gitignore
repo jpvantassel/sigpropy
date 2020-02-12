@@ -3,6 +3,7 @@ __pycache__
 build
 dist
 .tox
+docs/html
 
 # File Types
 *.egg-info
