@@ -39,7 +39,7 @@ class FourierTransform():
     """
 
     @staticmethod
-    def fft(amplitude, dt):
+    def fft(amplitude, dt, **kwargs):
         """Compute the fast-Fourier transform (FFT) of a time series.
 
         Parameters
@@ -52,6 +52,8 @@ class FourierTransform():
             column corresponds to a single time step.
         dt : float
             Denotes the time step between samples in seconds.
+        **kwargs : dict
+            Additional keyard arguements to fft.
 
         Returns
         -------
@@ -74,15 +76,15 @@ class FourierTransform():
         if len(amplitude.shape) > 2:
             raise TypeError("`amplitude` cannot have dimension > 2.")
 
-        npts = amplitude.shape[-1]
+        npts = amplitude.shape[-1] if kwargs.get("n") is None else kwargs.get("n")
         nfrqs = int(npts/2)+1 if (npts % 2) == 0 else int((npts+1)/2)
         frq = np.abs(np.fft.fftfreq(npts, dt))[0:nfrqs]
         if len(amplitude.shape) == 1:
-            return(2/npts * fftpack.fft(amplitude)[0:nfrqs], frq)
+            return(2/npts * fftpack.fft(amplitude, **kwargs)[0:nfrqs], frq)
         else:
             fft = np.zeros((amplitude.shape[0], nfrqs), dtype=complex)
             for cwindow, amplitude in enumerate(amplitude):
-                fft[cwindow] = 2/npts * fftpack.fft(amplitude)[0:nfrqs]
+                fft[cwindow] = 2/npts * fftpack.fft(amplitude, **kwargs)[0:nfrqs]
             return (fft, frq)
 
     def __init__(self, amplitude, frequency, fnyq=None):
@@ -240,7 +242,7 @@ class FourierTransform():
             return (xx, interped_amp)
 
     @classmethod
-    def from_timeseries(cls, timeseries):
+    def from_timeseries(cls, timeseries, **kwargs):
         """Create a `FourierTransform` object from a `TimeSeries`
         object.
 
@@ -248,13 +250,15 @@ class FourierTransform():
         ----------
         timeseries : TimeSeries 
             `TimeSeries` object to be transformed.
+        **kwargs : dict
+            Custom settings for fft.
 
         Returns
         -------
         FourierTransform
             Initialized with information from `TimeSeries`.
         """
-        amp, frq = cls.fft(timeseries.amp, timeseries.dt)
+        amp, frq = cls.fft(timeseries.amp, timeseries.dt, **kwargs)
         return cls(amp, frq, timeseries.fnyq)
 
     @property
