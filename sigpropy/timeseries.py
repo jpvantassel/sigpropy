@@ -90,11 +90,11 @@ class TimeSeries():
         self.delay = delay
         self.multiple = 1
 
-        logging.info(f"Initialize a TimeSeries object.")
-        logging.info(f"\tdt = {dt}")
-        logging.info(f"\tfs = {self.fs}")
-        logging.info(f"\tdelay = {delay}")
-        logging.info(f"\tn_samples = {self.n_samples}")
+        logger.info(f"Initialize a TimeSeries object.")
+        logger.info(f"\tdt = {dt}")
+        logger.info(f"\tfs = {self.fs}")
+        logger.info(f"\tdelay = {delay}")
+        logger.info(f"\tn_samples = {self.n_samples}")
 
     @staticmethod
     def _check_input(name, values):
