@@ -20,6 +20,81 @@
 import numpy as np
 import scipy.interpolate as sp
 import scipy.fftpack as fftpack
+# import numba
+
+# Alternate implementation -> Does pass unit tests.
+# @numba.jit(nopython=True, cache=True)
+# def _k_and_o_smooth(amplitude, frequencies, bandwidth=40.0, normalize=True):
+    
+#     smooth_amp = np.empty_like(amplitude)
+#     for c_id, cfrq in enumerate(frequencies):
+#         if cfrq < 1E-6:
+#             smooth_amp[c_id] = amplitude[c_id]
+#             continue
+
+#         total = 0
+#         total_weight = 0
+#         for comp_id, frequency in enumerate(frequencies):
+#             if (frequency<1e-6):
+#                 continue
+#             elif np.abs(frequency - cfrq) < 1E-6:
+#                 weight = 1
+#             else:
+#                 weight = bandwidth * np.log10(frequency/cfrq)
+#                 weight = np.sin(weight)/weight
+#                 weight = weight*weight*weight*weight
+
+#             total += weight * amplitude[comp_id]
+#             total_weight += weight
+
+#         if total_weight > 0:
+#             if normalize:
+#                 smooth_amp[c_id] = total/total_weight
+#             else:
+#                 smooth_amp[c_id] = total
+#         else:
+#             smooth_amp[c_id] = 0
+#     return smooth_amp
+
+# Albert's implementation -> Doesnt pass unit tests.
+# @numba.jit(nopython=True)
+# def smooth(ko_freqs, freqs, spectrum, b):
+#     max_ratio = pow(10.0, (3.0 / b))
+#     min_ratio = 1.0 / max_ratio
+
+#     total = 0
+#     window_total = 0
+
+#     ko_smooth = np.empty_like(ko_freqs)
+#     for i, fc in enumerate(ko_freqs):
+#         if fc < 1e-6:
+#             ko_smooth[i] = 0
+#             continue
+
+#         total = 0
+#         window_total = 0
+#         for j, freq in enumerate(freqs):
+#             frat = freq / fc
+
+#             if (freq < 1e-6 or frat > max_ratio or frat < min_ratio):
+#                 continue
+#             elif np.abs(freq - fc) < 1e-6:
+#                 window = 1.
+#             else:
+#                 x = b * np.log10(frat)
+#                 window = np.sin(x) / x
+#                 window *= window
+#                 window *= window
+
+#             total += window * spectrum[j]
+#             window_total += window
+
+#         if window_total > 0:
+#             ko_smooth[i] = total / window_total
+#         else:
+#             ko_smooth[i] = 0
+
+#     return ko_smooth
 
 class FourierTransform():
     """A class for manipulating Fourier transforms.
@@ -76,7 +151,8 @@ class FourierTransform():
         if len(amplitude.shape) > 2:
             raise TypeError("`amplitude` cannot have dimension > 2.")
 
-        npts = amplitude.shape[-1] if kwargs.get("n") is None else kwargs.get("n")
+        npts = amplitude.shape[-1] if kwargs.get(
+            "n") is None else kwargs.get("n")
         nfrqs = int(npts/2)+1 if (npts % 2) == 0 else int((npts+1)/2)
         frq = np.abs(np.fft.fftfreq(npts, dt))[0:nfrqs]
         if len(amplitude.shape) == 1:
@@ -84,7 +160,8 @@ class FourierTransform():
         else:
             fft = np.zeros((amplitude.shape[0], nfrqs), dtype=complex)
             for cwindow, amplitude in enumerate(amplitude):
-                fft[cwindow] = 2/npts * fftpack.fft(amplitude, **kwargs)[0:nfrqs]
+                fft[cwindow] = 2/npts * \
+                    fftpack.fft(amplitude, **kwargs)[0:nfrqs]
             return (fft, frq)
 
     def __init__(self, amplitude, frequency, fnyq=None):
@@ -133,20 +210,46 @@ class FourierTransform():
             smoothed value of `mag`.
         """
         self.amp = self.mag
-        smooth_amp = np.zeros(self.amp.shape)
+        smooth_amp = np.empty_like(self.amp)
         if len(self.amp.shape) == 1:
             for cid, cfrq in enumerate(self.frq):
                 smoothing_window = self._k_and_o_window(self.frq, cfrq,
                                                         bandwidth=bandwidth)
-                smooth_amp[cid] = np.dot(self.amp, smoothing_window)
+                smooth_amp[cid] = np.dot(self.amp,smoothing_window)
         else:
             for c_col, cfrq in enumerate(self.frq):
                 smoothing_window = self._k_and_o_window(self.frq, cfrq,
                                                         bandwidth=bandwidth)
                 for c_row, c_amp in enumerate(self.amp):
-                    smooth_amp[c_row, c_col] = np.dot(c_amp, smoothing_window)
+                    smooth_amp[c_row, c_col] = np.dot(c_amp,smoothing_window)
         self.amp = smooth_amp
 
+    # def smooth_konno_ohmachi(self, bandwidth=40.0):
+    #     """Apply Konno and Ohmachi smoothing.
+
+    #     Parameters
+    #     ----------
+    #     bandwidth : float, optional
+    #         Width of smoothing window, default is 40.
+
+    #     Returns
+    #     -------
+    #     None
+    #         Modifies the internal attribute `amp` to equal the
+    #         smoothed value of `mag`.
+    #     """
+
+    #     if len(self.amp.shape) == 1:
+    #         self.amp = self._k_and_o_smooth(self.mag, self.frq, bandwidth=bandwidth) 
+    #     else:
+    #         for c_win, c_mag in enumerate(self.mag):
+    #             self.amp[c_win] = self._k_and_o_smooth(c_mag, self.frq, bandwidth=bandwidth)
+
+    # @staticmethod
+    # def _k_and_o_smooth(amplitude, frequencies, bandwidth=40.0, normalize=True):
+    #     return _k_and_o_smooth(amplitude, frequencies, bandwidth, normalize)
+    #     # return smooth(frequencies, frequencies, amplitude, bandwidth)
+            
     @staticmethod
     def _k_and_o_window(frequencies, center_frequency,
                         bandwidth=40.0, normalize=True):
@@ -155,14 +258,17 @@ class FourierTransform():
             raise ValueError(msg)
 
         if center_frequency == 0:
-            smoothing_window = np.zeros(len(frequencies), dtype=frequencies.dtype)
+            smoothing_window = np.zeros(
+                len(frequencies), dtype=frequencies.dtype)
             smoothing_window[frequencies == 0.0] = 1.0
             return smoothing_window
 
         with np.errstate(divide='ignore', invalid='ignore'):
-            smoothing_window = bandwidth * np.log10(frequencies / center_frequency)
+            smoothing_window = bandwidth * \
+                np.log10(frequencies / center_frequency)
             smoothing_window = np.sin(smoothing_window) / smoothing_window
-            smoothing_window = smoothing_window * smoothing_window * smoothing_window * smoothing_window
+            smoothing_window = smoothing_window * \
+                smoothing_window * smoothing_window * smoothing_window
 
         smoothing_window[frequencies == center_frequency] = 1.0
         smoothing_window[frequencies == 0.0] = 0.0
