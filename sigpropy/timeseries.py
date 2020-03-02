@@ -18,6 +18,7 @@
 """This file contains the class TimeSeries."""
 
 import numpy as np
+import json
 from scipy.signal.windows import tukey
 from scipy.signal import butter, filtfilt, detrend
 import logging
@@ -137,6 +138,87 @@ class TimeSeries():
 
         return values
 
+    def to_dict(self):
+        """Dictionary representation of `TimeSeries`.
+
+        Returns
+        -------
+        dict
+            Containing all of the relevant contents of the `TimeSeries`.
+        """
+
+        info = {}
+        if self.n_windows > 1:
+            msg = "This method is only implemented for `TimeSeries` with 1 window."
+            raise NotImplementedError(msg)
+        info["amplitude"] = list(self.amp)
+        info["dt"] = self.dt
+        info["n_stacks"] = self._nstack
+        info["delay"] = self.delay
+
+        return info
+
+    @classmethod
+    def from_dict(cls, dictionary):
+        """Create `TimeSeries` object from dictionary representation.
+
+        Parameters
+        ----------
+        dictionary : dict
+            Must contain keys "amplitude" and "dt", optional keys
+            include "n_stacks" and "delay".
+
+        Returns
+        -------
+        TimeSeries
+            Instantiated `TimeSeries` object.
+
+        Raises
+        ------
+        KeyError
+            If any of the required keys (listed above) are missing.
+        """
+
+        if dictionary.get("n_stacks") is None:
+            dictionary["n_stacks"] = 1
+        if dictionary.get("delay") is None:
+            dictionary["delay"] = 0
+
+        return cls(dictionary["amplitude"], dictionary["dt"],
+                   n_stacks=dictionary["n_stacks"], delay=dictionary["delay"])
+
+    def to_json(self):
+        """Json string representation of `TimeSeries` object.
+
+        Returns
+        -------
+        str
+            Json string with all of the relevant contents of the 
+            `TimeSeries`.
+        """
+        dictionary = self.to_dict()
+        return json.dumps(dictionary)
+
+    @classmethod
+    def from_json(cls, json_str):
+        """Instaniate `TimeSeries` object form Json string.
+
+        Parameters
+        ----------
+        json_str : str
+            Json string with all of the relevant contents of
+            `TimeSeries`. Must contain keys "amplitude" and "dt", 
+            optional keys include "n_stacks" and "delay".
+        
+        Returns
+        -------
+        TimeSeries
+            Instantiated `TimeSeries` object.
+        """
+
+        dictionary = json.loads(json_str)
+        return cls.from_dict(dictionary)
+
     @property
     def amplitude(self):
         return self.amp
@@ -152,7 +234,8 @@ class TimeSeries():
             for cwindow in range(self.n_windows):
                 start_time = cwindow*(samples_per_window-1)*self.dt
                 stop_time = start_time + (samples_per_window-1)*self.dt
-                time[cwindow] = np.linspace(start_time, stop_time, samples_per_window)
+                time[cwindow] = np.linspace(
+                    start_time, stop_time, samples_per_window)
             return time
 
     def trim(self, start_time, end_time):

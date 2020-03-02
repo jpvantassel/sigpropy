@@ -208,5 +208,25 @@ class Test_TimeSeries(TestCase):
         for row in tseries.amp:
             self.assertArrayAlmostEqual(signal,  row, delta=0.03)
 
+    def test_to_and_from_dict(self):
+        # 1d amp
+        amplitude = np.array([1,2,3,4])
+        dt = 1
+        expected = sigpropy.TimeSeries(amplitude, dt)
+        dict_repr = expected.to_dict()
+        returned = sigpropy.TimeSeries.from_dict(dict_repr)
+        self.assertEqual(expected.dt, returned.dt)
+        self.assertArrayEqual(expected.amp, returned.amp)
+
+    def test_to_and_from_json(self):
+        # 1d amp
+        amplitude = np.array([1,2,3,4])
+        dt = 1
+        expected = sigpropy.TimeSeries(amplitude, dt)
+        json_repr = expected.to_json()
+        returned = sigpropy.TimeSeries.from_json(json_repr)
+        self.assertEqual(expected.dt, returned.dt)
+        self.assertArrayEqual(expected.amp, returned.amp)
+
 if __name__ == '__main__':
     unittest.main()
