@@ -39,7 +39,7 @@ setup(
     keywords='signal-processing signal',
     packages=find_packages(),
     python_requires = '>=3.6, <3.9',
-    install_requires=['scipy>=1.2.1', 'numpy>=1.16.2', 'obspy>=1.1.1'],
+    install_requires=['scipy>=1.2.1', 'numpy>=1.16.2', 'obspy>=1.1.1', 'json'],
     extras_require={
         'dev': ['unittest', 'hypothesis'],
         'test': ['unittest', 'hypothesis'],
