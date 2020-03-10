@@ -50,7 +50,7 @@ class TimeSeries():
         Nyquist frequency in Hz equal to `fs/2`. 
     """
 
-    def __init__(self, amplitude, dt, n_stacks=1, delay=0):
+    def __init__(self, amplitude, dt):
         """Intialize a `TimeSeries` object.
 
         Parameters
@@ -60,12 +60,6 @@ class TimeSeries():
             attribute definition for details.
         dt : float
             Time step between samples in seconds.
-        n_stacks : int, optional
-            Number of stacks used to produce the amplitude (the
-            default value is 1, denoting a single unstacked 
-            recording).
-        delay : float {<=0.}, optional
-            Indicates the pre-event delay in seconds.
 
         Returns
         -------
@@ -86,15 +80,11 @@ class TimeSeries():
         self.fnyq = 0.5*self.fs
         self._df = self.fs/self.n_samples
         self._nstack = 1
-        if delay > 0:
-            raise ValueError("`delay` must not be > 0")
-        self.delay = delay
         self.multiple = 1
 
         logger.info(f"Initialize a TimeSeries object.")
         logger.info(f"\tdt = {dt}")
         logger.info(f"\tfs = {self.fs}")
-        logger.info(f"\tdelay = {delay}")
         logger.info(f"\tn_samples = {self.n_samples}")
 
     @staticmethod
@@ -153,8 +143,6 @@ class TimeSeries():
             raise NotImplementedError(msg)
         info["amplitude"] = list(self.amp)
         info["dt"] = self.dt
-        info["n_stacks"] = self._nstack
-        info["delay"] = self.delay
 
         return info
 
@@ -165,8 +153,7 @@ class TimeSeries():
         Parameters
         ----------
         dictionary : dict
-            Must contain keys "amplitude" and "dt", optional keys
-            include "n_stacks" and "delay".
+            Must contain keys "amplitude" and "dt".
 
         Returns
         -------
@@ -179,13 +166,7 @@ class TimeSeries():
             If any of the required keys (listed above) are missing.
         """
 
-        if dictionary.get("n_stacks") is None:
-            dictionary["n_stacks"] = 1
-        if dictionary.get("delay") is None:
-            dictionary["delay"] = 0
-
-        return cls(dictionary["amplitude"], dictionary["dt"],
-                   n_stacks=dictionary["n_stacks"], delay=dictionary["delay"])
+        return cls(dictionary["amplitude"], dictionary["dt"])
 
     def to_json(self):
         """Json string representation of `TimeSeries` object.
@@ -207,9 +188,8 @@ class TimeSeries():
         ----------
         json_str : str
             Json string with all of the relevant contents of
-            `TimeSeries`. Must contain keys "amplitude" and "dt", 
-            optional keys include "n_stacks" and "delay".
-        
+            `TimeSeries`. Must contain keys "amplitude" and "dt".
+
         Returns
         -------
         TimeSeries
@@ -227,7 +207,7 @@ class TimeSeries():
     def time(self):
         """Return time vector for `TimeSeries` object."""
         if self.n_windows == 1:
-            return np.arange(0, self.n_samples*self.dt, self.dt) + self.delay
+            return np.arange(0, self.n_samples*self.dt, self.dt)
         else:
             samples_per_window = (self.n_samples//self.n_windows)+1
             time = np.zeros((self.n_windows, samples_per_window))
@@ -287,11 +267,9 @@ class TimeSeries():
         self.amp = self.amp[start_index:end_index+1]
         self.n_samples = len(self.amp)
         self._df = self.fs/self.n_samples
-        self.delay = 0 if start_time >= 0 else start_time
 
         logger.info(f"n_samples = {self.n_samples}")
         logger.info(f"df = {self._df}")
-        logger.info(f"delay = {self.delay}")
 
     def detrend(self):
         """Remove linear trend from time series.
@@ -393,8 +371,8 @@ class TimeSeries():
         None
             Filters attribute `amp`. 
         """
-        b, a = butter(order, [flow/self.fnyq, fhigh /
-                              self.fnyq], btype='bandpass')
+        b, a = butter(order, [flow/self.fnyq, fhigh/self.fnyq],
+                      btype='bandpass')
         # TODO (jpv): Research padlen arguement
         self.amp = filtfilt(b, a, self.amp, padlen=3*(max(len(b), len(a))-1))
 
@@ -413,23 +391,28 @@ class TimeSeries():
             `obspy documentation <https://github.com/obspy/obspy/wiki>`_
             for more information
 
-        n_stacks : int, optional
-            Number of stacks the time series represents, (default is
-            1, signifying a single unstacked time record).
-
-        delay : float {<=0.}, optional
-            Denotes the pre-event delay, (default is zero, 
-            meaning no pre-event noise was recorded).
-
         Returns
         -------
         TimeSeries
             Initialized with information from `trace`.
         """
-        return cls(amplitude=trace.data,
-                   dt=trace.stats.delta,
-                   n_stacks=n_stacks,
-                   delay=delay)
+        return cls(amplitude=trace.data, dt=trace.stats.delta)
+
+    def __eq__(self, other):
+        my = self.amp
+        ur = other.amp
+
+        if my.size != ur.size:
+            return False
+
+        for my_val, ur_val in zip(my, ur):
+            if my_val != ur_val:
+                return False
+
+        for attr in ["dt", "n_stacks", "delay"]:
+            if getattr(self, attr) != getattr(other, attr):
+                return False
+        return True
 
     def __repr__(self):
         return f"TimeSeries(dt={self.dt}, amplitude={str(self.amp[0:3])[:-1]} ... {str(self.amp[-3:])[1:]})"

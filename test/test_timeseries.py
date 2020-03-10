@@ -60,13 +60,6 @@ class Test_TimeSeries(TestCase):
         test = sigpropy.TimeSeries(amp, dt)
         self.assertListEqual(test.time.tolist(), true_time)
 
-        # With pre-event delay
-        dt = 0.5
-        amp = [-1, 0, 1, 0, -1]
-        true_time = [-0.5, 0., 0.5, 1., 1.5]
-        test = sigpropy.TimeSeries(amp, dt, delay=-0.5)
-        self.assertListEqual(test.time.tolist(), true_time)
-
         # 2d amp
         dt = 1
         amp = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -157,8 +150,6 @@ class Test_TimeSeries(TestCase):
         tseries = sigpropy.TimeSeries.from_trace(trace, delay=-0.5)
         self.assertListEqual(tseries.amp.tolist(), trace.data.tolist())
         self.assertEqual(tseries.dt, trace.stats.delta)
-        self.assertEqual(tseries._nstack, int(trace.stats.seg2.STACK))
-        self.assertEqual(tseries.delay, float(trace.stats.seg2.DELAY))
 
     def test_trim(self):
         # Standard
@@ -169,23 +160,6 @@ class Test_TimeSeries(TestCase):
         self.assertEqual(thist.n_samples, 3)
         self.assertEqual(min(thist.time), 0)
         self.assertEqual(max(thist.time), 1)
-
-        # With pre-trigger delay
-        thist = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3, 4, 5, 6],
-                                    dt=0.25,
-                                    delay=-.5)
-        # Remove part of pre-trigger
-        thist.trim(-0.25, 0.25)
-        self.assertEqual(thist.n_samples, 3)
-        self.assertEqual(thist.delay, -0.25)
-        self.assertEqual(min(thist.time), -0.25)
-        self.assertEqual(max(thist.time), 0.25)
-        # Remove all of pre-trigger
-        thist.trim(0, 0.25)
-        self.assertEqual(thist.n_samples, 2)
-        self.assertEqual(thist.delay, 0)
-        self.assertEqual(min(thist.time), 0.)
-        self.assertEqual(max(thist.time), 0.25)
 
     def test_detrend(self):
         # 1d amp
