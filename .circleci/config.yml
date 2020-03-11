@@ -18,9 +18,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install virtualenv
+          name: Create virtualenv
           command: |
-            pip install virtualenv
             virtualenv venv
             . venv/bin/activate
       - run:
