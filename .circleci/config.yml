@@ -42,7 +42,6 @@ jobs:
           command: |
             . venv/bin/activate
             pip install -e .
-            pip install -Iv obspy==1.2.1
             cd test
             python -m unittest
 
