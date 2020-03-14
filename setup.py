@@ -7,12 +7,12 @@ https://github.com/pypa/sampleproject
 
 from setuptools import setup, find_packages
 
-with open("README.md") as f:
+with open("README.md", encoding="utf8") as f:
     long_description = f.read()
 
 setup(
     name='sigpropy',
-    version='0.1.1',
+    version='0.1.2',
     description='A Python package for digital signal processing.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -41,8 +41,7 @@ setup(
     python_requires = '>=3.6, <3.9',
     install_requires=['scipy', 'numpy', 'obspy'],
     extras_require={
-        'dev': ['unittest', 'hypothesis'],
-        'test': ['unittest', 'hypothesis'],
+        'dev': ['hypothesis'],
     },
     package_data={
     },
