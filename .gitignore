@@ -4,6 +4,7 @@ build
 dist
 .tox
 docs/html
+scratch
 
 # File Types
 *.egg-info
