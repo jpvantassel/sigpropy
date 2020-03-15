@@ -40,10 +40,12 @@ jobs:
             cd test
             coverage run --source=../sigpropy -m unittest
       - run:
-          name: Store coverage xml
+          name: Create coverage xml
           command: |
             . venv/bin/activate
-            coverage xml
+            mv test/.coverage test-results
+            cd test-results
+            coverage xml -o coverage.xml
       - store_test_results:
           path: test-results
       - store_artifacts:
