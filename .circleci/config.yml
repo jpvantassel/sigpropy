@@ -43,10 +43,10 @@ jobs:
           name: Store coverage xml
             . venv/bin/activate
             coverage xml
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: test-results
+      # - store_test_results:
+      #     path: test-results
+      # - store_artifacts:
+      #     path: test-results
 
   test-3.7:
     <<: *test-template
