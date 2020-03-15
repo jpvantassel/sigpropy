@@ -50,6 +50,11 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results
+      - run:
+          name: Call Codecov
+            . venv/bin/activate
+            pip install codecov
+            codecov
 
   test-3.7:
     <<: *test-template
