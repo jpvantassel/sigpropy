@@ -21,6 +21,7 @@ jobs:
           name: Create virtualenv
           command: |
             virtualenv venv
+            mkdir test-results
             . venv/bin/activate
       - run:
           name: Install numpy
@@ -37,8 +38,15 @@ jobs:
           command: |
             . venv/bin/activate
             cd test
-            python -m unittest
-
+            coverage run --source=../sigpropy -m unittest
+      - run:
+          name: Store coverage xml
+            . venv/bin/activate
+            coverage xml
+      - store_test_results:
+        path: test-results
+      - store_artifacts:
+        path: test-results
   test-3.7:
     <<: *test-template
     docker:

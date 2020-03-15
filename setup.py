@@ -41,7 +41,7 @@ setup(
     python_requires = '>=3.6, <3.9',
     install_requires=['scipy', 'numpy', 'obspy', 'numba'],
     extras_require={
-        'dev': ['hypothesis', 'pandas'],
+        'dev': ['hypothesis', 'pandas', 'coverage'],
     },
     package_data={
     },

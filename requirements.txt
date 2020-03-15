@@ -3,3 +3,4 @@ numpy
 obspy
 numba
 pandas
+coverage
