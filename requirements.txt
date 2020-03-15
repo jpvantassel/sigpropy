@@ -1,3 +1,5 @@
 scipy
 numpy
-obspy==1.2.1
+obspy
+numba
+pandas

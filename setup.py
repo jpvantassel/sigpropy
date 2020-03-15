@@ -39,9 +39,9 @@ setup(
     keywords='signal-processing signal',
     packages=find_packages(),
     python_requires = '>=3.6, <3.9',
-    install_requires=['scipy', 'numpy', 'obspy'],
+    install_requires=['scipy', 'numpy', 'obspy', 'numba'],
     extras_require={
-        'dev': ['hypothesis'],
+        'dev': ['hypothesis', 'pandas'],
     },
     package_data={
     },
