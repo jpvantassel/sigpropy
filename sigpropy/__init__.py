@@ -20,3 +20,4 @@
 from .timeseries import *
 from .windowedtimeseries import *
 from .fouriertransform import *
+from .fouriertransformsuite import *

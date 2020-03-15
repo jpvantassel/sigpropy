@@ -68,7 +68,6 @@ class Test_FourierTransform(TestCase):
             self.assertArrayAlmostEqual(expected, returned)
 
     def test_smooth_konno_ohmachi(self):
-        # 1d amp
         amp = [3.0+0.0*1j, 0.0+0.0*1j, 0.0+0.0*1j, -1.0+1.0*1j,
                0.0+0.0*1j, 0.0+0.0*1j, -1.0+0.0*1j, 0.0+0.0*1j,
                0.0+0.0*1j, -1.0+-1.0*1j, 0.0+0.0*1j, 0.0+0.0*1j]
@@ -86,19 +85,6 @@ class Test_FourierTransform(TestCase):
                     0.001963869435750, 1.412146598800000,
                     0.000129672263813, 3.50436561989e-08]
         self.assertListAlmostEqual(expected, fseries.amp.tolist())
-
-        # 2d amp
-        amp = np.array([amp, amp])
-        fseries = sigpropy.FourierTransform(amp, frq)
-        fseries.smooth_konno_ohmachi(40)
-        expected = np.array([3.000000000000000, 3.50436561989e-08,
-                             0.000129672263813, 1.412146598800000,
-                             0.001963869435750, 1.71009155425e-05,
-                             0.999819070332000, 1.71009155425e-05,
-                             0.001963869435750, 1.412146598800000,
-                             0.000129672263813, 3.50436561989e-08])
-        for row in range(amp.shape[0]):
-            self.assertArrayAlmostEqual(expected, fseries.amp[row])
 
     def test_smooth_konno_ohmachi_fast(self):
 
@@ -135,7 +121,6 @@ class Test_FourierTransform(TestCase):
                 load_and_run(amp, b, self.full_path+"data/ko/"+fname)
 
     def test_resample(self):
-        # 1d amp
         frq = [0, 1, 2, 3, 4, 5]
         amp = [0, 1, 2, 3, 4, 5]
         fseries = sigpropy.FourierTransform(amp, frq)
@@ -150,23 +135,6 @@ class Test_FourierTransform(TestCase):
             self.assertAlmostEqual(known, test, places=1)
         for known, test in zip(known_vals, fseries.amp):
             self.assertAlmostEqual(known, test, places=1)
-
-        # 2d amp
-        frq = [0, 1, 2, 3, 4, 5]
-        amp = np.array([[0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5]])
-        fseries = sigpropy.FourierTransform(amp, frq)
-
-        known_frq = np.array([0.5, 1.5, 2.5, 3.5, 4.5])
-        known_vals = np.array([[0.5, 1.5, 2.5, 3.5, 4.5],
-                               [0.5, 1.5, 2.5, 3.5, 4.5]])
-
-        fseries.resample(minf=0.5, maxf=4.5, nf=5,
-                         res_type='linear', inplace=True)
-
-        for expected, returned in zip(known_frq, fseries.frq):
-            self.assertArrayAlmostEqual(expected, returned, places=1)
-        for expected, returned in zip(known_vals, fseries.amp):
-            self.assertArrayAlmostEqual(expected, returned, places=1)
 
 
 if __name__ == "__main__":

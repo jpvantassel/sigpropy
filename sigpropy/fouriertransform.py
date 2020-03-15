@@ -20,42 +20,7 @@
 import numpy as np
 import scipy.interpolate as sp
 import scipy.fftpack as fftpack
-import numba
-
-# Alternate implementation -> Does pass unit tests.
-# @numba.jit(nopython=True, cache=True)
-# def _k_and_o_smooth(amplitude, frequencies, bandwidth=40.0, normalize=True):
-
-#     smooth_amp = np.empty_like(amplitude)
-#     for c_id, cfrq in enumerate(frequencies):
-#         if cfrq < 1E-6:
-#             smooth_amp[c_id] = amplitude[c_id]
-#             continue
-
-#         total = 0
-#         total_weight = 0
-#         for comp_id, frequency in enumerate(frequencies):
-#             if (frequency<1e-6):
-#                 continue
-#             elif np.abs(frequency - cfrq) < 1E-6:
-#                 weight = 1
-#             else:
-#                 weight = bandwidth * np.log10(frequency/cfrq)
-#                 weight = np.sin(weight)/weight
-#                 weight = weight*weight*weight*weight
-
-#             total += weight * amplitude[comp_id]
-#             total_weight += weight
-
-#         if total_weight > 0:
-#             if normalize:
-#                 smooth_amp[c_id] = total/total_weight
-#             else:
-#                 smooth_amp[c_id] = total
-#         else:
-#             smooth_amp[c_id] = 0
-#     return smooth_amp
-
+from numba import njit
 
 class FourierTransform():
     """A class for manipulating Fourier transforms.
@@ -72,6 +37,7 @@ class FourierTransform():
         The Nyquist frequency associated with the time series used
         to generate the Fourier transform. Note this may or may not
         be equal to `frequency[-1]`.
+
     """
 
     @staticmethod
@@ -108,6 +74,7 @@ class FourierTransform():
                 If `amplitude` is a 2D array `fft` will also be a 2D
                 array where each row is the FFT of each row of 
                 `amplitude`.
+
         """
         if len(amplitude.shape) > 2:
             raise TypeError("`amplitude` cannot have dimension > 2.")
@@ -143,11 +110,35 @@ class FourierTransform():
         -------
         FourierTransform
             Initialized with `amplitude` and `frequency` information.
-        """
-        self.amp = np.array(amplitude)
-        self.frq = np.array(frequency)
-        self.fnyq = fnyq if fnyq != None else np.max(self.frq)
 
+        """
+        fnyq = fnyq if fnyq != None else np.max(frequency)
+        results = self._check_input(amplitude, frequency, fnyq)
+        self.amp, self.frq, self.fnyq = results
+
+    @staticmethod
+    def _check_input(amplitude, frequency, fnyq):
+        """Performs checks on input, specifically:
+
+            1. Cast `amplitude` and `frequency` to ndarrays.
+            2. Check that `amplitude` and `frequency` are 1D.
+            3. Check that fnyq is greater than zero.
+
+        """
+
+        amplitude = np.array(amplitude)
+        frequency = np.array(frequency)
+
+        for name, value in zip(["`amplitude`", "`frequency`"], [amplitude, frequency]):
+            if len(value.shape) != 1:
+                msg = f"{name} must be 1-D not {len(value.shape)}-D."
+                raise ValueError(msg)
+        
+        if not fnyq > 0:
+            raise ValueError(f"fnyq must be greater than 0, not {fnyq}")
+
+        return amplitude, frequency, fnyq
+        
     @property
     def frequency(self):
         return self.frq
@@ -169,6 +160,7 @@ class FourierTransform():
         None
             Modifies the internal attribute `amp` to equal the
             smoothed value of `mag`.
+
         """
         self.amp = self.mag
         smooth_amp = np.empty_like(self.amp)
@@ -184,6 +176,31 @@ class FourierTransform():
                 for c_row, c_amp in enumerate(self.amp):
                     smooth_amp[c_row, c_col] = np.dot(c_amp, smoothing_window)
         self.amp = smooth_amp
+
+    @staticmethod
+    def _k_and_o_window(frequencies, center_frequency,
+                        bandwidth=40.0, normalize=True):
+        if frequencies.dtype != np.float32 and frequencies.dtype != np.float64:
+            msg = 'frequencies needs to have a dtype of float32/64.'
+            raise ValueError(msg)
+
+        if center_frequency == 0:
+            window = np.zeros_like(frequencies)
+            window[frequencies == 0.0] = 1.0
+            return window
+
+        with np.errstate(divide='ignore', invalid='ignore'):
+            window = bandwidth *np.log10(frequencies / center_frequency)
+            window = np.sin(window) / window
+            window = window * window * window * window
+
+        window[frequencies == center_frequency] = 1.0
+        window[frequencies == 0.0] = 0.0
+
+        if normalize:
+            window /= window.sum()
+
+        return window
 
     def smooth_konno_ohmachi_fast(self, frequencies, bandwidth=40):
         """Apply fast Konno and Ohmachi smoothing.
@@ -203,6 +220,7 @@ class FourierTransform():
         None
             Modifies the internal attribute `amp` to equal the
             smoothed value of `mag`.
+
         """
         frequencies = np.array(frequencies)
         self.amp = self._smooth_konno_ohmachi_fast(self.frequency, self.mag,
@@ -210,7 +228,7 @@ class FourierTransform():
                                                    bandwidth=bandwidth)
 
     @staticmethod
-    @numba.jit(nopython=True)
+    @njit()
     def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs,
                                    bandwidth=40):
         """Static method for Konno and Ohmachi smoothing.
@@ -245,27 +263,19 @@ class FourierTransform():
             # TODO (jpv): Why fc<1E-6
             if fc < 1E-6:
                 smoothed_spectrum[f_index] = 0
-                # print("Continue: fc<1E-6")
                 continue
 
             sumproduct = 0
             sumwindow = 0
 
-            # print(spectrum)
             for f, c_spectrum in zip(frequencies, spectrum):
                 f_on_fc = f/fc
-                # print(f, fc, f_on_fc)
-
                 # TODO (jpv): Why f<1E-6
                 if (f < 1E-6) or (f_on_fc > upper_limit) or (f_on_fc < lower_limit):
-                    # print("Continue: 1 of 3")
-                    # print(f"\t{f<1E-6}, {f_on_fc>upper_limit}, {f_on_fc<lower_limit}")
                     continue
                 elif np.abs(f - fc) < 1e-6:
-                    # print("Window = 1")
                     window = 1.
                 else:
-                    # print("Window = Window")
                     window = bandwidth * np.log10(f_on_fc)
                     window = np.sin(window) / window
                     window *= window
@@ -274,107 +284,11 @@ class FourierTransform():
                 sumwindow += window
 
             if sumwindow > 0:
-                # print(sumproduct, sumwindow)
                 smoothed_spectrum[f_index] = sumproduct / sumwindow
             else:
                 smoothed_spectrum[f_index] = 0
 
         return smoothed_spectrum
-
-
-# Albert's implementation -> Doesnt pass unit tests.
-# @numba.jit(nopython=True)
-# def smooth(ko_freqs, freqs, spectrum, b):
-#     max_ratio = pow(10.0, (3.0 / b))
-#     min_ratio = 1.0 / max_ratio
-
-#     total = 0
-#     window_total = 0
-
-#     ko_smooth = np.empty_like(ko_freqs)
-#     for i, fc in enumerate(ko_freqs):
-#         if fc < 1e-6:
-#             ko_smooth[i] = 0
-#             continue
-
-#         total = 0
-#         window_total = 0
-#         for j, freq in enumerate(freqs):
-#             frat = freq / fc
-
-#             if (freq < 1e-6 or frat > max_ratio or frat < min_ratio):
-#                 continue
-#             elif np.abs(freq - fc) < 1e-6:
-#                 window = 1.
-#             else:
-#                 x = b * np.log10(frat)
-#                 window = np.sin(x) / x
-#                 window *= window
-#                 window *= window
-
-#             total += window * spectrum[j]
-#             window_total += window
-
-#         if window_total > 0:
-#             ko_smooth[i] = total / window_total
-#         else:
-#             ko_smooth[i] = 0
-
-#     return ko_smooth
-
-    # def smooth_konno_ohmachi(self, bandwidth=40.0):
-    #     """Apply Konno and Ohmachi smoothing.
-
-    #     Parameters
-    #     ----------
-    #     bandwidth : float, optional
-    #         Width of smoothing window, default is 40.
-
-    #     Returns
-    #     -------
-    #     None
-    #         Modifies the internal attribute `amp` to equal the
-    #         smoothed value of `mag`.
-    #     """
-
-    #     if len(self.amp.shape) == 1:
-    #         self.amp = self._k_and_o_smooth(self.mag, self.frq, bandwidth=bandwidth)
-    #     else:
-    #         for c_win, c_mag in enumerate(self.mag):
-    #             self.amp[c_win] = self._k_and_o_smooth(c_mag, self.frq, bandwidth=bandwidth)
-
-    # @staticmethod
-    # def _k_and_o_smooth(amplitude, frequencies, bandwidth=40.0, normalize=True):
-    #     return _k_and_o_smooth(amplitude, frequencies, bandwidth, normalize)
-    #     # return smooth(frequencies, frequencies, amplitude, bandwidth)
-
-    @staticmethod
-    def _k_and_o_window(frequencies, center_frequency,
-                        bandwidth=40.0, normalize=True):
-        if frequencies.dtype != np.float32 and frequencies.dtype != np.float64:
-            msg = 'frequencies needs to have a dtype of float32/64.'
-            raise ValueError(msg)
-
-        if center_frequency == 0:
-            smoothing_window = np.zeros(
-                len(frequencies), dtype=frequencies.dtype)
-            smoothing_window[frequencies == 0.0] = 1.0
-            return smoothing_window
-
-        with np.errstate(divide='ignore', invalid='ignore'):
-            smoothing_window = bandwidth * \
-                np.log10(frequencies / center_frequency)
-            smoothing_window = np.sin(smoothing_window) / smoothing_window
-            smoothing_window = smoothing_window * \
-                smoothing_window * smoothing_window * smoothing_window
-
-        smoothing_window[frequencies == center_frequency] = 1.0
-        smoothing_window[frequencies == 0.0] = 0.0
-
-        if normalize:
-            smoothing_window /= smoothing_window.sum()
-
-        return smoothing_window
 
     def resample(self, minf, maxf, nf, res_type="log", inplace=False):
         """Resample `FourierTransform` over a specified range.
@@ -411,6 +325,7 @@ class FourierTransform():
             If `maxf`, `minf`, or `nf` are illogical.
         NotImplementedError
             If `res_type` is not amoung those options specified.
+
         """
         if maxf < minf:
             raise ValueError("`maxf` must be > `minf`")
@@ -461,6 +376,7 @@ class FourierTransform():
         -------
         FourierTransform
             Initialized with information from `TimeSeries`.
+
         """
         amp, frq = cls.fft(timeseries.amp, timeseries.dt, **kwargs)
         return cls(amp, frq, timeseries.fnyq)
