@@ -25,14 +25,17 @@ jobs:
       - run:
           name: Install numpy
           command: |
+            . venv/bin/activate
             pip install numpy
       - run:
           name: Install sigpropy and dependencies
           command: |
+            . venv/bin/activate
             pip install -e .[dev]
       - run:
           name: Run tests
           command: |
+            . venv/bin/activate
             cd test
             python -m unittest
 
