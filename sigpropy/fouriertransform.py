@@ -20,12 +20,12 @@
 import numpy as np
 import scipy.interpolate as sp
 import scipy.fftpack as fftpack
-# import numba
+import numba
 
 # Alternate implementation -> Does pass unit tests.
 # @numba.jit(nopython=True, cache=True)
 # def _k_and_o_smooth(amplitude, frequencies, bandwidth=40.0, normalize=True):
-    
+
 #     smooth_amp = np.empty_like(amplitude)
 #     for c_id, cfrq in enumerate(frequencies):
 #         if cfrq < 1E-6:
@@ -56,45 +56,6 @@ import scipy.fftpack as fftpack
 #             smooth_amp[c_id] = 0
 #     return smooth_amp
 
-# Albert's implementation -> Doesnt pass unit tests.
-# @numba.jit(nopython=True)
-# def smooth(ko_freqs, freqs, spectrum, b):
-#     max_ratio = pow(10.0, (3.0 / b))
-#     min_ratio = 1.0 / max_ratio
-
-#     total = 0
-#     window_total = 0
-
-#     ko_smooth = np.empty_like(ko_freqs)
-#     for i, fc in enumerate(ko_freqs):
-#         if fc < 1e-6:
-#             ko_smooth[i] = 0
-#             continue
-
-#         total = 0
-#         window_total = 0
-#         for j, freq in enumerate(freqs):
-#             frat = freq / fc
-
-#             if (freq < 1e-6 or frat > max_ratio or frat < min_ratio):
-#                 continue
-#             elif np.abs(freq - fc) < 1e-6:
-#                 window = 1.
-#             else:
-#                 x = b * np.log10(frat)
-#                 window = np.sin(x) / x
-#                 window *= window
-#                 window *= window
-
-#             total += window * spectrum[j]
-#             window_total += window
-
-#         if window_total > 0:
-#             ko_smooth[i] = total / window_total
-#         else:
-#             ko_smooth[i] = 0
-
-#     return ko_smooth
 
 class FourierTransform():
     """A class for manipulating Fourier transforms.
@@ -215,14 +176,151 @@ class FourierTransform():
             for cid, cfrq in enumerate(self.frq):
                 smoothing_window = self._k_and_o_window(self.frq, cfrq,
                                                         bandwidth=bandwidth)
-                smooth_amp[cid] = np.dot(self.amp,smoothing_window)
+                smooth_amp[cid] = np.dot(self.amp, smoothing_window)
         else:
             for c_col, cfrq in enumerate(self.frq):
                 smoothing_window = self._k_and_o_window(self.frq, cfrq,
                                                         bandwidth=bandwidth)
                 for c_row, c_amp in enumerate(self.amp):
-                    smooth_amp[c_row, c_col] = np.dot(c_amp,smoothing_window)
+                    smooth_amp[c_row, c_col] = np.dot(c_amp, smoothing_window)
         self.amp = smooth_amp
+
+    def smooth_konno_ohmachi_fast(self, frequencies, bandwidth=40):
+        """Apply fast Konno and Ohmachi smoothing.
+
+        Parameters
+        ----------
+        frequencies : array-like
+            Frequencies at which the smoothing is performed. If you
+            choose to use all of the frequencies from the FFT
+            (i.e., `self.frq`) for this parameter you should not expect
+            much speedup over `smooth_konno_ohmachi`.
+        bandwidth : float, optional
+            Width of smoothing window, default is 40.
+
+        Returns
+        -------
+        None
+            Modifies the internal attribute `amp` to equal the
+            smoothed value of `mag`.
+        """
+        frequencies = np.array(frequencies)
+        self.amp = self._smooth_konno_ohmachi_fast(self.frequency, self.mag,
+                                                   fcs=frequencies,
+                                                   bandwidth=bandwidth)
+
+    @staticmethod
+    @numba.jit(nopython=True)
+    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs,
+                                   bandwidth=40):
+        """Static method for Konno and Ohmachi smoothing.
+
+        Parameters
+        ----------
+        frequencies : ndarray
+            Frequencies of the spectrum to be smoothed.
+        spectrum : ndarray
+            Spectrum to be smoothed, must be the same size as
+            frequencies.
+        fcs : ndarray
+            Array of center frequencies where smoothed spectrum is
+            calculated.
+        bandwidth : float, optional
+            Width of smoothing window, default is 40.
+
+        Returns
+        -------
+        ndarray
+            Spectrum smoothed at the specified center frequencies
+            (`fcs`).
+
+        """
+        n = 3
+        upper_limit = np.power(10, +n/bandwidth)
+        lower_limit = np.power(10, -n/bandwidth)
+
+        smoothed_spectrum = np.empty_like(fcs)
+
+        for f_index, fc in enumerate(fcs):
+            # TODO (jpv): Why fc<1E-6
+            if fc < 1E-6:
+                smoothed_spectrum[f_index] = 0
+                # print("Continue: fc<1E-6")
+                continue
+
+            sumproduct = 0
+            sumwindow = 0
+
+            # print(spectrum)
+            for f, c_spectrum in zip(frequencies, spectrum):
+                f_on_fc = f/fc
+                # print(f, fc, f_on_fc)
+
+                # TODO (jpv): Why f<1E-6
+                if (f < 1E-6) or (f_on_fc > upper_limit) or (f_on_fc < lower_limit):
+                    # print("Continue: 1 of 3")
+                    # print(f"\t{f<1E-6}, {f_on_fc>upper_limit}, {f_on_fc<lower_limit}")
+                    continue
+                elif np.abs(f - fc) < 1e-6:
+                    # print("Window = 1")
+                    window = 1.
+                else:
+                    # print("Window = Window")
+                    window = bandwidth * np.log10(f_on_fc)
+                    window = np.sin(window) / window
+                    window *= window
+                    window *= window
+                sumproduct += window*c_spectrum
+                sumwindow += window
+
+            if sumwindow > 0:
+                # print(sumproduct, sumwindow)
+                smoothed_spectrum[f_index] = sumproduct / sumwindow
+            else:
+                smoothed_spectrum[f_index] = 0
+
+        return smoothed_spectrum
+
+
+# Albert's implementation -> Doesnt pass unit tests.
+# @numba.jit(nopython=True)
+# def smooth(ko_freqs, freqs, spectrum, b):
+#     max_ratio = pow(10.0, (3.0 / b))
+#     min_ratio = 1.0 / max_ratio
+
+#     total = 0
+#     window_total = 0
+
+#     ko_smooth = np.empty_like(ko_freqs)
+#     for i, fc in enumerate(ko_freqs):
+#         if fc < 1e-6:
+#             ko_smooth[i] = 0
+#             continue
+
+#         total = 0
+#         window_total = 0
+#         for j, freq in enumerate(freqs):
+#             frat = freq / fc
+
+#             if (freq < 1e-6 or frat > max_ratio or frat < min_ratio):
+#                 continue
+#             elif np.abs(freq - fc) < 1e-6:
+#                 window = 1.
+#             else:
+#                 x = b * np.log10(frat)
+#                 window = np.sin(x) / x
+#                 window *= window
+#                 window *= window
+
+#             total += window * spectrum[j]
+#             window_total += window
+
+#         if window_total > 0:
+#             ko_smooth[i] = total / window_total
+#         else:
+#             ko_smooth[i] = 0
+
+#     return ko_smooth
 
     # def smooth_konno_ohmachi(self, bandwidth=40.0):
     #     """Apply Konno and Ohmachi smoothing.
@@ -240,7 +338,7 @@ class FourierTransform():
     #     """
 
     #     if len(self.amp.shape) == 1:
-    #         self.amp = self._k_and_o_smooth(self.mag, self.frq, bandwidth=bandwidth) 
+    #         self.amp = self._k_and_o_smooth(self.mag, self.frq, bandwidth=bandwidth)
     #     else:
     #         for c_win, c_mag in enumerate(self.mag):
     #             self.amp[c_win] = self._k_and_o_smooth(c_mag, self.frq, bandwidth=bandwidth)
@@ -249,7 +347,7 @@ class FourierTransform():
     # def _k_and_o_smooth(amplitude, frequencies, bandwidth=40.0, normalize=True):
     #     return _k_and_o_smooth(amplitude, frequencies, bandwidth, normalize)
     #     # return smooth(frequencies, frequencies, amplitude, bandwidth)
-            
+
     @staticmethod
     def _k_and_o_window(frequencies, center_frequency,
                         bandwidth=40.0, normalize=True):

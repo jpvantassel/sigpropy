@@ -20,10 +20,14 @@
 import sigpropy
 import obspy
 import numpy as np
-from testtools import unittest, TestCase
+import pandas as pd
+from testtools import unittest, TestCase, get_full_path
 
 
 class Test_FourierTransform(TestCase):
+
+    def setUp(self):
+        self.full_path = get_full_path(__file__)
 
     def test_init(self):
         frq = np.array([0.00000000000000000, 0.090909090909090910,
@@ -95,6 +99,40 @@ class Test_FourierTransform(TestCase):
                              0.000129672263813, 3.50436561989e-08])
         for row in range(amp.shape[0]):
             self.assertArrayAlmostEqual(expected, fseries.amp[row])
+
+    def test_smooth_konno_ohmachi_fast(self):
+
+        def smooth(amp, windows):
+            smoothed_amp = np.empty_like(amp)
+            # Transpose b/c pandas uses row major.
+            for cindex, window in enumerate(windows.T):
+                smoothed_amp[cindex] = np.sum(window*amp) / np.sum(window)
+            return smoothed_amp
+
+        def load_and_run(amp, b, fname):
+            dat = pd.read_csv(fname)
+
+            frq = dat["f"].values
+            fcs = dat["fc"].values
+            windows = dat.iloc[:, 2:].values
+
+            fseries = sigpropy.FourierTransform(amp, frq)
+            fseries.smooth_konno_ohmachi_fast(frequencies=fcs, bandwidth=b)
+
+            returned = fseries.amp
+            expected = smooth(amp, windows)
+            self.assertArrayAlmostEqual(expected, returned, places=2)
+
+        amps = [np.array([0., 1.4]*8),
+                np.array([1.2, 1.]*8),
+                np.array([1.2, 0.7]*8)]
+
+        bs = [20, 40, 60]
+        fnames = ["ko_b20.csv", "ko_b40.csv", "ko_b60.csv"]
+
+        for amp in amps:
+            for b, fname in zip(bs, fnames):
+                load_and_run(amp, b, self.full_path+"data/ko/"+fname)
 
     def test_resample(self):
         # 1d amp
