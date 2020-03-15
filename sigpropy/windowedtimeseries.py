@@ -20,7 +20,7 @@
 import numpy as np
 from sigpropy import TimeSeries
 from scipy.signal.windows import tukey
-from scipy.signal import butter, filtfilt, detrend
+from scipy.signal import detrend
 import logging
 logger = logging.getLogger(__name__)
 
@@ -267,10 +267,6 @@ class WindowedTimeSeries(TimeSeries):
         cos_taper = tukey(self.nsamples_per_window, alpha=width)
         for c_window, c_amp in enumerate(self.amp):
             self.amp[c_window] = c_amp*cos_taper
-
-    def bandpassfilter(self, flow, fhigh, order=5):
-        msg = "This method has not been implemented"
-        raise NotImplementedError(msg)
 
     @classmethod
     def from_trace(cls, trace, windowlength):

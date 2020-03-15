@@ -231,11 +231,11 @@ class TimeSeries():
         start = min(current_time)
         end = max(current_time)
 
-        if start_time < start or start_time > end_time:
+        if (start_time < start) or (start_time > end_time):
             logger.debug(f"{start} < {start_time} < {end_time}: Must be True.")
             raise IndexError("Illogical start_time, see doctring.")
 
-        if end_time > end or end_time < start_time:
+        if (end_time > end) or (end_time < start_time):
             logger.debug(f"{start_time} < {end_time} < {end}: Must be True.")
             raise IndexError("Illogical end_time, see doctring.")
 
@@ -261,7 +261,7 @@ class TimeSeries():
         self.amp = detrend(self.amp)
 
     def split(self, windowlength):
-        msg = "This method has been removed refer to class WindowTimeSeries"
+        msg = "This method has been removed refer to class `WindowTimeSeries`"
         raise DeprecationWarning(msg)
 
     def cosine_taper(self, width):
