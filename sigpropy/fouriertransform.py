@@ -106,7 +106,7 @@ class FourierTransform():
     amplitude : ndarray
         The transform's amplitude in the same units as the input.
         May be 1D or 2D. If 2D each row corresponds to a unique FFT,
-        where each column correpsonds to an entry in `frequency`.
+        where each column corresponds to an entry in `frequency`.
     fnyq : float
         The Nyquist frequency associated with the time series used
         to generate the Fourier transform. Note this may or may not

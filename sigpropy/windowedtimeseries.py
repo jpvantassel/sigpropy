@@ -18,7 +18,6 @@
 """This file contains the class WindowedTimeSeries."""
 
 import numpy as np
-# import json
 from sigpropy import TimeSeries
 from scipy.signal.windows import tukey
 from scipy.signal import butter, filtfilt, detrend
