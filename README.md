@@ -5,6 +5,9 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/jpvantassel/sigpropy/blob/master/LICENSE.txt)
 [![CircleCI](https://circleci.com/gh/jpvantassel/sigpropy.svg?style=svg)](https://circleci.com/gh/jpvantassel/sigpropy)
 [![Documentation Status](https://readthedocs.org/projects/sigpropy/badge/?version=latest)](https://sigpropy.readthedocs.io/en/latest/?badge=latest)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/jpvantassel/sigpropy.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jpvantassel/sigpropy/context:python)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1a9c785e79214a0db457797f6d5f82f0)](https://www.codacy.com/manual/jpvantassel/sigpropy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jpvantassel/sigpropy&amp;utm_campaign=Badge_Grade)
+[![codecov](https://codecov.io/gh/jpvantassel/sigpropy/branch/master/graph/badge.svg)](https://codecov.io/gh/jpvantassel/sigpropy)
 
 ## Table of Contents
 
