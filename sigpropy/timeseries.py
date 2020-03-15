@@ -58,7 +58,6 @@ class TimeSeries():
             dimenension not equal to 1. See error message(s) for
             details.
         """
-        print("TimeSeries __init__")
         self.amp = TimeSeries._check_input("amplitude", amplitude)
         self._dt = dt
 
@@ -298,7 +297,8 @@ class TimeSeries():
         None
             Filters attribute `amp`. 
         """
-        #TODO 
+        # TODO (jpv): Add test
+        # TODO (jpv): Extend functionality of WindowedTimeSeries
         fnyq = self.fnyq
         b, a = butter(order, [flow/fnyq, fhigh/fnyq], btype='bandpass')
         # TODO (jpv): Research padlen arguement
@@ -324,7 +324,6 @@ class TimeSeries():
         TimeSeries
             Initialized with information from `trace`.
         """
-        print("From trace in timeseries")
         return cls(amplitude=trace.data, dt=trace.stats.delta)
 
     def __eq__(self, other):

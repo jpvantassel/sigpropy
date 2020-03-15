@@ -110,56 +110,43 @@ class Test_TimeSeries(TestCase):
         self.assertArrayEqual(tseries.amp, trace.data)
         self.assertEqual(tseries.dt, trace.stats.delta)
 
-    # def test_trim(self):
-    #     # Standard
-    #     thist = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3, 4],
-    #                                 dt=0.5)
-    #     thist.trim(0, 1)
-    #     self.assertListEqual(thist.amp.tolist(), [0, 1, 2])
-    #     self.assertEqual(thist.nsamples, 3)
-    #     self.assertEqual(min(thist.time), 0)
-    #     self.assertEqual(max(thist.time), 1)
+    def test_trim(self):
+        tseries = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3, 4],
+                                    dt=0.5)
+        tseries.trim(0, 1)
+        self.assertListEqual(tseries.amp.tolist(), [0, 1, 2])
+        self.assertEqual(tseries.nsamples, 3)
+        self.assertEqual(min(tseries.time), 0)
+        self.assertEqual(max(tseries.time), 1)
 
-    # def test_detrend(self):
-    #     # 1d amp
-    #     signal = np.array([0., .2, 0., -.2]*5)
-    #     trend = np.arange(0, 20, 1)
-    #     amp = signal + trend
-    #     dt = 1
-    #     tseries = sigpropy.TimeSeries(amp, dt)
-    #     tseries.detrend()
-    #     self.assertArrayAlmostEqual(signal, tseries.amp, delta=0.03)
+    def test_detrend(self):
+        signal = np.array([0., .2, 0., -.2]*5)
+        trend = np.arange(0, 20, 1)
+        amp = signal + trend
+        dt = 1
+        tseries = sigpropy.TimeSeries(amp, dt)
+        tseries.detrend()
+        returned = tseries.amp
+        expected = signal
+        self.assertArrayAlmostEqual(expected, returned, delta=0.03)
 
-    #     # 2d amp
-    #     signal = np.array([0., .2, 0., -.2]*5)
-    #     trend = np.arange(0, 20, 1)
-    #     amp = signal + trend
-    #     amp = np.vstack((amp, amp))
-    #     dt = 1
-    #     tseries = sigpropy.TimeSeries(amp, dt)
-    #     tseries.detrend()
-    #     for row in tseries.amp:
-    #         self.assertArrayAlmostEqual(signal,  row, delta=0.03)
+    def test_to_and_from_dict(self):
+        amplitude = np.array([1,2,3,4])
+        dt = 1
+        expected = sigpropy.TimeSeries(amplitude, dt)
+        dict_repr = expected.to_dict()
+        returned = sigpropy.TimeSeries.from_dict(dict_repr)
+        self.assertEqual(expected.dt, returned.dt)
+        self.assertArrayEqual(expected.amp, returned.amp)
 
-    # def test_to_and_from_dict(self):
-    #     # 1d amp
-    #     amplitude = np.array([1,2,3,4])
-    #     dt = 1
-    #     expected = sigpropy.TimeSeries(amplitude, dt)
-    #     dict_repr = expected.to_dict()
-    #     returned = sigpropy.TimeSeries.from_dict(dict_repr)
-    #     self.assertEqual(expected.dt, returned.dt)
-    #     self.assertArrayEqual(expected.amp, returned.amp)
-
-    # def test_to_and_from_json(self):
-    #     # 1d amp
-    #     amplitude = np.array([1,2,3,4])
-    #     dt = 1
-    #     expected = sigpropy.TimeSeries(amplitude, dt)
-    #     json_repr = expected.to_json()
-    #     returned = sigpropy.TimeSeries.from_json(json_repr)
-    #     self.assertEqual(expected.dt, returned.dt)
-    #     self.assertArrayEqual(expected.amp, returned.amp)
+    def test_to_and_from_json(self):
+        amplitude = np.array([1,2,3,4])
+        dt = 1
+        expected = sigpropy.TimeSeries(amplitude, dt)
+        json_repr = expected.to_json()
+        returned = sigpropy.TimeSeries.from_json(json_repr)
+        self.assertEqual(expected.dt, returned.dt)
+        self.assertArrayEqual(expected.amp, returned.amp)
 
 if __name__ == '__main__':
     unittest.main()

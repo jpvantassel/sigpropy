@@ -65,7 +65,6 @@ class WindowedTimeSeries(TimeSeries):
         ValueError
             If `delay` is greater than 0.
         """
-        print("WindowedTimeSeries __init__")
         self.amp = WindowedTimeSeries._check_input("amplitude", amplitude)
         self._dt = dt
 
@@ -198,8 +197,48 @@ class WindowedTimeSeries(TimeSeries):
         raise NotImplementedError(msg)
 
     def trim(self, start_time, end_time):
-        msg = "This method has not been implemented."
-        raise NotImplementedError(msg)
+        """Trim WindowedTimeSeries.
+
+        Parameters
+        ----------
+        start_time, end_time : float
+            Desired start and end times of the new WindowedTimeSeries in
+            seconds. The `start_time` should correpsond to the first
+            sample of the timewindow otherwise the entire window will be
+            rejected (i.e., no partial windows are allowed), likewise
+            the `end_time` should correspond to the last time
+            of the window otherwise the entire window will be rejected.
+
+        Returns
+        -------
+        None
+            Modifies the attribute `amp`.
+
+        Raises
+        ------
+        ValueError
+            If `start_time` and `end_time` are illogical.
+        """
+        time_array = self.time
+        delta = self.dt/2
+        effective_start_time = start_time - delta
+        effective_end_time = end_time + delta
+
+        for start_index, time_window in enumerate(time_array):
+            if time_window[0] > effective_start_time:
+                break
+
+        for end_index, time_window in enumerate(time_array):
+            if time_window[-1] > effective_end_time:
+                break
+        else:
+            end_index += 1
+        
+        if start_index > end_index:
+            msg = f"end_time ({end_time}) must be greater than start_time ({start_time})"
+            raise ValueError(msg)
+
+        self.amp = self.amp[start_index:end_index]
 
     def detrend(self):
         """Remove linear trend from time series.
@@ -251,11 +290,11 @@ class WindowedTimeSeries(TimeSeries):
             Initialized with information from `trace` and split into
             windows of length `windowlength`.
         """
-        timeseries = super().from_trace(trace)
+        timeseries = TimeSeries.from_trace(trace)
         return cls.from_timeseries(timeseries, windowlength)
 
     def __eq__(self, other):
-        if not super().__eq__(self, other):
+        if not TimeSeries.__eq__(self, other):
             return False
 
         for attr in ["nwindows"]:
