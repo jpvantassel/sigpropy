@@ -226,6 +226,8 @@ class FourierTransform():
         self.amp = self._smooth_konno_ohmachi_fast(self.frequency, self.mag,
                                                    fcs=frequencies,
                                                    bandwidth=bandwidth)
+        self.frq = frequencies
+        # TODO (jpv): Add test to check that frequencies are updated.
 
     @staticmethod
     @njit()
