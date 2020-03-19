@@ -15,7 +15,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""This file contains the class FourierTransform."""
+"""FourierTransform class definition."""
 
 import numpy as np
 import scipy.interpolate as sp
@@ -71,10 +71,10 @@ class FourierTransform():
 
             fft : ndarray
                 Complex amplitudes for the frequencies between zero
-                and the Nyquist (if even) or near the Nyquist 
+                and the Nyquist (if even) or near the Nyquist
                 (if odd) with units of the input ampltiude.
                 If `amplitude` is a 2D array `fft` will also be a 2D
-                array where each row is the FFT of each row of 
+                array where each row is the FFT of each row of
                 `amplitude`.
 
         """
@@ -102,10 +102,10 @@ class FourierTransform():
         amplitude : ndarray
             Fourier transform amplitude. Refer to attribute `amp`
             for more details.
-        frequency : ndarray 
+        frequency : ndarray
             Linearly spaced frequency vector for Fourier transform.
         fnyq : float, optional
-            Nyquist frequency of Fourier transform, default is 
+            Nyquist frequency of Fourier transform, default is
             `max(frq)`.
 
         Returns
@@ -135,12 +135,12 @@ class FourierTransform():
             if len(value.shape) != 1:
                 msg = f"{name} must be 1-D not {len(value.shape)}-D."
                 raise ValueError(msg)
-        
+
         if not fnyq > 0:
             raise ValueError(f"fnyq must be greater than 0, not {fnyq}")
 
         return amplitude, frequency, fnyq
-        
+
     @property
     def frequency(self):
         return self.frq
@@ -299,7 +299,7 @@ class FourierTransform():
 
         Parameters
         ----------
-        minf : float 
+        minf : float
             Minimum value of resample.
         maxf : float
             Maximum value of resample.
@@ -308,7 +308,7 @@ class FourierTransform():
         res_type : {"log", "linear"}, optional
             Type of resampling, default value is `log`.
         inplace : bool, optional
-            Determines whether resampling is done in place or 
+            Determines whether resampling is done in place or
             if a copy is to be returned. By default the
             resampling is not done inplace (i.e., `inplace=False`).
 
@@ -319,12 +319,12 @@ class FourierTransform():
                 `None`, method edits the internal attribute `amp`.
             If `inplace=False`
                 A tuple of the form (`frequency`, `amplitude`)
-                where `frequency` is the resampled frequency vector and 
-                `amplitude` is the resampled amplitude vector if 
-                `amp` is 1D or array if `amp` is 2D. 
+                where `frequency` is the resampled frequency vector and
+                `amplitude` is the resampled amplitude vector if
+                `amp` is 1D or array if `amp` is 2D.
 
         Raises
-        ------            
+        ------
         ValueError:
             If `maxf`, `minf`, or `nf` are illogical.
         NotImplementedError
@@ -371,7 +371,7 @@ class FourierTransform():
 
         Parameters
         ----------
-        timeseries : TimeSeries 
+        timeseries : TimeSeries
             `TimeSeries` object to be transformed.
         **kwargs : dict
             Custom settings for fft.
@@ -406,4 +406,5 @@ class FourierTransform():
         return np.real(self.amp)
 
     def __repr__(self):
+        """Unambiguous representation of a `FourierTransform` object."""
         return f"FourierTransform(amp={str(self.amp[0:3])[:-1]} ... {str(self.amp[-3:])[1:]}, frq={str(self.frq[0:3])[:-1]} ... {str(self.frq[-3:])[1:]})"

@@ -18,7 +18,6 @@
 """Tests for FourierTransform class."""
 
 import sigpropy
-import obspy
 import numpy as np
 import pandas as pd
 from testtools import unittest, TestCase, get_full_path

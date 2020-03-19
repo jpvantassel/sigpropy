@@ -12,8 +12,8 @@
 ## Table of Contents
 
 - [About _sigpropy_](#About-sigpropy)
-  - [TimeSeries](#TimeSeries)
-  - [FourierTransform](#FourierTransform)
+- [TimeSeries](#TimeSeries)
+- [FourierTransform](#FourierTransform)
 
 ## About _sigpropy_
 

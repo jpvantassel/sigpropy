@@ -15,7 +15,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""This file contains a speed test to perform fft and smoothing."""
+"""A speed test on a standard fft and smoothing operation."""
 
 import sigpropy as sp
 import obspy

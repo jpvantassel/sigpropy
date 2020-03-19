@@ -15,7 +15,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""This file contains the class WindowedTimeSeries."""
+"""WindowedTimeSeries class definition."""
 
 import numpy as np
 from sigpropy import TimeSeries
@@ -37,12 +37,13 @@ class WindowedTimeSeries(TimeSeries):
         Time series amplitude. Each row corresponds to a particular
         section (i.e., window) of the time series and each column
         corresponds to a time step.
-    dt : float 
+    dt : float
         Denotes the time step between samples in seconds.
 
     nwindows : int
         Number of time windows that the time series has been split
         into (i.e., number of rows of `amp`).
+
     """
 
     def __init__(self, amplitude, dt):
@@ -66,6 +67,7 @@ class WindowedTimeSeries(TimeSeries):
         ------
         ValueError
             If `delay` is greater than 0.
+
         """
         self.amp = WindowedTimeSeries._check_input("amplitude", amplitude)
         self._dt = dt
@@ -85,7 +87,7 @@ class WindowedTimeSeries(TimeSeries):
         Parameters
         ----------
         name : str
-            Name of parameter to be check. Only used to raise 
+            Name of parameter to be check. Only used to raise
             easily understood exceptions.
         values : any
             Value of parameter to be checked.
@@ -99,6 +101,7 @@ class WindowedTimeSeries(TimeSeries):
         ------
         TypeError
             If entries do not comply with checks 1. and 2. listed above.
+
         """
         try:
             values = np.array(values, dtype=np.double)
@@ -153,8 +156,8 @@ class WindowedTimeSeries(TimeSeries):
         timeseries : TimeSeries
             Time series to be divided into time windows.
         windowlength : float
-            Duration of desired windows in seconds. If 
-            `windowlength` is not an integer multiple of `dt`, the 
+            Duration of desired windows in seconds. If
+            `windowlength` is not an integer multiple of `dt`, the
             window length is rounded to up to the next integer
             multiple of `dt`.
 
@@ -175,13 +178,14 @@ class WindowedTimeSeries(TimeSeries):
             >>> from sigpropy import TimeSeries, WindowedTimeSeries
             >>> import numpy as np
             >>> amp = np.array([0,1,2,3,4,5,6,7,8,9])
-            >>> tseries = TimeSeries(amp, dt=1) 
+            >>> tseries = TimeSeries(amp, dt=1)
             >>> wseries = WindowedTimeSeries.from_timeseries(tseries, 2)
             >>> wseries.amp
             array([[0, 1, 2],
                 [2, 3, 4],
                 [4, 5, 6],
                 [6, 7, 8]])
+
         """
         steps_per_win = int(windowlength/timeseries.dt)
         nwindows = int((timeseries.nsamples-1)/steps_per_win)
@@ -220,6 +224,7 @@ class WindowedTimeSeries(TimeSeries):
         ------
         ValueError
             If `start_time` and `end_time` are illogical.
+
         """
         time_array = self.time
         delta = self.dt/2
@@ -235,7 +240,7 @@ class WindowedTimeSeries(TimeSeries):
                 break
         else:
             end_index += 1
-        
+
         if start_index > end_index:
             msg = f"end_time ({end_time}) must be greater than start_time ({start_time})"
             raise ValueError(msg)
@@ -249,6 +254,7 @@ class WindowedTimeSeries(TimeSeries):
         -------
         None
             Removes linear trend from attribute `amp`.
+
         """
         for row, amp in enumerate(self.amp):
             self.amp[row] = detrend(amp)
@@ -266,6 +272,7 @@ class WindowedTimeSeries(TimeSeries):
         -------
         None
             Applies cosine taper to attribute `amp`.
+
         """
         cos_taper = tukey(self.nsamples_per_window, alpha=width)
         for c_window, c_amp in enumerate(self.amp):
@@ -287,11 +294,13 @@ class WindowedTimeSeries(TimeSeries):
         WindowedTimeSeries
             Initialized with information from `trace` and split into
             windows of length `windowlength`.
+
         """
         timeseries = TimeSeries.from_trace(trace)
         return cls.from_timeseries(timeseries, windowlength)
 
     def __eq__(self, other):
+        """Check if `other` is equal to `self`."""
         if not TimeSeries.__eq__(self, other):
             return False
 

@@ -15,7 +15,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""This file contains the class TimeSeries."""
+"""TimeSeries class definition."""
 
 import numpy as np
 import json
@@ -33,8 +33,9 @@ class TimeSeries():
     ----------
     amp : ndarray
         Denotes the time series amplitude one value per time step.
-    dt : float 
+    dt : float
         Denotes the time step between samples in seconds.
+
     """
 
     def __init__(self, amplitude, dt):
@@ -42,7 +43,7 @@ class TimeSeries():
 
         Parameters
         ----------
-        amplitude : ndarray 
+        amplitude : ndarray
             Amplitude of the time series at each time step.
         dt : float
             Time step between samples in seconds.
@@ -58,6 +59,7 @@ class TimeSeries():
             If `amplitude` is not castable to `ndarray` or has
             dimenension not equal to 1. See error message(s) for
             details.
+
         """
         self.amp = TimeSeries._check_input("amplitude", amplitude)
         self._dt = dt
@@ -109,7 +111,7 @@ class TimeSeries():
         Parameters
         ----------
         name : str
-            Name of parameter to be check. Only used to raise 
+            Name of parameter to be check. Only used to raise
             easily understood exceptions.
         values : any
             Value of parameter to be checked.
@@ -123,6 +125,7 @@ class TimeSeries():
         ------
         TypeError
             If entries do not comply with checks 1. and 2. listed above.
+
         """
         try:
             values = np.array(values, dtype=np.double)
@@ -160,6 +163,7 @@ class TimeSeries():
             For example, `start_time` is before the start of the
             `delay` or after `end_time`, or the `end_time` is
             after the end of the record.
+
         """
         current_time = self.time
         start = min(current_time)
@@ -191,6 +195,7 @@ class TimeSeries():
         -------
         None
             Removes linear trend from attribute `amp`.
+
         """
         self.amp = detrend(self.amp)
 
@@ -211,6 +216,7 @@ class TimeSeries():
         -------
         None
             Applies cosine taper to attribute `amp`.
+
         """
         self.amp = self.amp * tukey(self.nsamples, alpha=width)
 
@@ -229,7 +235,8 @@ class TimeSeries():
         Returns
         -------
         None
-            Filters attribute `amp`. 
+            Filters attribute `amp`.
+
         """
         # TODO (jpv): Add test
         # TODO (jpv): Extend functionality of WindowedTimeSeries
@@ -242,8 +249,8 @@ class TimeSeries():
     def from_trace(cls, trace):
         """Initialize a `TimeSeries` object from a trace object.
 
-        This method is more general method than `from_trace_seg2`, 
-        as it does not attempt to extract any metadata from the `Trace` 
+        This method is more general method than `from_trace_seg2`,
+        as it does not attempt to extract any metadata from the `Trace`
         object.
 
         Parameters
@@ -257,6 +264,7 @@ class TimeSeries():
         -------
         TimeSeries
             Initialized with information from `trace`.
+
         """
         return cls(amplitude=trace.data, dt=trace.stats.delta)
 
@@ -278,6 +286,7 @@ class TimeSeries():
         ------
         KeyError
             If any of the required keys (listed above) are missing.
+
         """
 
         return cls(dictionary["amplitude"], dictionary["dt"])
@@ -296,6 +305,7 @@ class TimeSeries():
         -------
         TimeSeries
             Instantiated `TimeSeries` object.
+
         """
         dictionary = json.loads(json_str)
         return cls.from_dict(dictionary)
@@ -306,8 +316,9 @@ class TimeSeries():
         Returns
         -------
         str
-            Json string with all of the relevant contents of the 
+            Json string with all of the relevant contents of the
             `TimeSeries`.
+
         """
         dictionary = self.to_dict()
         return json.dumps(dictionary)
@@ -319,6 +330,7 @@ class TimeSeries():
         -------
         dict
             Containing all of the relevant contents of the `TimeSeries`.
+
         """
 
         info = {}
@@ -328,6 +340,7 @@ class TimeSeries():
         return info
 
     def __eq__(self, other):
+        """Check if `other` is equal to `self`."""
         my = self.amp
         ur = other.amp
 
@@ -344,4 +357,5 @@ class TimeSeries():
         return True
 
     def __repr__(self):
+        """Unambiguous representation of `TimeSeries`."""
         return f"TimeSeries(dt={self.dt}, amplitude={str(self.amp[0:3])[:-1]} ... {str(self.amp[-3:])[1:]})"

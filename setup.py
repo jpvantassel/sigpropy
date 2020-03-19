@@ -1,9 +1,5 @@
-"""A setuptools based setup module.
 
-See:
-https://packaging.python.org/guides/distributing-packages-using-setuptools/
-https://github.com/pypa/sampleproject
-"""
+"""A setuptools based setup module."""
 
 from setuptools import setup, find_packages
 
@@ -19,9 +15,9 @@ setup(
     url='https://github.com/jpvantassel/signal-processing',
     author='Joseph P. Vantassel',
     author_email='jvantassel@utexas.edu',
-    classifiers=[  
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
-        
+
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
@@ -38,7 +34,7 @@ setup(
     ],
     keywords='signal-processing signal',
     packages=find_packages(),
-    python_requires = '>=3.6, <3.9',
+    python_requires='>=3.6, <3.9',
     install_requires=['scipy', 'numpy', 'obspy', 'numba'],
     extras_require={
         'dev': ['hypothesis', 'pandas', 'coverage'],
@@ -46,7 +42,7 @@ setup(
     package_data={
     },
     data_files=[
-        ],
+    ],
     entry_points={
     },
     project_urls={

@@ -15,7 +15,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""This file contains the class FourierTransformSuite."""
+"""FourierTransformSuite class definition."""
 
 import numpy as np
 import warnings
@@ -40,6 +40,7 @@ class FourierTransformSuite(FourierTransform):
         The Nyquist frequency associated with the time series used
         to generate the Fourier transform. Note this may or may not
         be equal to `frequency[-1]`.
+
     """
 
     def __init__(self, amplitude, frequency, fnyq=None):
@@ -61,6 +62,7 @@ class FourierTransformSuite(FourierTransform):
         -------
         FourierTransformSuite
             Initialized with `amplitude` and `frequency` information.
+
         """
         super().__init__(amplitude, frequency, fnyq=fnyq)
 
