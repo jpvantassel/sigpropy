@@ -18,11 +18,11 @@
 """This file contains the class FourierTransformSuite."""
 
 import numpy as np
-import scipy.interpolate as sp
-import scipy.fftpack as fftpack
 import warnings
 from sigpropy import FourierTransform, WindowedTimeSeries
 from numba import njit
+
+__all__ = ['FourierTransformSuite']
 
 
 class FourierTransformSuite(FourierTransform):

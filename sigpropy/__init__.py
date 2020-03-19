@@ -15,9 +15,9 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""Import files from each module into the SigProPy package."""
+"""Import classes from each module into the SigProPy package."""
 
-from .timeseries import *
-from .windowedtimeseries import *
-from .fouriertransform import *
-from .fouriertransformsuite import *
+from .timeseries import TimeSeries
+from .windowedtimeseries import WindowedTimeSeries
+from .fouriertransform import FourierTransform
+from .fouriertransformsuite import FourierTransformSuite

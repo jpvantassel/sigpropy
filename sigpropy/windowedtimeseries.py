@@ -25,6 +25,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+__all__ = ['WindowedTimeSeries']
+
+
 class WindowedTimeSeries(TimeSeries):
     """A class for time series that has been split into windows
 

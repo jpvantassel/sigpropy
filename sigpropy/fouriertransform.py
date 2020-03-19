@@ -22,6 +22,8 @@ import scipy.interpolate as sp
 import scipy.fftpack as fftpack
 from numba import njit
 
+__all__ = ['FourierTransform']
+
 class FourierTransform():
     """A class for manipulating Fourier transforms.
 

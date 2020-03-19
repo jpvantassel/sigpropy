@@ -24,6 +24,7 @@ from scipy.signal import butter, filtfilt, detrend
 import logging
 logger = logging.getLogger(__name__)
 
+__all__ = ['TimeSeries']
 
 class TimeSeries():
     """A class for manipulating time series.
@@ -135,73 +136,6 @@ class TimeSeries():
 
         return values
 
-    def to_dict(self):
-        """Dictionary representation of `TimeSeries`.
-
-        Returns
-        -------
-        dict
-            Containing all of the relevant contents of the `TimeSeries`.
-        """
-
-        info = {}
-        info["amplitude"] = list(self.amp)
-        info["dt"] = self.dt
-
-        return info
-
-    @classmethod
-    def from_dict(cls, dictionary):
-        """Create `TimeSeries` object from dictionary representation.
-
-        Parameters
-        ----------
-        dictionary : dict
-            Must contain keys "amplitude" and "dt".
-
-        Returns
-        -------
-        TimeSeries
-            Instantiated `TimeSeries` object.
-
-        Raises
-        ------
-        KeyError
-            If any of the required keys (listed above) are missing.
-        """
-
-        return cls(dictionary["amplitude"], dictionary["dt"])
-
-    def to_json(self):
-        """Json string representation of `TimeSeries` object.
-
-        Returns
-        -------
-        str
-            Json string with all of the relevant contents of the 
-            `TimeSeries`.
-        """
-        dictionary = self.to_dict()
-        return json.dumps(dictionary)
-
-    @classmethod
-    def from_json(cls, json_str):
-        """Instaniate `TimeSeries` object form Json string.
-
-        Parameters
-        ----------
-        json_str : str
-            Json string with all of the relevant contents of
-            `TimeSeries`. Must contain keys "amplitude" and "dt".
-
-        Returns
-        -------
-        TimeSeries
-            Instantiated `TimeSeries` object.
-        """
-        dictionary = json.loads(json_str)
-        return cls.from_dict(dictionary)
-
     def trim(self, start_time, end_time):
         """Trim excess from time series in the half-open interval
         [start_time, end_time).
@@ -235,7 +169,7 @@ class TimeSeries():
             logger.debug(f"{start} < {start_time} < {end_time}: Must be True.")
             raise IndexError("Illogical start_time, see doctring.")
 
-        if (end_time > end) or (end_time < start_time):
+        if (end_time > end):
             logger.debug(f"{start_time} < {end_time} < {end}: Must be True.")
             raise IndexError("Illogical end_time, see doctring.")
 
@@ -325,6 +259,73 @@ class TimeSeries():
             Initialized with information from `trace`.
         """
         return cls(amplitude=trace.data, dt=trace.stats.delta)
+
+    @classmethod
+    def from_dict(cls, dictionary):
+        """Create `TimeSeries` object from dictionary representation.
+
+        Parameters
+        ----------
+        dictionary : dict
+            Must contain keys "amplitude" and "dt".
+
+        Returns
+        -------
+        TimeSeries
+            Instantiated `TimeSeries` object.
+
+        Raises
+        ------
+        KeyError
+            If any of the required keys (listed above) are missing.
+        """
+
+        return cls(dictionary["amplitude"], dictionary["dt"])
+
+    @classmethod
+    def from_json(cls, json_str):
+        """Instaniate `TimeSeries` object form Json string.
+
+        Parameters
+        ----------
+        json_str : str
+            Json string with all of the relevant contents of
+            `TimeSeries`. Must contain keys "amplitude" and "dt".
+
+        Returns
+        -------
+        TimeSeries
+            Instantiated `TimeSeries` object.
+        """
+        dictionary = json.loads(json_str)
+        return cls.from_dict(dictionary)
+
+    def to_json(self):
+        """Json string representation of `TimeSeries` object.
+
+        Returns
+        -------
+        str
+            Json string with all of the relevant contents of the 
+            `TimeSeries`.
+        """
+        dictionary = self.to_dict()
+        return json.dumps(dictionary)
+
+    def to_dict(self):
+        """Dictionary representation of `TimeSeries`.
+
+        Returns
+        -------
+        dict
+            Containing all of the relevant contents of the `TimeSeries`.
+        """
+
+        info = {}
+        info["amplitude"] = list(self.amp)
+        info["dt"] = self.dt
+
+        return info
 
     def __eq__(self, other):
         my = self.amp
