@@ -232,7 +232,7 @@ class FourierTransform():
         # TODO (jpv): Add test to check that frequencies are updated.
 
     @staticmethod
-    @njit()
+    @njit(cache=True)
     def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs,
                                    bandwidth=40):
         """Static method for Konno and Ohmachi smoothing.

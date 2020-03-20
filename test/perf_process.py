@@ -58,3 +58,4 @@ stat.print_stats(0.01)
 # 2020 - 03 - 15 :  1.401s -> Refactor tseries and fft
 # 2020 - 03 - 15 :  16.47s -> Change from 120s to 360s
 # 2020 - 03 - 15 :  1.342s -> Fast smoothing
+# 2020 - 03 - 19 :  0.254s -> Add cache to njit.

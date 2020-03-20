@@ -94,7 +94,7 @@ class FourierTransformSuite(FourierTransform):
 
 
     @staticmethod
-    @njit()
+    @njit(cache=True)
     def _smooth_konno_ohmachi_fast(frequencies, spectrums, fcs,
                                    bandwidth=40):
         """Static method for Konno and Ohmachi smoothing.
