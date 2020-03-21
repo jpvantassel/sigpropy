@@ -52,10 +52,10 @@ class FourierTransformSuite(FourierTransform):
             Fourier transform amplitude as 2D array, each row is a
             unique FFT, and each column correponds to a specific
             `frequency`.
-        frequency : ndarray 
+        frequency : ndarray
             Frequency vector, one per column of `amplitude`.
         fnyq : float, optional
-            Nyquist frequency of Fourier transform, default is 
+            Nyquist frequency of Fourier transform, default is
             `max(frq)`.
 
         Returns
@@ -70,9 +70,9 @@ class FourierTransformSuite(FourierTransform):
     def _check_input(amplitude, frequency, fnyq):
         """Performs checks on input, specifically:
 
-            1. Cast `amplitude` and `frequency` to ndarrays.
-            2. Check that `amplitude` and `frequency` are 2D.
-            3. Check that fnyq is greater than zero.
+        1. Cast `amplitude` and `frequency` to ndarrays.
+        2. Check that `amplitude` and `frequency` are 2D.
+        3. Check that fnyq is greater than zero.
 
         """
 
@@ -86,7 +86,7 @@ class FourierTransformSuite(FourierTransform):
         if len(amplitude.shape) != 2:
             msg = f"`amplitude` must be 2-D not {len(amplitude.shape)}-D."
             raise ValueError(msg)
-        
+
         if not fnyq > 0:
             raise ValueError(f"fnyq must be greater than 0, not {fnyq}")
 
@@ -95,8 +95,7 @@ class FourierTransformSuite(FourierTransform):
 
     @staticmethod
     @njit(cache=True)
-    def _smooth_konno_ohmachi_fast(frequencies, spectrums, fcs,
-                                   bandwidth=40):
+    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40):
         """Static method for Konno and Ohmachi smoothing.
 
         Parameters
@@ -123,7 +122,7 @@ class FourierTransformSuite(FourierTransform):
         upper_limit = np.power(10, +n/bandwidth)
         lower_limit = np.power(10, -n/bandwidth)
 
-        nrows = spectrums.shape[0]
+        nrows = spectrum.shape[0]
         ncols = fcs.size
         smoothed_spectrum = np.empty((nrows, ncols))
 
@@ -150,7 +149,7 @@ class FourierTransformSuite(FourierTransform):
                     window = np.sin(window) / window
                     window *= window
                     window *= window
-                sumproduct += window*spectrums[:, f_index]
+                sumproduct += window*spectrum[:, f_index]
                 sumwindow += window
 
             if sumwindow > 0:
@@ -167,12 +166,11 @@ class FourierTransformSuite(FourierTransform):
 
     @classmethod
     def from_timeseries(cls, timeseries, **kwargs):
-        """Create a `FourierTransform` object from a `TimeSeries`
-        object.
+        """Create a `FourierTransform` object from a `TimeSeries`.
 
         Parameters
         ----------
-        timeseries : WindowedTimeSeries 
+        timeseries : WindowedTimeSeries
             `TimeSeries` object to be transformed.
         **kwargs : dict
             Custom settings for fft.

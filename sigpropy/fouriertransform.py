@@ -122,9 +122,9 @@ class FourierTransform():
     def _check_input(amplitude, frequency, fnyq):
         """Performs checks on input, specifically:
 
-            1. Cast `amplitude` and `frequency` to ndarrays.
-            2. Check that `amplitude` and `frequency` are 1D.
-            3. Check that fnyq is greater than zero.
+        1. Cast `amplitude` and `frequency` to ndarrays.
+        2. Check that `amplitude` and `frequency` are 1D.
+        3. Check that fnyq is greater than zero.
 
         """
 
@@ -233,8 +233,7 @@ class FourierTransform():
 
     @staticmethod
     @njit(cache=True)
-    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs,
-                                   bandwidth=40):
+    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40):
         """Static method for Konno and Ohmachi smoothing.
 
         Parameters
@@ -333,7 +332,7 @@ class FourierTransform():
         """
         if maxf < minf:
             raise ValueError("`maxf` must be > `minf`")
-        if type(nf) not in (int,):
+        if not isinstance(nf, int):
             raise TypeError("`nf` must be postive integer")
         if nf < 0:
             raise TypeError("`nf` must be postive integer")

@@ -199,7 +199,8 @@ class TimeSeries():
         """
         self.amp = detrend(self.amp)
 
-    def split(self, windowlength):
+    @staticmethod 
+    def split(windowlength):
         msg = "This method has been removed refer to class `WindowTimeSeries`"
         raise DeprecationWarning(msg)
 

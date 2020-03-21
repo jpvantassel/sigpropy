@@ -156,7 +156,7 @@ class Test_WindowedTimeSeries(TestCase):
             wtseries = sigpropy.WindowedTimeSeries(amp, dt)
             wtseries.trim(start, end)
             return wtseries.amp
-        
+
         # No Trim
         _expected = np.array([[0,1,2,3],[3,4,5,6],[6,7,8,9]])
         expected = _expected
@@ -175,7 +175,7 @@ class Test_WindowedTimeSeries(TestCase):
         expected = _expected[1:2]
         returned = trim_test(2,8)
         self.assertArrayEqual(expected, returned)
-        
+
         returned = trim_test(3,6)
         self.assertArrayEqual(expected, returned)
 
@@ -183,7 +183,7 @@ class Test_WindowedTimeSeries(TestCase):
         expected = _expected[2:3]
         returned = trim_test(5,10)
         self.assertArrayEqual(expected, returned)
-        
+
         returned = trim_test(6,9)
         self.assertArrayEqual(expected, returned)
 
@@ -191,7 +191,7 @@ class Test_WindowedTimeSeries(TestCase):
         expected = _expected[0:1]
         returned = trim_test(-1,4)
         self.assertArrayEqual(expected, returned)
-        
+
         returned = trim_test(0,3)
         self.assertArrayEqual(expected, returned)
 

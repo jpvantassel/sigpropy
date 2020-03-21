@@ -66,7 +66,8 @@ class Test_FourierTransformSuite(TestCase):
             smoothed_amp = np.empty_like(amp)
             # Transpose b/c pandas uses row major.
             for cindex, window in enumerate(windows.T):
-                smoothed_amp[:, cindex] = np.sum(window*amp, axis=1) / np.sum(window)
+                smoothed_amp[:, cindex] = np.sum(
+                    window*amp, axis=1) / np.sum(window)
             return smoothed_amp
 
         def load_and_run(amp, b, fname):
@@ -102,10 +103,10 @@ class Test_FourierTransformSuite(TestCase):
 
         known_frq = np.array([0.5, 1.5, 2.5, 3.5, 4.5])
         known_vals = np.array([[0.5, 1.5, 2.5, 3.5, 4.5],
-                             [0.5, 1.5, 2.5, 3.5, 4.5]])
+                               [0.5, 1.5, 2.5, 3.5, 4.5]])
 
         fseries.resample(minf=0.5, maxf=4.5, nf=5,
-                        res_type='linear', inplace=True)
+                         res_type='linear', inplace=True)
 
         for expected, returned in zip(known_frq, fseries.frq):
             self.assertArrayAlmostEqual(expected, returned, places=1)
@@ -124,7 +125,7 @@ class Test_FourierTransformSuite(TestCase):
         returned = fsuite.amp.shape
         expected = (wtseries.nwindows, fsuite.frequency.size)
         self.assertTupleEqual(expected, returned)
-        
+
 
 if __name__ == "__main__":
     unittest.main()
