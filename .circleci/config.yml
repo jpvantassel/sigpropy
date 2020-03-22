@@ -10,6 +10,9 @@ workflows:
       - test-3.6
       - test-3.7
       - test-3.8
+  coverage-example:
+    jobs:
+      - send-coverage-report
 jobs:
   test-3.6: &test-template
     docker:
@@ -56,6 +59,7 @@ jobs:
             . venv/bin/activate
             pip install codecov
             codecov
+      - coverage-reporter/send_report
 
   test-3.7:
     <<: *test-template
