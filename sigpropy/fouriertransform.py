@@ -24,6 +24,7 @@ from numba import njit
 
 __all__ = ['FourierTransform']
 
+
 class FourierTransform():
     """A class for manipulating Fourier transforms.
 
@@ -119,25 +120,34 @@ class FourierTransform():
         self.amp, self.frq, self.fnyq = results
 
     @staticmethod
-    def _check_input(amplitude, frequency, fnyq):
-        """Performs checks on input, specifically:
-
-        1. Cast `amplitude` and `frequency` to ndarrays.
-        2. Check that `amplitude` and `frequency` are 1D.
-        3. Check that fnyq is greater than zero.
-
-        """
-
+    def _basic_checks(amplitude, frequency, fnyq):
         amplitude = np.array(amplitude)
         frequency = np.array(frequency)
+        fnyq = float(fnyq)
 
-        for name, value in zip(["`amplitude`", "`frequency`"], [amplitude, frequency]):
-            if len(value.shape) != 1:
-                msg = f"{name} must be 1-D not {len(value.shape)}-D."
-                raise ValueError(msg)
+        if len(frequency.shape) != 1:
+            msg = f"Frequency must be 1-D not {len(frequency.shape)}-D."
+            raise TypeError(msg)
 
         if not fnyq > 0:
             raise ValueError(f"fnyq must be greater than 0, not {fnyq}")
+
+        return amplitude, frequency, fnyq
+
+    def _check_input(self, amplitude, frequency, fnyq):
+        """Performs checks on input, specifically:
+
+        1. Check that `amplitude` and `frequency` are 1D.
+        2. Checks that fnyq is greater than zero.
+
+        """
+
+        amplitude, frequency, fnyq = self._basic_checks(amplitude, frequency,
+                                                        fnyq)
+
+        if len(amplitude.shape) != 1:
+            msg = f"Amplitude must be 1-D not {len(amplitude.shape)}-D."
+            raise ValueError(msg)
 
         return amplitude, frequency, fnyq
 
@@ -192,7 +202,7 @@ class FourierTransform():
             return window
 
         with np.errstate(divide='ignore', invalid='ignore'):
-            window = bandwidth *np.log10(frequencies / center_frequency)
+            window = bandwidth * np.log10(frequencies / center_frequency)
             window = np.sin(window) / window
             window = window * window * window * window
 
@@ -233,7 +243,7 @@ class FourierTransform():
 
     @staticmethod
     @njit(cache=True)
-    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40):
+    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40):  # pragma: no cover
         """Static method for Konno and Ohmachi smoothing.
 
         Parameters
@@ -335,16 +345,15 @@ class FourierTransform():
         if not isinstance(nf, int):
             raise TypeError("`nf` must be postive integer")
         if nf < 0:
-            raise TypeError("`nf` must be postive integer")
-        types = {"log": "log", "linear": "linear"}
+            raise ValueError("`nf` must be postive integer")
         if maxf > self.fnyq*1.05:
             raise ValueError("`maxf` is out of range.")
-        if minf < 0:
+        if minf < min(self.frq):
             raise ValueError("`minf` is out of range.")
 
-        if types[res_type] == types["log"]:
-            xx = np.logspace(np.log10(minf), np.log10(maxf), nf)
-        elif types[res_type] == types["linear"]:
+        if res_type == "log":
+            xx = np.geomspace(minf, maxf, nf)
+        elif res_type == "linear":
             xx = np.linspace(minf, maxf, nf)
         else:
             msg = f"{res_type} resampling has not been implemented."

@@ -35,6 +35,29 @@ class Test_FourierTransformSuite(TestCase):
         amplitude = np.array([[1, 2, 3], [4, 5, 6]])
         fft_suite = sigpropy.FourierTransformSuite(amplitude, frequency)
 
+        self.assertArrayEqual(frequency, fft_suite.frequency)
+        self.assertArrayEqual(amplitude, fft_suite.amplitude)
+
+    def test_check_input(self):
+        amp = [[1, 2], [3, 4]]
+        frq = [1, 2]
+
+        # TypeError - 2D Frequeny
+        self.assertRaises(TypeError,
+                          sigpropy.FourierTransformSuite._check_input,
+                          amplitude=amp, frequency=[[4, 5], [6, 7]], fnyq=2)
+
+        # TypeError - 1D Amplitude
+        self.assertRaises(TypeError,
+                          sigpropy.FourierTransformSuite._check_input,
+                          amplitude=[1, 2], frequency=frq, fnyq=2)
+
+        # ValueError - fnyq <= 0
+        for fnyq in [-1, 0]:
+            self.assertRaises(ValueError,
+                              sigpropy.FourierTransformSuite._check_input,
+                              amplitude=amp, frequency=frq, fnyq=fnyq)
+
     def test_konno_and_ohmachi(self):
         amp = [3.0+0.0*1j, 0.0+0.0*1j, 0.0+0.0*1j, -1.0+1.0*1j,
                0.0+0.0*1j, 0.0+0.0*1j, -1.0+0.0*1j, 0.0+0.0*1j,
@@ -125,6 +148,11 @@ class Test_FourierTransformSuite(TestCase):
         returned = fsuite.amp.shape
         expected = (wtseries.nwindows, fsuite.frequency.size)
         self.assertTupleEqual(expected, returned)
+
+        # Fail with TimeSeries
+        self.assertRaises(TypeError,
+                          sigpropy.FourierTransformSuite.from_timeseries,
+                          sigpropy.TimeSeries.from_trace(trace))
 
 
 if __name__ == "__main__":

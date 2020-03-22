@@ -46,7 +46,9 @@ class Test_FourierTransform(TestCase):
                         -0.9486905697966428+1.0948472814948405*1j,
                         0.22844587066117938+-0.14681324646918337*1j,
                         -11.843537519677056+3.477576385886737*1j])
-        sigpropy.FourierTransform(frq, amp)
+        fseries = sigpropy.FourierTransform(amp, frq)
+        self.assertArrayEqual(amp, fseries.amplitude)
+        self.assertArrayEqual(frq, fseries.frequency)
 
     def test_from_timeseries(self):
         amp = [0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0]
@@ -124,16 +126,55 @@ class Test_FourierTransform(TestCase):
         amp = [0, 1, 2, 3, 4, 5]
         fseries = sigpropy.FourierTransform(amp, frq)
 
-        known_frq = [0.5, 1.5, 2.5, 3.5, 4.5]
-        known_vals = [0.5, 1.5, 2.5, 3.5, 4.5]
-
+        # inplace = True
+        expected = np.array([0.5, 1.5, 2.5, 3.5, 4.5])
         fseries.resample(minf=0.5, maxf=4.5, nf=5,
                          res_type='linear', inplace=True)
+        for attr in ["frq", "amp"]:
+            self.assertArrayEqual(expected, getattr(fseries, attr))
+        
+        # inplace = False
+        expected = np.geomspace(0.5, 4.5, 5)
+        returneds = fseries.resample(minf=0.5, maxf=4.5, nf=5,
+                         res_type='log', inplace=False)
+        for returned  in returneds:
+            self.assertArrayEqual(expected, returned)
 
-        for known, test in zip(known_frq, fseries.frq):
-            self.assertAlmostEqual(known, test, places=1)
-        for known, test in zip(known_vals, fseries.amp):
-            self.assertAlmostEqual(known, test, places=1)
+        self.assertRaises(ValueError, fseries.resample, minf=4, maxf=1, nf=5)
+        self.assertRaises(TypeError, fseries.resample, minf=1, maxf=4, nf=5.1)
+        self.assertRaises(ValueError, fseries.resample, minf=1, maxf=4, nf=-2)
+        self.assertRaises(ValueError, fseries.resample, minf=0.1, maxf=4, nf=5)
+        self.assertRaises(ValueError, fseries.resample, minf=1, maxf=7, nf=5)
+        self.assertRaises(NotImplementedError, fseries.resample, minf=1,
+                          maxf=4, nf=5, res_type="spline")
+
+    def test_properties(self):
+        frq = np.array([1, 2, 3, 4, 5])
+        amp = np.array([0+1j, 1+2j, 4+0j, 2j, 5])
+        fseries = sigpropy.FourierTransform(amp, frq)
+
+        # .amplitude
+        self.assertArrayEqual(amp, fseries.amplitude)
+        
+        # .mag
+        returned = fseries.mag
+        expected = np.array([1, np.sqrt(5), 4, 2, 5])
+        self.assertArrayEqual(expected, returned)
+
+        # .imag
+        returned = fseries.imag
+        expected = np.array([1, 2, 0, 2, 0])
+        self.assertArrayEqual(expected, returned)
+
+        # .real
+        returned = fseries.real
+        expected = np.array([0, 1, 4, 0, 5])
+        self.assertArrayEqual(expected, returned)
+
+        # .phase
+        returned = fseries.phase
+        expected = np.arctan2(fseries.imag, fseries.real)
+        self.assertArrayEqual(expected, returned)
 
 
 if __name__ == "__main__":

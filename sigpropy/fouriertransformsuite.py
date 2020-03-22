@@ -66,36 +66,29 @@ class FourierTransformSuite(FourierTransform):
         """
         super().__init__(amplitude, frequency, fnyq=fnyq)
 
-    @staticmethod
-    def _check_input(amplitude, frequency, fnyq):
+    @classmethod
+    def _check_input(cls, amplitude, frequency, fnyq):
         """Performs checks on input, specifically:
 
         1. Cast `amplitude` and `frequency` to ndarrays.
-        2. Check that `amplitude` and `frequency` are 2D.
-        3. Check that fnyq is greater than zero.
+        2. Cast `fnyq` to `float`.
+        3. Check that `amplitude` and `frequency` are 2D.
+        4. Check that fnyq is greater than zero.
 
         """
 
-        amplitude = np.array(amplitude)
-        frequency = np.array(frequency)
-
-        if len(frequency.shape) != 1:
-            msg = f"`frequency` must be 2-D not {len(frequency.shape)}-D."
-            raise ValueError(msg)
+        amplitude, frequency, fnyq = cls._basic_checks(amplitude, frequency,
+                                                       fnyq)
 
         if len(amplitude.shape) != 2:
             msg = f"`amplitude` must be 2-D not {len(amplitude.shape)}-D."
-            raise ValueError(msg)
-
-        if not fnyq > 0:
-            raise ValueError(f"fnyq must be greater than 0, not {fnyq}")
+            raise TypeError(msg)
 
         return amplitude, frequency, fnyq
 
-
     @staticmethod
     @njit(cache=True)
-    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40):
+    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40):  # pragma: no cover
         """Static method for Konno and Ohmachi smoothing.
 
         Parameters
