@@ -15,6 +15,9 @@ workflows:
       - send-coverage-report
 jobs:
   send-coverage-report:
+    docker:
+      - image: circleci/python:3.7.5
+    working_directory: ~/repo
     steps:
       - checkout
       - run:
