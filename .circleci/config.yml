@@ -10,10 +10,23 @@ workflows:
       - test-3.6
       - test-3.7
       - test-3.8
-  # coverage-example:
-  #   jobs:
-  #     - send-coverage-report
+      # - send-coverage-report
 jobs:
+  # send-coverage-report:
+  #   steps:
+  #     - checkout
+  #     name: Run tests
+  #     command: |
+  #       . venv/bin/activate
+  #       cd test
+  #       coverage run --source=../sigpropy -m unittest
+  # - run:
+  #     name: Create coverage xml
+  #     command: |
+  #       . venv/bin/activate
+  #       mv test/.coverage test-results
+  #       cd test-results
+  #       coverage xml -o coverage.xml
   test-3.6: &test-template
     docker:
       - image: circleci/python:3.6.9
@@ -59,8 +72,7 @@ jobs:
             . venv/bin/activate
             pip install codecov
             codecov
-      # - coverage-reporter/send_report
-
+      - coverage-reporter/send_report
   test-3.7:
     <<: *test-template
     docker:
