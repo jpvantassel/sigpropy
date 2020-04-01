@@ -9,9 +9,9 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-3.6
-      - test-3.7
-      - test-3.8
+      - test-36
+      - test-37
+      - test-38
       - send-coverage-report
 jobs:
   send-coverage-report:
@@ -40,7 +40,7 @@ jobs:
           path: test-results
       - coverage-reporter/send_report
 
-  test-3.6: &test-template
+  test-36: &test-template
     docker:
       - image: circleci/python:3.6.9
     working_directory: ~/repo
@@ -85,11 +85,11 @@ jobs:
             . venv/bin/activate
             pip install codecov
             codecov
-  test-3.7:
+  test-37:
     <<: *test-template
     docker:
       - image: circleci/python:3.7.5
-  test-3.8:
+  test-38:
     <<: *test-template
     docker:
       - image: circleci/python:3.8.0
