@@ -17,19 +17,20 @@ jobs:
   send-coverage-report:
     steps:
       - checkout
-      name: Prepare Results
-      command: |
-          virtualenv venv
-          . venv/bin/activate
-          pip install numpy
-          pip install -e .[dev]
-          cd test
-          coverage run --source=../sigpropy -m unittest
-          cd ..
-          mkdir test-results
-          mv test/.coverage test-results
-          cd test-results
-          coverage xml -o coverage.xml
+      - run:
+          name: Prepare Results
+          command: |
+            virtualenv venv
+            . venv/bin/activate
+            pip install numpy
+            pip install -e .[dev]
+            cd test
+            coverage run --source=../sigpropy -m unittest
+            cd ..
+            mkdir test-results
+            mv test/.coverage test-results
+            cd test-results
+            coverage xml -o coverage.xml
       - store_test_results:
           path: test-results
       - store_artifacts:
