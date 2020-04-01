@@ -35,7 +35,7 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results
-    - coverage-reporter/send_report
+      - coverage-reporter/send_report
 
   test-3.6: &test-template
     docker:
