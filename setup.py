@@ -8,7 +8,7 @@ with open("README.md", encoding="utf8") as f:
 
 setup(
     name='sigpropy',
-    version='0.1.2',
+    version='0.2.0',
     description='A Python package for digital signal processing.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -16,8 +16,7 @@ setup(
     author='Joseph P. Vantassel',
     author_email='jvantassel@utexas.edu',
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
