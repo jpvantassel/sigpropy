@@ -8,6 +8,7 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/jpvantassel/sigpropy.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jpvantassel/sigpropy/context:python)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1a9c785e79214a0db457797f6d5f82f0)](https://www.codacy.com/manual/jpvantassel/sigpropy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jpvantassel/sigpropy&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/jpvantassel/sigpropy/branch/master/graph/badge.svg)](https://codecov.io/gh/jpvantassel/sigpropy)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6a3d16f9a406a5367a67/maintainability)](https://codeclimate.com/github/jpvantassel/sigpropy/maintainability)
 
 ## Table of Contents
 
