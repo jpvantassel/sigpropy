@@ -119,15 +119,13 @@ class FourierTransformSuite(FourierTransform):
         ncols = fcs.size
         smoothed_spectrum = np.empty((nrows, ncols))
 
-        sumproduct = np.empty(nrows)
-
         for fc_index, fc in enumerate(fcs):
 
             if fc < 1E-6:
                 smoothed_spectrum[:, fc_index] = 0
                 continue
 
-            sumproduct *= 0
+            sumproduct = np.zeros(nrows)
             sumwindow = 0
 
             for f_index, f in enumerate(frequencies):
@@ -142,6 +140,7 @@ class FourierTransformSuite(FourierTransform):
                     window = np.sin(window) / window
                     window *= window
                     window *= window
+
                 sumproduct += window*spectrum[:, f_index]
                 sumwindow += window
 

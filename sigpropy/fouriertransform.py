@@ -115,7 +115,7 @@ class FourierTransform():
             Initialized with `amplitude` and `frequency` information.
 
         """
-        fnyq = fnyq if fnyq != None else np.max(frequency)
+        fnyq = fnyq if fnyq != None else max(frequency)
         results = self._check_input(amplitude, frequency, fnyq)
         self.amp, self.frq, self.fnyq = results
 
@@ -239,7 +239,6 @@ class FourierTransform():
                                                    fcs=frequencies,
                                                    bandwidth=bandwidth)
         self.frq = frequencies
-        # TODO (jpv): Add test to check that frequencies are updated.
 
     @staticmethod
     @njit(cache=True)
@@ -273,7 +272,6 @@ class FourierTransform():
         smoothed_spectrum = np.empty_like(fcs)
 
         for f_index, fc in enumerate(fcs):
-            # TODO (jpv): Why fc<1E-6
             if fc < 1E-6:
                 smoothed_spectrum[f_index] = 0
                 continue
@@ -283,7 +281,6 @@ class FourierTransform():
 
             for f, c_spectrum in zip(frequencies, spectrum):
                 f_on_fc = f/fc
-                # TODO (jpv): Why f<1E-6
                 if (f < 1E-6) or (f_on_fc > upper_limit) or (f_on_fc < lower_limit):
                     continue
                 elif np.abs(f - fc) < 1e-6:

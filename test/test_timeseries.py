@@ -74,7 +74,7 @@ class Test_TimeSeries(TestCase):
         tseries.cosine_taper(0)
         returned = tseries.amp
         expected = amp
-        self.assertArrayAlmostEqual(expected, returned, places=6)
+        self.assertArrayEqual(expected, returned)
 
         # 50% window
         amp = np.ones(10)

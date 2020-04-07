@@ -17,9 +17,10 @@
 
 """Tests for FourierTransform class."""
 
-import sigpropy
 import numpy as np
 import pandas as pd
+
+import sigpropy
 from testtools import unittest, TestCase, get_full_path
 
 
@@ -121,6 +122,19 @@ class Test_FourierTransform(TestCase):
             for b, fname in zip(bs, fnames):
                 load_and_run(amp, b, self.full_path+"data/ko/"+fname)
 
+    def test_ko_nan(self):
+        with open(self.full_path + "data/ko/ko_nan.csv", "r") as f:
+            lines = f.read().splitlines()
+        frq, amp = [], []
+        for line in lines:
+            f, a = line.split(",")
+            frq.append(float(f))
+            amp.append(float(a))
+        fft = sigpropy.FourierTransform(amp, frq)
+        fc = np.logspace(np.log10(0.3), np.log10(40), 2048)
+        fft.smooth_konno_ohmachi_fast(fc, 40)
+        self.assertArrayEqual(fc, fft.frq)
+
     def test_resample(self):
         frq = [0, 1, 2, 3, 4, 5]
         amp = [0, 1, 2, 3, 4, 5]
@@ -132,12 +146,12 @@ class Test_FourierTransform(TestCase):
                          res_type='linear', inplace=True)
         for attr in ["frq", "amp"]:
             self.assertArrayEqual(expected, getattr(fseries, attr))
-        
+
         # inplace = False
         expected = np.geomspace(0.5, 4.5, 5)
         returneds = fseries.resample(minf=0.5, maxf=4.5, nf=5,
-                         res_type='log', inplace=False)
-        for returned  in returneds:
+                                     res_type='log', inplace=False)
+        for returned in returneds:
             self.assertArrayEqual(expected, returned)
 
         self.assertRaises(ValueError, fseries.resample, minf=4, maxf=1, nf=5)
@@ -155,7 +169,7 @@ class Test_FourierTransform(TestCase):
 
         # .amplitude
         self.assertArrayEqual(amp, fseries.amplitude)
-        
+
         # .mag
         returned = fseries.mag
         expected = np.array([1, np.sqrt(5), 4, 2, 5])
