@@ -140,16 +140,14 @@ class TimeSeries():
         return values
 
     def trim(self, start_time, end_time):
-        """Trim excess from time series in the half-open interval
-        [start_time, end_time).
+        """Trim time series in the interval [`start_time`, `end_time`].
 
         Parameters
         ----------
         start_time : float
             New time zero in seconds.
         end_time : float
-            New end time in seconds. Note that the interval is
-            half-open.
+            New end time in seconds.
 
         Returns
         -------
