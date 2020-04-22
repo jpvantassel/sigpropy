@@ -17,11 +17,14 @@
 
 """TimeSeries class definition."""
 
+import warnings
+import logging
+
 import numpy as np
 import json
 from scipy.signal.windows import tukey
 from scipy.signal import butter, filtfilt, detrend
-import logging
+
 logger = logging.getLogger(__name__)
 
 __all__ = ['TimeSeries']
@@ -74,6 +77,8 @@ class TimeSeries():
 
     @property
     def n_samples(self):
+        warnings.warn("`n_samples` is deprecated, use `nsamples` instead",
+                      DeprecationWarning)
         return self.nsamples
 
     @property
@@ -152,7 +157,7 @@ class TimeSeries():
         Returns
         -------
         None
-            Updates the attributes `n_samples`, `delay`, and `df`.
+            Updates the attributes `amp` and `nsamples`.
 
         Raises
         ------
