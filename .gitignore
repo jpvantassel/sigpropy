@@ -5,10 +5,12 @@ dist
 .tox
 docs/html
 scratch
+htmlcov
 
 # File Types
 *.egg-info
 *.json
 *.tmp_profiler_run
 *.ipynb_checkpoints
+.coverage
 venv
