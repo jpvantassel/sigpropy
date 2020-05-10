@@ -36,13 +36,11 @@ class TimeSeries():
     ----------
     amp : ndarray
         Denotes the time series amplitude one value per time step.
-    dt : float
-        Denotes the time step between samples in seconds.
 
     """
 
     def __init__(self, amplitude, dt):
-        """Intialize a `TimeSeries` object.
+        """Initialize a `TimeSeries` object.
 
         Parameters
         ----------
@@ -60,7 +58,7 @@ class TimeSeries():
         ------
         TypeError
             If `amplitude` is not castable to `ndarray` or has
-            dimenension not equal to 1. See error message(s) for
+            dimensions not equal to 1. See error message(s) for
             details.
 
         """
@@ -246,16 +244,12 @@ class TimeSeries():
         # TODO (jpv): Extend functionality of WindowedTimeSeries
         fnyq = self.fnyq
         b, a = butter(order, [flow/fnyq, fhigh/fnyq], btype='bandpass')
-        # TODO (jpv): Research padlen arguement
+        # TODO (jpv): Research padlen argument
         self.amp = filtfilt(b, a, self.amp, padlen=3*(max(len(b), len(a))-1))
 
     @classmethod
     def from_trace(cls, trace):
         """Initialize a `TimeSeries` object from a trace object.
-
-        This method is more general method than `from_trace_seg2`,
-        as it does not attempt to extract any metadata from the `Trace`
-        object.
 
         Parameters
         ----------
@@ -297,7 +291,7 @@ class TimeSeries():
 
     @classmethod
     def from_json(cls, json_str):
-        """Instaniate `TimeSeries` object form Json string.
+        """Instantiate `TimeSeries` object form Json string.
 
         Parameters
         ----------

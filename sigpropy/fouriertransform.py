@@ -58,7 +58,7 @@ class FourierTransform():
         dt : float
             Denotes the time step between samples in seconds.
         **kwargs : dict
-            Additional keyard arguements to fft.
+            Additional keyard arguments to fft.
 
         Returns
         -------
@@ -66,14 +66,14 @@ class FourierTransform():
             Of the form (frq, fft) where:
 
             frq : ndarray
-                Positve frequency vector between zero and the
+                Positive frequency vector between zero and the
                 Nyquist frequency (if even) or near the Nyquist
                 (if odd) in Hz.
 
             fft : ndarray
                 Complex amplitudes for the frequencies between zero
                 and the Nyquist (if even) or near the Nyquist
-                (if odd) with units of the input ampltiude.
+                (if odd) with units of the input amplitude.
                 If `amplitude` is a 2D array `fft` will also be a 2D
                 array where each row is the FFT of each row of
                 `amplitude`.
@@ -340,9 +340,9 @@ class FourierTransform():
         if maxf < minf:
             raise ValueError("`maxf` must be > `minf`")
         if not isinstance(nf, int):
-            raise TypeError("`nf` must be postive integer")
+            raise TypeError("`nf` must be positive integer")
         if nf < 0:
-            raise ValueError("`nf` must be postive integer")
+            raise ValueError("`nf` must be positive integer")
         if maxf > self.fnyq*1.05:
             raise ValueError("`maxf` is out of range.")
         if minf < min(self.frq):

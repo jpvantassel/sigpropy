@@ -40,10 +40,6 @@ class WindowedTimeSeries(TimeSeries):
     dt : float
         Denotes the time step between samples in seconds.
 
-    nwindows : int
-        Number of time windows that the time series has been split
-        into (i.e., number of rows of `amp`).
-
     """
 
     def __init__(self, amplitude, dt):
@@ -169,7 +165,7 @@ class WindowedTimeSeries(TimeSeries):
         Notes
         -----
             The last sample of each window is repeated as the first
-            sample of the following time window to ensure an inuitive
+            sample of the following time window to ensure an intuitive
             number of windows. Without this, a 10 minute record could
             not be broken into 10 1-minute records.
 
@@ -209,7 +205,7 @@ class WindowedTimeSeries(TimeSeries):
         ----------
         start_time, end_time : float
             Desired start and end times of the new WindowedTimeSeries in
-            seconds. The `start_time` should correpsond to the first
+            seconds. The `start_time` should correspond to the first
             sample of the timewindow otherwise the entire window will be
             rejected (i.e., no partial windows are allowed), likewise
             the `end_time` should correspond to the last time
