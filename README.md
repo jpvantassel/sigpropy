@@ -25,7 +25,7 @@ include methods to perform common signal processing techniques (e.g., trimming
 and resampling) and properties to make using them readable and intuitive.
 
 This package and the classes therein are being used in several other
-Python projects, some of which have been released publically and others are
+Python projects, some of which have been released publicly and others are
 still in the development stage, so if you do not see a feature you would like
 it may very well be under development and released in the near future. To be
 notified of future releases, you can either `watch` the repository on
@@ -87,3 +87,9 @@ plt.show()
 ```
 
 <img src="https://github.com/jpvantassel/sigpropy/blob/master/figs/example_fseries.png?raw=true" width="425">
+
+## Special Thanks To
+
+- __Albert Kottke__ for his suggestions to speed up the Konno and Ohmachi
+smoothing. For a standalone implementation of Konno and Ohmachi smoothing see
+his project [pykooh](https://github.com/arkottke/pykooh).
