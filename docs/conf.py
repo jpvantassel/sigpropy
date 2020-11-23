@@ -13,6 +13,8 @@
 import os
 import sys
 
+from sigpropy.__init__ import __version__
+
 sys.path.insert(0, os.path.abspath('../sigpropy'))
 
 # -- Project information -----------------------------------------------------
@@ -22,7 +24,7 @@ copyright = '2019-2020, Joseph P. Vantassel'
 author = 'Joseph P. Vantassel'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.1'
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 

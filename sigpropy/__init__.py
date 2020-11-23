@@ -21,3 +21,5 @@ from .timeseries import TimeSeries
 from .windowedtimeseries import WindowedTimeSeries
 from .fouriertransform import FourierTransform
 from .fouriertransformsuite import FourierTransformSuite
+
+__version__ = "0.2.1rc0"
