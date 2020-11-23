@@ -101,7 +101,7 @@ class TimeSeries():
 
     @property
     def time(self):
-        return np.arange(0, self.nsamples*self.dt, self.dt)
+        return np.arange(0, self.nsamples)*self.dt
 
     @staticmethod
     def _check_input(name, values):
