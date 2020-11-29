@@ -16,7 +16,7 @@ jobs:
   test-36: &test-template
     docker:
       - image: circleci/python:3.6.9
-    working_directory: ~/repo
+    working_directory: ~/sigpropy
     steps:
       - checkout
       - restore_cache:
@@ -33,18 +33,18 @@ jobs:
           paths:
             - "venv"
       - run:
-          name: Install sigpropy and dependencies
+          name: Install sigpropy
           command: |
             . venv/bin/activate
             pip install -e .[dev]
       - run:
-          name: Run tests
+          name: Test
           command: |
             . venv/bin/activate
             cd test
             coverage run --source=../sigpropy -m unittest
       - run:
-          name: Create coverage xml
+          name: Create Coverage Report
           command: |
             . venv/bin/activate
             mkdir test-results
