@@ -59,6 +59,7 @@ jobs:
             . venv/bin/activate
             pip install codecov
             codecov
+      - coverage-reporter/send_report
 
   test-37:
     <<: *test-template
@@ -70,28 +71,27 @@ jobs:
     docker:
       - image: circleci/python:3.8.0
 
-  send-coverage-report:
-    docker:
-      - image: circleci/python:3.7.5
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          name: Prepare Results
-          command: |
-            virtualenv venv
-            . venv/bin/activate
-            pip install numpy
-            pip install -e .[dev]
-            cd test
-            coverage run --source=../sigpropy -m unittest
-            cd ..
-            mkdir test-results
-            mv test/.coverage test-results
-            cd test-results
-            coverage xml -o cobertura.xml
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: test-results
-      - coverage-reporter/send_report
+  # send-coverage-report:
+  #   docker:
+  #     - image: circleci/python:3.7.5
+  #   working_directory: ~/repo
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Prepare Results
+  #         command: |
+  #           virtualenv venv
+  #           . venv/bin/activate
+  #           pip install numpy
+  #           pip install -e .[dev]
+  #           cd test
+  #           coverage run --source=../sigpropy -m unittest
+  #           cd ..
+  #           mkdir test-results
+  #           mv test/.coverage test-results
+  #           cd test-results
+  #           coverage xml -o cobertura.xml
+  #     - store_test_results:
+  #         path: test-results
+  #     - store_artifacts:
+  #         path: test-results
