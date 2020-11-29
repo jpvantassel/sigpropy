@@ -12,7 +12,6 @@ workflows:
       - test-36
       - test-37
       - test-38
-      - send-coverage-report
 jobs:
   test-36: &test-template
     docker:
