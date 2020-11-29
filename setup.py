@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 
-from sigpropy.__init__ import __version__
+from .sigpropy.__init__ import __version__
 
 with open("README.md", encoding="utf8") as f:
     long_description = f.read()

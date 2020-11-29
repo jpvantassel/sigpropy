@@ -1,4 +1,4 @@
-# This file is part of SigProPy, a Python package for digital signal
+# This file is part of sigpropy, a Python package for digital signal
 # processing.
 # Copyright (C) 2019-2020 Joseph P. Vantassel (jvantassel@utexas.edu)
 #
@@ -15,7 +15,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""Import classes from each module into the SigProPy package."""
+"""Import classes from each module into the sigpropy package."""
 
 from .timeseries import TimeSeries
 from .windowedtimeseries import WindowedTimeSeries
