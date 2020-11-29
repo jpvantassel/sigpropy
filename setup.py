@@ -3,14 +3,16 @@
 
 from setuptools import setup, find_packages
 
-from .sigpropy.__init__ import __version__
+meta = {}
+with open("sigpropy/meta.py") as f:
+    exec(f.read(), meta)
 
 with open("README.md", encoding="utf8") as f:
     long_description = f.read()
 
 setup(
     name='sigpropy',
-    version=__version__,
+    version=meta['__version__'],
     description='A Python package for digital signal processing.',
     long_description=long_description,
     long_description_content_type='text/markdown',

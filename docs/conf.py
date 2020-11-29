@@ -13,7 +13,9 @@
 import os
 import sys
 
-from sigpropy.__init__ import __version__
+meta = {}
+with open("sigpropy/meta.py") as f:
+    exec(f.read(), meta)
 
 sys.path.insert(0, os.path.abspath('../sigpropy'))
 
@@ -24,7 +26,7 @@ copyright = '2019-2020, Joseph P. Vantassel'
 author = 'Joseph P. Vantassel'
 
 # The full version, including alpha/beta/rc tags
-release = __version__
+release = meta['__version__']
 
 # -- General configuration ---------------------------------------------------
 

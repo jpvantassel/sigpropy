@@ -15,10 +15,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""Import classes from each module into the sigpropy package."""
+"""Metadata for sigpropy."""
 
-from .timeseries import TimeSeries
-from .windowedtimeseries import WindowedTimeSeries
-from .fouriertransform import FourierTransform
-from .fouriertransformsuite import FourierTransformSuite
-from .meta import __version__
+__version__ = "0.2.1rc1"
+
