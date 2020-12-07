@@ -30,19 +30,19 @@ jobs:
     working_directory: ~/sigpropy
     steps:
       - checkout
-      - restore_cache:
-          key: pycache-{{ .Branch }}-{{ checksum "requirements.txt" }}  
+      # - restore_cache:
+      #     key: pycache-{{ .Branch }}-{{ checksum "requirements.txt" }}  
       - run:
           name: Install Requirements
           command: |
-            python3 -m venv venv
+            virtualenv venv
             . venv/bin/activate
             pip install numpy
             pip install -r requirements.txt
-      - save_cache:
-          key: pycache-{{ .Branch }}-{{ checksum "requirements.txt" }}
-          paths:
-            - "venv"
+      # - save_cache:
+      #     key: pycache-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      #     paths:
+      #       - "venv"
       - run:
           name: Install sigpropy
           command: |
