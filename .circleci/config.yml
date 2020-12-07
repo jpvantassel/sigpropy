@@ -10,21 +10,21 @@ orbs:
 workflows:
   build:
     jobs:
-      - test-36
-        context:
-          - docker          
-      - test-37
-        context:
-          - docker
-      - test-38
-        context:
-          - docker
+      - test-36:
+          context:
+            - docker          
+      - test-37:
+          context:
+            - docker
+      - test-38:
+          context:
+            - docker
 
 jobs:
   test-36: &test-template
     docker:
       - image: circleci/python:3.6.9
-      auth:
+        auth:
           username: jpvantassel
           password: $DOCKER_PASS
     working_directory: ~/sigpropy
