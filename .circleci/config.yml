@@ -72,8 +72,14 @@ jobs:
     <<: *test-template
     docker:
       - image: circleci/python:3.7.5
+        auth:
+          username: jpvantassel
+          password: $DOCKER_PASS
 
   test-38:
     <<: *test-template
     docker:
       - image: circleci/python:3.8.0
+        auth:
+          username: jpvantassel
+          password: $DOCKER_PASS
