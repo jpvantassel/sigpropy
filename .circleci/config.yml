@@ -26,7 +26,7 @@ jobs:
       - image: circleci/python:3.6.9
       auth:
           username: jpvantassel
-          password: $DOCKERHUB_PASS
+          password: $DOCKER_PASS
     working_directory: ~/sigpropy
     steps:
       - checkout
