@@ -3,19 +3,30 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
 version: 2.1
+
 orbs:
   coverage-reporter: codacy/coverage-reporter@7.6.7
+
 workflows:
-  version: 2
-  test:
+  build:
     jobs:
       - test-36
+        context:
+          - docker          
       - test-37
+        context:
+          - docker
       - test-38
+        context:
+          - docker
+
 jobs:
   test-36: &test-template
     docker:
       - image: circleci/python:3.6.9
+      auth:
+          username: jpvantassel
+          password: $DOCKERHUB_PASS
     working_directory: ~/sigpropy
     steps:
       - checkout
