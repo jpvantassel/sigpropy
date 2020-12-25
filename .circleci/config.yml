@@ -19,6 +19,9 @@ workflows:
       - test-38:
           context:
             - docker
+      - test-39:
+          context:
+            - docker
 
 jobs:
   test-36: &test-template
@@ -80,6 +83,14 @@ jobs:
     <<: *test-template
     docker:
       - image: circleci/python:3.8.0
+        auth:
+          username: jpvantassel
+          password: $DOCKER_PASS
+
+  test-39:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.9.0
         auth:
           username: jpvantassel
           password: $DOCKER_PASS
