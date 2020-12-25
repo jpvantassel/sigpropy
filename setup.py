@@ -20,7 +20,7 @@ setup(
     author='Joseph P. Vantassel',
     author_email='jvantassel@utexas.edu',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
@@ -34,10 +34,11 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     keywords='signal-processing signal',
     packages=find_packages(),
-    python_requires='>=3.6, <3.9',
+    python_requires='>=3.6, <3.10',
     install_requires=['scipy', 'numpy', 'obspy', 'numba'],
     extras_require={
         'dev': ['hypothesis', 'pandas', 'coverage'],

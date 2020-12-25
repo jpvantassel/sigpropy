@@ -13,11 +13,11 @@
 import os
 import sys
 
-meta = {}
-with open("sigpropy/meta.py") as f:
-    exec(f.read(), meta)
-
 sys.path.insert(0, os.path.abspath('../sigpropy'))
+
+meta = {}
+with open("meta.py") as f:
+    exec(f.read(), meta)
 
 # -- Project information -----------------------------------------------------
 
