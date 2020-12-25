@@ -87,10 +87,10 @@ jobs:
           username: jpvantassel
           password: $DOCKER_PASS
 
-  test-39:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.9.0
-        auth:
-          username: jpvantassel
-          password: $DOCKER_PASS
+  # test-39:
+  #   <<: *test-template
+  #   docker:
+  #     - image: circleci/python:3.9.0
+  #       auth:
+  #         username: jpvantassel
+  #         password: $DOCKER_PASS
