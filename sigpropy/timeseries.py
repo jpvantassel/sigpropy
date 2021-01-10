@@ -19,6 +19,7 @@
 
 import warnings
 import logging
+import json
 
 import numpy as np
 from scipy.signal.windows import tukey
@@ -28,13 +29,18 @@ logger = logging.getLogger("sigpropy.timeseries")
 
 __all__ = ['TimeSeries']
 
+
 class TimeSeries():
     """A class for manipulating time series.
 
     Attributes
     ----------
-    amp : ndarray
+    amplitude : ndarray
         Denotes the time series amplitude one value per time step.
+        Amplitude can be 1D or 2D, for the 2D case each row is a
+        different time series.
+    dt : float
+        Time step between samples in seconds.
 
     """
 
@@ -57,20 +63,26 @@ class TimeSeries():
         ------
         TypeError
             If `amplitude` is not castable to `ndarray` or has
-            dimensions not equal to 1. See error message(s) for
-            details.
+            dimensions greater than 2. Refer to error message(s) for
+            specific details.
 
         """
-        self.amp = TimeSeries._check_input("amplitude", amplitude)
-        self._dt = dt
+        self._amp = self._check_input("amplitude", amplitude)
+        self._dt = float(dt)
 
-        logger.info(f"Initialize a TimeSeries object.")
+        logger.info(f"Creating a TimeSeries object.")
         logger.info(f"\tnsamples = {self.nsamples}")
         logger.info(f"\tdt = {self._dt}")
 
     @property
     def dt(self):
         return self._dt
+
+    @property
+    def amp(self):
+        warnings.warn("`amp` is deprecated, use `_amp` instead",
+                      DeprecationWarning)
+        return self._amp
 
     @property
     def n_samples(self):
@@ -80,7 +92,31 @@ class TimeSeries():
 
     @property
     def nsamples(self):
-        return len(self.amp)
+        return self._amp.shape[1]
+
+    @property
+    def nsamples_per_window(self):
+        return self._amp.shape[1]
+
+    @property
+    def windowlength(self):
+        return (self.nsamples_per_window-1)*self.dt
+
+    @property
+    def n_windows(self):
+        warnings.warn("`n_windows` is deprecated, use `nwindows` instead",
+                      DeprecationWarning)
+        return self.nwindows
+
+    @property
+    def nwindows(self):
+        warnings.warn("`nwindows` is deprecated, use `nseries` instead",
+                      DeprecationWarning)
+        return self.nseries
+
+    @property
+    def nseries(self):
+        return self._amp.shape[0]
 
     @property
     def fs(self):
@@ -96,19 +132,19 @@ class TimeSeries():
 
     @property
     def amplitude(self):
-        return self.amp
+        return self._amp.squeeze()
 
     @property
     def time(self):
         return np.arange(0, self.nsamples)*self.dt
 
-    @staticmethod
-    def _check_input(name, values):
+    def _check_input(self, name, values):
         """Perform simple checks on values of parameter `name`.
 
         Specifically:
-            1. Cast `values` to `ndarray`.
-            2. Check that `ndarray` is 1D.
+
+        1. Cast `values` to `ndarray`.
+        2. Check that `ndarray` is 1D.
 
         Parameters
         ----------
@@ -135,9 +171,13 @@ class TimeSeries():
             msg = f"{name} must be convertable to numeric `ndarray`."
             raise TypeError(msg)
 
-        if len(values.shape) != 1:
-            msg = f"{name} must be 1-D, not {len(values.shape)}-D."
+        if values.ndim == 1:
+            values = np.expand_dims(values, axis=0)
+        elif values.ndim > 2:
+            msg = f"{name} must be <= 2, not {values.ndim}-D."
             raise TypeError(msg)
+        else:
+            pass
 
         return values
 
@@ -186,7 +226,7 @@ class TimeSeries():
         logger.debug(f"start_index = {start_index}")
         logger.debug(f"start_index = {end_index}")
 
-        self.amp = self.amp[start_index:end_index+1]
+        self._amp = self._amp[:, start_index:end_index+1]
 
     def detrend(self):
         """Remove linear trend from time series.
@@ -197,12 +237,73 @@ class TimeSeries():
             Removes linear trend from attribute `amp`.
 
         """
-        self.amp = detrend(self.amp)
+        self._amp = detrend(self._amp)
 
-    @staticmethod 
-    def split(windowlength):
-        msg = "This method has been removed refer to class `WindowTimeSeries`"
-        raise DeprecationWarning(msg)
+    def split(self, windowlength):
+        """Split record into `n` series of length `windowlength`.
+
+        Parameters
+        ----------
+        windowlength : float
+            Duration of desired shorter series in seconds. If
+            `windowlength` is not an integer multiple of `dt`, the
+            window length is rounded to up to the next integer
+            multiple of `dt`.
+
+        Returns
+        -------
+        None
+            Updates the object's internal attributes
+            (e.g., `amplitude`).
+
+        Notes
+        -----
+            The last sample of each window is repeated as the first
+            sample of the following time window to ensure an intuitive
+            number of windows. Without this, for example, a 10-minute
+            record could not be broken into 10 1-minute records.
+
+        Examples
+        --------
+            >>> import numpy as np
+            >>> from sigpropy import TimeSeries
+            >>> amp = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+            >>> tseries = TimeSeries(amp, dt=1)
+            >>> wseries = tseries.split(2)
+            >>> wseries.amplitude
+            array([[0, 1, 2],
+                [2, 3, 4],
+                [4, 5, 6],
+                [6, 7, 8]])
+
+        """
+        if self.nseries > 1:
+            warnings.warn("nseries > 1, so joining before splitting.")
+            self.join()
+
+        steps_per_win = int(windowlength/self.dt)
+        nwindows = int((self.nsamples-1)/steps_per_win)
+        rec_samples = (steps_per_win*nwindows)+1
+
+        right_cols = np.reshape(self.amplitude[1:rec_samples],
+                                (nwindows, steps_per_win))
+        left_col = self.amplitude[:-steps_per_win:steps_per_win].T
+        self._amp = np.column_stack((left_col, right_cols))
+
+    def join(self):
+        """Rejoin a split `TimeSeries`.
+
+        Returns
+        -------
+        None
+            Updates the object's internal attributes
+            (e.g., `amplitude`).
+
+        """
+        nth = self.nsamples_per_window
+        keep_ids = np.ones(self._amp.size, dtype=bool)
+        keep_ids[nth::nth] = False
+        self._amp = self._amp.flatten()[keep_ids]
 
     def cosine_taper(self, width):
         """Apply cosine taper to time series.
@@ -219,7 +320,7 @@ class TimeSeries():
             Applies cosine taper to attribute `amp`.
 
         """
-        self.amp = self.amp * tukey(self.nsamples, alpha=width)
+        self._amp = self._amp * tukey(self.nsamples, alpha=width)
 
     def bandpassfilter(self, flow, fhigh, order=5):
         """Apply bandpass Butterworth filter to time series.
@@ -244,7 +345,7 @@ class TimeSeries():
         fnyq = self.fnyq
         b, a = butter(order, [flow/fnyq, fhigh/fnyq], btype='bandpass')
         # TODO (jpv): Research padlen argument
-        self.amp = filtfilt(b, a, self.amp, padlen=3*(max(len(b), len(a))-1))
+        self._amp = filtfilt(b, a, self._amp, padlen=3*(max(len(b), len(a))-1))
 
     @classmethod
     def from_trace(cls, trace):
@@ -329,30 +430,26 @@ class TimeSeries():
             Containing all of the relevant contents of the `TimeSeries`.
 
         """
-
         info = {}
-        info["amplitude"] = list(self.amp)
+        info["amplitude"] = [list(series) for series in self._amp]
         info["dt"] = self.dt
 
         return info
 
     def __eq__(self, other):
         """Check if `other` is equal to `self`."""
-        my = self.amp
-        ur = other.amp
+        for attr in ["nseries", "nsamples", "dt"]:
+            if getattr(self, attr) != getattr(other, attr):
+                return False
 
-        if my.size != ur.size:
-            return False
-
+        my = self.amplitude
+        ur = other.amplitude
         for my_val, ur_val in zip(my.flatten(), ur.flatten()):
             if my_val != ur_val:
                 return False
 
-        for attr in ["dt"]:
-            if getattr(self, attr) != getattr(other, attr):
-                return False
         return True
 
     def __repr__(self):
         """Unambiguous representation of `TimeSeries`."""
-        return f"TimeSeries(dt={self.dt}, amplitude={str(self.amp[0:3])[:-1]} ... {str(self.amp[-3:])[1:]})"
+        return f"TimeSeries(dt={self.dt}, amplitude={str(self.amplitude[0:3])[:-1]} ... {str(self.amplitude[-3:])[1:]})"

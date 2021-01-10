@@ -17,12 +17,15 @@
 
 """Tests for TimeSeries class."""
 
-import sigpropy
-import obspy
-import numpy as np
 import warnings
 import logging
+
+import obspy
+import numpy as np
+
+import sigpropy
 from testtools import get_full_path, unittest, TestCase
+
 logging.basicConfig(level=logging.WARNING)
 
 
@@ -43,28 +46,36 @@ class Test_TimeSeries(TestCase):
 
     def test_init(self):
         dt = 1
-        amp = [0, 1, 0, -1]
-        test = sigpropy.TimeSeries(amp, dt)
-        self.assertListEqual(amp, test.amp.tolist())
+        amplitude = [0, 1, 0, -1]
+        test = sigpropy.TimeSeries(amplitude, dt)
+        self.assertListEqual(amplitude, test.amplitude.tolist())
         self.assertEqual(dt, test.dt)
 
-        amp = np.array(amp)
-        test = sigpropy.TimeSeries(amp, dt)
-        self.assertArrayEqual(amp, test.amp)
+        amplitude = np.array(amplitude, dtype=np.double)
+        test = sigpropy.TimeSeries(amplitude, dt)
+        self.assertArrayEqual(amplitude, test.amplitude)
 
     def test_time(self):
         dt = 0.5
-        amp = [0, 1, 2, 3]
+        amplitude = [0, 1, 2, 3]
         expected = np.array([0., 0.5, 1., 1.5])
-        test = sigpropy.TimeSeries(amp, dt)
+        test = sigpropy.TimeSeries(amplitude, dt)
         returned = test.time
         self.assertArrayEqual(expected, returned)
 
     def test_split(self):
-        amp = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         dt = 1
-        tseries = sigpropy.TimeSeries(amp, dt)
-        self.assertRaises(DeprecationWarning, tseries.split, 2)
+        amplitude = [0., 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+        tseries = sigpropy.TimeSeries(amplitude, dt)
+        tseries.split(windowlength=3)
+
+        windowed_amplitude = np.array([[0., 1, 2, 3],
+                                       [3., 4, 5, 6],
+                                       [6., 7, 8, 9]])
+        self.assertArrayEqual(windowed_amplitude, tseries.amplitude)
+        self.assertEqual(3, tseries.nseries)
+        self.assertEqual(4, tseries.nsamples)
 
     def test_cosine_taper(self):
         # 0% Window - (i.e., no taper)
@@ -72,7 +83,7 @@ class Test_TimeSeries(TestCase):
         dt = 1
         tseries = sigpropy.TimeSeries(amp, dt)
         tseries.cosine_taper(0)
-        returned = tseries.amp
+        returned = tseries.amplitude
         expected = amp
         self.assertArrayEqual(expected, returned)
 
@@ -81,7 +92,7 @@ class Test_TimeSeries(TestCase):
         dt = 1
         tseries = sigpropy.TimeSeries(amp, dt)
         tseries.cosine_taper(0.5)
-        returned = tseries.amp
+        returned = tseries.amplitude
         expected = np.array([0.000000000000000e+00, 4.131759111665348e-01,
                              9.698463103929542e-01, 1.000000000000000e+00,
                              1.000000000000000e+00, 1.000000000000000e+00,
@@ -94,12 +105,12 @@ class Test_TimeSeries(TestCase):
         dt = 1
         tseries = sigpropy.TimeSeries(amp, dt)
         tseries.cosine_taper(1)
-        returned = tseries.amp
+        returned = tseries.amplitude
         expected = np.array([0.000000000000000e+00, 1.169777784405110e-01,
-               4.131759111665348e-01, 7.499999999999999e-01,
-               9.698463103929542e-01, 9.698463103929542e-01,
-               7.500000000000002e-01, 4.131759111665350e-01,
-               1.169777784405111e-01, 0.000000000000000e+00])
+                             4.131759111665348e-01, 7.499999999999999e-01,
+                             9.698463103929542e-01, 9.698463103929542e-01,
+                             7.500000000000002e-01, 4.131759111665350e-01,
+                             1.169777784405111e-01, 0.000000000000000e+00])
         self.assertArrayAlmostEqual(expected, returned, places=6)
 
     def test_from_trace(self):
@@ -107,14 +118,15 @@ class Test_TimeSeries(TestCase):
             warnings.simplefilter("ignore")
             trace = obspy.read(self.full_path+"data/vuws/1.dat")[0]
         tseries = sigpropy.TimeSeries.from_trace(trace)
-        self.assertArrayEqual(tseries.amp, trace.data)
-        self.assertEqual(tseries.dt, trace.stats.delta)
+        self.assertEqual(trace.stats.delta, tseries.dt)
+        self.assertArrayEqual(
+            np.array(trace.data, dtype=np.double), tseries.amplitude)
 
     def test_trim(self):
         tseries = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3, 4],
-                                    dt=0.5)
+                                      dt=0.5)
         tseries.trim(0, 1)
-        self.assertListEqual(tseries.amp.tolist(), [0, 1, 2])
+        self.assertListEqual(tseries.amplitude.tolist(), [0, 1, 2])
         self.assertEqual(tseries.nsamples, 3)
         self.assertEqual(min(tseries.time), 0)
         self.assertEqual(max(tseries.time), 1)
@@ -122,31 +134,32 @@ class Test_TimeSeries(TestCase):
     def test_detrend(self):
         signal = np.array([0., .2, 0., -.2]*5)
         trend = np.arange(0, 20, 1)
-        amp = signal + trend
+        amplitude = signal + trend
         dt = 1
-        tseries = sigpropy.TimeSeries(amp, dt)
+        tseries = sigpropy.TimeSeries(amplitude, dt)
         tseries.detrend()
-        returned = tseries.amp
+        returned = tseries.amplitude
         expected = signal
         self.assertArrayAlmostEqual(expected, returned, delta=0.03)
 
     def test_to_and_from_dict(self):
-        amplitude = np.array([1,2,3,4])
         dt = 1
+        amplitude = np.array([1, 2, 3, 4])
         expected = sigpropy.TimeSeries(amplitude, dt)
         dict_repr = expected.to_dict()
         returned = sigpropy.TimeSeries.from_dict(dict_repr)
         self.assertEqual(expected.dt, returned.dt)
-        self.assertArrayEqual(expected.amp, returned.amp)
+        self.assertArrayEqual(expected.amplitude, returned.amplitude)
 
     def test_to_and_from_json(self):
-        amplitude = np.array([1,2,3,4])
         dt = 1
+        amplitude = np.array([1, 2, 3, 4])
         expected = sigpropy.TimeSeries(amplitude, dt)
         json_repr = expected.to_json()
         returned = sigpropy.TimeSeries.from_json(json_repr)
         self.assertEqual(expected.dt, returned.dt)
-        self.assertArrayEqual(expected.amp, returned.amp)
+        self.assertArrayEqual(expected.amplitude, returned.amplitude)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -83,14 +83,14 @@ class FourierTransform():
                 `amplitude`.
 
         """
-        if len(amplitude.shape) > 2:
+        if amplitude.ndim > 2:
             raise TypeError("`amplitude` cannot have dimension > 2.")
 
         npts = amplitude.shape[-1] if kwargs.get(
             "n") is None else kwargs.get("n")
         nfrqs = int(npts/2)+1 if (npts % 2) == 0 else int((npts+1)/2)
         frq = np.abs(np.fft.fftfreq(npts, dt))[0:nfrqs]
-        if len(amplitude.shape) == 1:
+        if amplitude.ndim == 1:
             return(2/npts * fftpack.fft(amplitude, **kwargs)[0:nfrqs], frq)
         else:
             fft = np.zeros((amplitude.shape[0], nfrqs), dtype=complex)
@@ -129,8 +129,8 @@ class FourierTransform():
         frequency = np.array(frequency)
         fnyq = float(fnyq)
 
-        if len(frequency.shape) != 1:
-            msg = f"Frequency must be 1-D not {len(frequency.shape)}-D."
+        if frequency.ndim != 1:
+            msg = f"Frequency must be 1-D not {frequency.ndim}-D."
             raise TypeError(msg)
 
         if not fnyq > 0:
@@ -149,8 +149,8 @@ class FourierTransform():
         amplitude, frequency, fnyq = self._basic_checks(amplitude, frequency,
                                                         fnyq)
 
-        if len(amplitude.shape) != 1:
-            msg = f"Amplitude must be 1-D not {len(amplitude.shape)}-D."
+        if amplitude.ndim != 1:
+            msg = f"Amplitude must be 1-D not {amplitude.ndim}-D."
             raise ValueError(msg)
 
         return amplitude, frequency, fnyq
@@ -180,17 +180,13 @@ class FourierTransform():
         """
         self.amp = self.mag
         smooth_amp = np.empty_like(self.amp)
-        if len(self.amp.shape) == 1:
-            for cid, cfrq in enumerate(self.frq):
-                smoothing_window = self._k_and_o_window(self.frq, cfrq,
-                                                        bandwidth=bandwidth)
-                smooth_amp[cid] = np.dot(self.amp, smoothing_window)
-        else:
-            for c_col, cfrq in enumerate(self.frq):
-                smoothing_window = self._k_and_o_window(self.frq, cfrq,
-                                                        bandwidth=bandwidth)
-                for c_row, c_amp in enumerate(self.amp):
-                    smooth_amp[c_row, c_col] = np.dot(c_amp, smoothing_window)
+
+        for c_col, cfrq in enumerate(self.frq):
+            smoothing_window = self._k_and_o_window(self.frq, cfrq,
+                                                    bandwidth=bandwidth)
+            for c_row, c_amp in enumerate(self.amp):
+                smooth_amp[c_row, c_col] = np.dot(c_amp, smoothing_window)
+
         self.amp = smooth_amp
 
     @staticmethod
