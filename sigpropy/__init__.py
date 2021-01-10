@@ -17,8 +17,12 @@
 
 """Import classes from each module into the sigpropy package."""
 
+import logging
+
 from .timeseries import TimeSeries
 from .windowedtimeseries import WindowedTimeSeries
 from .fouriertransform import FourierTransform
 from .fouriertransformsuite import FourierTransformSuite
 from .meta import __version__
+
+logging.getLogger('swprocess').addHandler(logging.NullHandler())

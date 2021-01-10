@@ -21,11 +21,10 @@ import warnings
 import logging
 
 import numpy as np
-import json
 from scipy.signal.windows import tukey
 from scipy.signal import butter, filtfilt, detrend
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("sigpropy.timeseries")
 
 __all__ = ['TimeSeries']
 

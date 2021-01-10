@@ -17,10 +17,14 @@
 
 """FourierTransform class definition."""
 
+import logging
+
 import numpy as np
 import scipy.interpolate as sp
 import scipy.fftpack as fftpack
 from numba import njit
+
+logger = logging.getLogger("sigpropy.fouriertransform")
 
 __all__ = ['FourierTransform']
 
