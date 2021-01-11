@@ -67,7 +67,22 @@ class TimeSeries():
             specific details.
 
         """
-        self._amp = self._check_input("amplitude", amplitude)
+        # amplitude must be an ndarray of floating point numbers.
+        try:
+            self._amp = np.array(amplitude, dtype=np.double)
+        except ValueError:
+            msg = "`amplitude` must be convertable to numeric `ndarray`."
+            raise TypeError(msg)
+
+        # amplitude must be an ndarray with ndims=2.
+        if self._amp.ndim == 1:
+            self._amp = np.expand_dims(self._amp, axis=0)
+        elif self._amp.ndim > 2:
+            msg = f"`amplitude` must be 1-D or 2-D, not {self._amp.ndim}-D."
+            raise TypeError(msg)
+        else:
+            pass
+
         self._dt = float(dt)
 
         logger.info(f"Creating a TimeSeries object.")
@@ -136,50 +151,14 @@ class TimeSeries():
 
     @property
     def time(self):
-        return np.arange(0, self.nsamples)*self.dt
-
-    def _check_input(self, name, values):
-        """Perform simple checks on values of parameter `name`.
-
-        Specifically:
-
-        1. Cast `values` to `ndarray`.
-        2. Check that `ndarray` is 1D.
-
-        Parameters
-        ----------
-        name : str
-            Name of parameter to be check. Only used to raise
-            easily understood exceptions.
-        values : any
-            Value of parameter to be checked.
-
-        Returns
-        -------
-        ndarray
-            `values` cast to `ndarray`.
-
-        Raises
-        ------
-        TypeError
-            If entries do not comply with checks 1. and 2. listed above.
-
-        """
-        try:
-            values = np.array(values, dtype=np.double)
-        except ValueError:
-            msg = f"{name} must be convertable to numeric `ndarray`."
-            raise TypeError(msg)
-
-        if values.ndim == 1:
-            values = np.expand_dims(values, axis=0)
-        elif values.ndim > 2:
-            msg = f"{name} must be <= 2, not {values.ndim}-D."
-            raise TypeError(msg)
-        else:
-            pass
-
-        return values
+        start = 0
+        delta = self.nsamples_per_window
+        time = np.empty_like(self._amp)
+        for row in range(self.nseries):
+            time[row, :] = np.arange(start, start+delta)
+            start += delta-1
+        time *= self.dt            
+        return time.squeeze()
 
     def trim(self, start_time, end_time):
         """Trim time series in the interval [`start_time`, `end_time`].
@@ -205,6 +184,12 @@ class TimeSeries():
             after the end of the record.
 
         """
+        nseries = int(self.nseries)
+        if self.nseries > 1:
+            windowlength = self.windowlength
+            warnings.warn("nseries > 1, so joining before splitting.")
+            self.join()
+
         current_time = self.time
         start = min(current_time)
         end = max(current_time)
@@ -227,6 +212,9 @@ class TimeSeries():
         logger.debug(f"start_index = {end_index}")
 
         self._amp = self._amp[:, start_index:end_index+1]
+
+        if nseries > 1:
+            self.split(windowlength)
 
     def detrend(self):
         """Remove linear trend from time series.

@@ -34,17 +34,8 @@ class Test_TimeSeries(TestCase):
     def setUp(self):
         self.full_path = get_full_path(__file__)
 
-    def test_check(self):
-        for value in ["values", ["a", "b", "c"], [[1,2,3]]]:
-            self.assertRaises(TypeError,
-                              sigpropy.TimeSeries._check_input,
-                              name="blah",
-                              values=value)
-        for value in [[1, 2, 3], (1, 2, 3)]:
-            value = sigpropy.TimeSeries._check_input(name="blah", values=value)
-            self.assertTrue(isinstance(value, np.ndarray))
-
     def test_init(self):
+        # nseries = 1
         dt = 1
         amplitude = [0, 1, 0, -1]
         test = sigpropy.TimeSeries(amplitude, dt)
@@ -55,7 +46,33 @@ class Test_TimeSeries(TestCase):
         test = sigpropy.TimeSeries(amplitude, dt)
         self.assertArrayEqual(amplitude, test.amplitude)
 
+        # nseries = 2
+        dt = 1
+        amplitude = [[0, 1, 0, -1], [0, 1, 0, -1]]
+        test = sigpropy.TimeSeries(amplitude, dt)
+        self.assertNestedListEqual(amplitude, test.amplitude.tolist())
+        self.assertEqual(dt, test.dt)
+
+        # nseries = 3
+        dt = 1
+        amplitude = [[0, 1, 0, -1], [0, 1, 0, 1], [0, -1, 0, 1]]
+        test = sigpropy.TimeSeries(amplitude, dt)
+        self.assertNestedListEqual(amplitude, test.amplitude.tolist())
+        self.assertEqual(dt, test.dt)
+
+        amplitude = np.array(amplitude, dtype=np.double)
+        test = sigpropy.TimeSeries(amplitude, dt)
+        self.assertArrayEqual(amplitude, test.amplitude)
+
+        # Invalid entries
+        for amplitude in ["values", ["a", "b", "c"]]:
+            self.assertRaises(TypeError,
+                              sigpropy.TimeSeries,
+                              amplitude=amplitude,
+                              dt=1)
+
     def test_time(self):
+        # nseries=1, short and simple.
         dt = 0.5
         amplitude = [0, 1, 2, 3]
         expected = np.array([0., 0.5, 1., 1.5])
@@ -63,19 +80,88 @@ class Test_TimeSeries(TestCase):
         returned = test.time
         self.assertArrayEqual(expected, returned)
 
-    def test_split(self):
+        # nseries=1, long time series (1 day @ 200 Hz).
+        dt = 0.005
+        amplitude = np.arange(0, 24*3600*int(1/dt))
+        test = sigpropy.TimeSeries(amplitude, dt)
+        expected = amplitude*dt
+        returned = test.time
+        self.assertArrayEqual(expected, returned)
+
+        # nseries=2, short and simple
+        dt = 1
+        amplitude = [0., 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        tseries = sigpropy.TimeSeries(amplitude, dt)
+        tseries.split(windowlength=4)
+        returned = tseries.time
+        expected = np.array([[0., 1, 2, 3, 4],
+                             [4., 5, 6, 7, 8]])
+        self.assertArrayEqual(expected, returned)
+
+        # nseries=3, short and simple.
         dt = 1
         amplitude = [0., 1, 2, 3, 4, 5, 6, 7, 8, 9]
-
         tseries = sigpropy.TimeSeries(amplitude, dt)
         tseries.split(windowlength=3)
+        returned = tseries.time
+        expected = np.array([[0., 1, 2, 3],
+                             [3., 4, 5, 6],
+                             [6., 7, 8, 9]])
+        self.assertArrayEqual(expected, returned)
 
-        windowed_amplitude = np.array([[0., 1, 2, 3],
-                                       [3., 4, 5, 6],
-                                       [6., 7, 8, 9]])
-        self.assertArrayEqual(windowed_amplitude, tseries.amplitude)
+    def test_split(self):
+        # nseries = 1 to nseries = 2
+        amplitude = [1., 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        dt = 1
+        tseries = sigpropy.TimeSeries(amplitude=amplitude, dt=dt)
+        tseries.split(windowlength=4)
+        returned = tseries.amplitude
+        expected = np.array([[1., 2, 3, 4, 5],
+                             [5., 6, 7, 8, 9]])
+        self.assertArrayEqual(expected, returned)
+        self.assertEqual(2, tseries.nseries)
+        self.assertEqual(5, tseries.nsamples)
+
+        # nseries = 1 to nseries = 3
+        dt = 1
+        amplitude = [0., 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        tseries = sigpropy.TimeSeries(amplitude=amplitude, dt=dt)
+        tseries.split(windowlength=3)
+        returned = tseries.amplitude
+        expected = np.array([[0., 1, 2, 3],
+                             [3., 4, 5, 6],
+                             [6., 7, 8, 9]])
+        self.assertArrayEqual(expected, returned)
         self.assertEqual(3, tseries.nseries)
         self.assertEqual(4, tseries.nsamples)
+
+        # nseries = 1 to nseries = 4
+        amplitude = [1., 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        dt = 1
+        tseries = sigpropy.TimeSeries(amplitude=amplitude, dt=dt)
+        tseries.split(windowlength=2)
+        returned = tseries.amplitude
+        expected = np.array([[1., 2, 3],
+                             [3., 4, 5],
+                             [5., 6, 7],
+                             [7., 8, 9]])
+        self.assertArrayEqual(expected, returned)
+        self.assertEqual(4, tseries.nseries)
+        self.assertEqual(3, tseries.nsamples)
+
+        # nseries = 3 to nseries = 4
+        amplitude = np.array([[1., 2, 3, 4],
+                              [5., 6, 7, 8],
+                              [9., 0, 1, 2]])
+        dt = 1
+        tseries = sigpropy.TimeSeries(amplitude=amplitude, dt=dt)
+        tseries.split(windowlength=2)
+        returned = tseries.amplitude
+        expected = np.array([[1., 2, 3],
+                             [4., 5, 6],
+                             [7., 8, 9],
+                             [0., 1, 2]])
+        self.assertArrayEqual(expected, returned)
 
     def test_cosine_taper(self):
         # 0% Window - (i.e., no taper)
@@ -122,14 +208,14 @@ class Test_TimeSeries(TestCase):
         self.assertArrayEqual(
             np.array(trace.data, dtype=np.double), tseries.amplitude)
 
-    def test_trim(self):
-        tseries = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3, 4],
-                                      dt=0.5)
-        tseries.trim(0, 1)
-        self.assertListEqual(tseries.amplitude.tolist(), [0, 1, 2])
-        self.assertEqual(tseries.nsamples, 3)
-        self.assertEqual(min(tseries.time), 0)
-        self.assertEqual(max(tseries.time), 1)
+    # def test_trim(self):
+    #     tseries = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3, 4],
+    #                                   dt=0.5)
+    #     tseries.trim(0, 1)
+    #     self.assertListEqual(tseries.amplitude.tolist(), [0, 1, 2])
+    #     self.assertEqual(tseries.nsamples, 3)
+    #     self.assertEqual(min(tseries.time), 0)
+    #     self.assertEqual(max(tseries.time), 1)
 
     def test_detrend(self):
         signal = np.array([0., .2, 0., -.2]*5)
