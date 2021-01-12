@@ -184,7 +184,7 @@ class TimeSeries():
             after the end of the record.
 
         """
-        nseries = int(self.nseries)
+        nseries_before_join = int(self.nseries)
         if self.nseries > 1:
             windowlength = self.windowlength
             warnings.warn("nseries > 1, so joining before splitting.")
@@ -213,7 +213,7 @@ class TimeSeries():
 
         self._amp = self._amp[:, start_index:end_index+1]
 
-        if nseries > 1:
+        if nseries_before_join > 1:
             self.split(windowlength)
 
     def detrend(self):
@@ -291,7 +291,7 @@ class TimeSeries():
         nth = self.nsamples_per_window
         keep_ids = np.ones(self._amp.size, dtype=bool)
         keep_ids[nth::nth] = False
-        self._amp = self._amp.flatten()[keep_ids]
+        self._amp = np.expand_dims(self._amp.flatten()[keep_ids], axis=0)
 
     def cosine_taper(self, width):
         """Apply cosine taper to time series.
