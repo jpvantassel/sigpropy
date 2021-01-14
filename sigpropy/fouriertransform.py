@@ -175,7 +175,7 @@ class FourierTransform():
 
         """
         self._amp = self.mag
-        smooth_amp = np.empty_like(self._amp)
+        smooth_amp = np.empty_like(self._amp, dtype=np.double)
 
         for c_col, cfrq in enumerate(self._frq):
             smoothing_window = self._k_and_o_window(self._frq, cfrq,
@@ -230,7 +230,8 @@ class FourierTransform():
             smoothed value of `mag`.
 
         """
-        frequencies = np.array(frequencies)
+        frequencies = np.array(frequencies, dtype=np.double)
+
         self._amp = self._smooth_konno_ohmachi_fast(self._frq, self.mag,
                                                     fcs=frequencies,
                                                     bandwidth=bandwidth)
@@ -238,7 +239,7 @@ class FourierTransform():
 
     @staticmethod
     @njit(cache=True)
-    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40):  # pragma: no cover
+    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40.):  # pragma: no cover
         """Static method for Konno and Ohmachi smoothing.
 
         Parameters
@@ -265,18 +266,22 @@ class FourierTransform():
         upper_limit = np.power(10, +n/bandwidth)
         lower_limit = np.power(10, -n/bandwidth)
 
-        smoothed_spectrum = np.empty_like(fcs)
+        nrows = spectrum.shape[0]
+        ncols = fcs.size
+        smoothed_spectrum = np.empty((nrows, ncols))
 
-        for f_index, fc in enumerate(fcs):
+        for fc_index, fc in enumerate(fcs):
+
             if fc < 1E-6:
-                smoothed_spectrum[f_index] = 0
+                smoothed_spectrum[:, fc_index] = 0
                 continue
 
-            sumproduct = 0
+            sumproduct = np.zeros(nrows)
             sumwindow = 0
 
-            for f, c_spectrum in zip(frequencies, spectrum):
+            for f_index, f in enumerate(frequencies):
                 f_on_fc = f/fc
+
                 if (f < 1E-6) or (f_on_fc > upper_limit) or (f_on_fc < lower_limit):
                     continue
                 elif np.abs(f - fc) < 1e-6:
@@ -286,13 +291,14 @@ class FourierTransform():
                     window = np.sin(window) / window
                     window *= window
                     window *= window
-                sumproduct += window*c_spectrum
+
+                sumproduct += window*spectrum[:, f_index]
                 sumwindow += window
 
             if sumwindow > 0:
-                smoothed_spectrum[f_index] = sumproduct / sumwindow
+                smoothed_spectrum[:, fc_index] = sumproduct / sumwindow
             else:
-                smoothed_spectrum[f_index] = 0
+                smoothed_spectrum[:, fc_index] = 0
 
         return smoothed_spectrum
 
@@ -382,7 +388,7 @@ class FourierTransform():
             Initialized with information from `TimeSeries`.
 
         """
-        amp, frq = cls.fft(timeseries.amplitude, timeseries.dt, **fft_kwargs)
+        amp, frq = cls.fft(timeseries._amp, timeseries.dt, **fft_kwargs)
         return cls(amp, frq, timeseries.fnyq)
 
     @property
