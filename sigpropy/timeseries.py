@@ -194,22 +194,16 @@ class TimeSeries():
         start = min(current_time)
         end = max(current_time)
 
-        if (start_time < start) or (start_time > end_time):
-            logger.debug(f"{start} < {start_time} < {end_time}: Must be True.")
-            raise IndexError("Illogical start_time, see doctring.")
+        if (start_time < start) or (start_time >= end_time):
+            msg = f"Illogical start_time for trim. The following must be true: {start:.2f} < {start_time:.2f} < {end_time:.2f}."
+            raise IndexError(msg)
 
         if (end_time > end):
-            logger.debug(f"{start_time} < {end_time} < {end}: Must be True.")
-            raise IndexError("Illogical end_time, see doctring.")
-
-        logger.info(f"start = {start}, moving to start_time = {start_time}")
-        logger.info(f"start = {end}, moving to end_time = {end_time}")
+            msg = f"Illogical end_time for trim. The following must be true: {start_time:.2f} < {end_time:.2f} < {end:.2f}."
+            raise IndexError(msg)
 
         start_index = np.argmin(np.absolute(current_time - start_time))
         end_index = np.argmin(np.absolute(current_time - end_time))
-
-        logger.debug(f"start_index = {start_index}")
-        logger.debug(f"start_index = {end_index}")
 
         self._amp = self._amp[:, start_index:end_index+1]
 
@@ -328,11 +322,8 @@ class TimeSeries():
             Filters attribute `amp`.
 
         """
-        # TODO (jpv): Add test
-        # TODO (jpv): Extend functionality of WindowedTimeSeries
         fnyq = self.fnyq
         b, a = butter(order, [flow/fnyq, fhigh/fnyq], btype='bandpass')
-        # TODO (jpv): Research padlen argument
         self._amp = filtfilt(b, a, self._amp, padlen=3*(max(len(b), len(a))-1))
 
     @classmethod
@@ -438,6 +429,10 @@ class TimeSeries():
 
         return True
 
+    def __str__(self):
+        """Human-readable representation of `TimeSeries`."""
+        return f"TimeSeries of shape ({self.nseries},{self.nsamples}) at {id(self)}."
+
     def __repr__(self):
         """Unambiguous representation of `TimeSeries`."""
-        return f"TimeSeries(dt={self.dt}, amplitude={str(self.amplitude[0:3])[:-1]} ... {str(self.amplitude[-3:])[1:]})"
+        return f"TimeSeries(amplitude={self.amplitude}, dt={self.dt})"
