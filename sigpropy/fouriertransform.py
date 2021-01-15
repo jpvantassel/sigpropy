@@ -86,15 +86,9 @@ class FourierTransform():
         if amplitude.ndim > 2:
             raise TypeError("`amplitude` cannot have dimension > 2.")
 
-        npts = amplitude.shape[-1] if kwargs.get(
-            "n") is None else kwargs.get("n")
+        npts = amplitude.shape[-1] if kwargs.get("n") is None else kwargs.get("n")
         nfrqs = int(npts/2)+1 if (npts % 2) == 0 else int((npts+1)/2)
         frq = np.abs(np.fft.fftfreq(npts, dt))[:nfrqs]
-        # if amplitude.ndim == 1:
-        #     return(2/npts * fftpack.fft(amplitude, **kwargs)[0:nfrqs], frq)
-        # else:
-        # fft = np.zeros((amplitude.shape[0], nfrqs), dtype=complex)
-        # for cwindow, amplitude in enumerate(amplitude):
         fft = 2/npts*fftpack.fft(amplitude, **kwargs)[:, :nfrqs]
         return (fft, frq)
 
@@ -121,9 +115,9 @@ class FourierTransform():
         # amplitude must be castable to ndarray of complex doubles.
         try:
             self._amp = np.array(amplitude, dtype=np.cdouble)
-        except ValueError:
+        except TypeError as e:
             msg = "`amplitude` must be convertable to `ndarray` of `cdouble`s."
-            raise TypeError(msg)
+            raise TypeError(msg) from e
 
         # amplitude must have ndim==2.
         if self._amp.ndim == 1:
@@ -188,9 +182,7 @@ class FourierTransform():
     @staticmethod
     def _k_and_o_window(frequencies, center_frequency,
                         bandwidth=40.0, normalize=True):
-        if frequencies.dtype != np.float32 and frequencies.dtype != np.float64:
-            msg = 'frequencies needs to have a dtype of float32/64.'
-            raise ValueError(msg)
+        frequencies = np.array(frequencies, dtype=float)
 
         if center_frequency == 0:
             window = np.zeros_like(frequencies)
@@ -411,10 +403,10 @@ class FourierTransform():
         """Real component of complex FFT amplitude."""
         return np.real(self._amp)
 
-    def __str__(Self):
+    def __str__(self):
         """Human-readable representation of `FourierTransform`."""
-        return f"FourierTransform of shape {self._amp.shape} at {id(self)}"
+        return f"FourierTransform of shape {self.amplitude.shape} at {id(self)}"
 
     def __repr__(self):
         """Unambiguous representation of `FourierTransform`."""
-        return f"FourierTransform(amplitude={self._amp}, frequency={self._frq}, fnyq={self.fnyq})"
+        return f"FourierTransform(amplitude=np.{self.amplitude.__repr__()}, frequency=np.{self.frequency.__repr__()}, fnyq={self.fnyq})"

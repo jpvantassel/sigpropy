@@ -32,6 +32,11 @@ class Test_FourierTransform(TestCase):
     def setUp(self):
         self.full_path = get_full_path(__file__)
 
+    def test_fft(self):
+        dt = 0.5
+        amplitude = np.array([[[1.,2,3]]])
+        self.assertRaises(TypeError, sigpropy.FourierTransform.fft, amplitude, dt)
+
     def test_init(self):
         # 1d amplitude
         frequency = np.array([1., 2, 3])
@@ -73,7 +78,7 @@ class Test_FourierTransform(TestCase):
         self.assertRaises(TypeError, sigpropy.FourierTransform,
                           amplitude, frequency)
 
-        # invalid fnyq
+        # invalid fnyq (fnyq < 0).
         frequency = [1, 2, 3]
         amplitude = [4, 5, 6]
         fnyq = 0
@@ -279,6 +284,18 @@ class Test_FourierTransform(TestCase):
         expected = (tseries.nseries, fsuite.frequency.size)
         self.assertTupleEqual(expected, returned)
 
+    def test_str_and_repr(self):
+        frequency = [1.,2,3]
+        amplitude = [4.,5,6]
+        fseries = sigpropy.FourierTransform(amplitude, frequency)
+
+        # str
+        expected = f"FourierTransform of shape (3,) at {id(fseries)}"
+        self.assertEqual(expected, fseries.__str__())
+
+        # repr
+        expected = f"FourierTransform(amplitude=np.array([ 4.+0.j,  5.+0.j,  6.+0.j]), frequency=np.array([ 1.,  2.,  3.]), fnyq=3.0)"
+        self.assertEqual(expected, fseries.__repr__())
 
 if __name__ == "__main__": # pragma: no cover
     unittest.main()
