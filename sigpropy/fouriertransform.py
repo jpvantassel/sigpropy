@@ -115,7 +115,7 @@ class FourierTransform():
         # amplitude must be castable to ndarray of complex doubles.
         try:
             self._amp = np.array(amplitude, dtype=np.cdouble)
-        except TypeError as e:
+        except TypeError or ValueError as e:
             msg = "`amplitude` must be convertable to `ndarray` of `cdouble`s."
             raise TypeError(msg) from e
 
