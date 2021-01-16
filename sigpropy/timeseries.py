@@ -387,6 +387,23 @@ class TimeSeries():
         dictionary = json.loads(json_str)
         return cls.from_dict(dictionary)
 
+    @classmethod
+    def from_timeseries(cls, timeseries):
+        """Copy constructor for `TimeSeries` object.
+
+        Parameters
+        ----------
+        timeseries : TimeSeries
+            `TimeSeries` to be copied.
+
+        Returns
+        -------
+        TimeSeries
+            Copy of the provided `TimeSeries` object.
+
+        """
+        return cls(timeseries.amplitude, timeseries.dt)
+
     def to_json(self):
         """Json string representation of `TimeSeries` object.
 

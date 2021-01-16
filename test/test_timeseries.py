@@ -240,6 +240,30 @@ class Test_TimeSeries(TestCase):
         tseries = sigpropy.TimeSeries(amplitude, dt)
         self.assertRaises(IndexError, tseries.trim, start_time=1, end_time=5)
 
+    def test_detrend(self):
+        # nseries = 1
+        signal = np.array([0., .2, 0., -.2]*5)
+        trend = np.arange(0, 20, 1)
+        amplitude = signal + trend
+        dt = 1
+        tseries = sigpropy.TimeSeries(amplitude, dt)
+        tseries.detrend()
+        returned = tseries.amplitude
+        expected = signal
+        self.assertArrayAlmostEqual(expected, returned, delta=0.03)
+
+        # nseries = 2
+        signal = np.array([0., .2, 0., -.2]*5)
+        trend = np.arange(0, 20, 1)
+        amplitude = signal + trend
+        amplitude = np.vstack((amplitude, amplitude))
+        dt = 1
+        tseries = sigpropy.TimeSeries(amplitude, dt)
+        tseries.detrend()
+        expected = signal
+        for returned in tseries.amplitude:
+            self.assertArrayAlmostEqual(expected, returned, delta=0.03)
+
     def test_split(self):
         # nseries = 1 to nseries = 2
         amplitude = [1., 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -399,30 +423,6 @@ class Test_TimeSeries(TestCase):
         self.assertArrayEqual(
             np.array(trace.data, dtype=np.double), tseries.amplitude)
 
-    def test_detrend(self):
-        # nseries = 1
-        signal = np.array([0., .2, 0., -.2]*5)
-        trend = np.arange(0, 20, 1)
-        amplitude = signal + trend
-        dt = 1
-        tseries = sigpropy.TimeSeries(amplitude, dt)
-        tseries.detrend()
-        returned = tseries.amplitude
-        expected = signal
-        self.assertArrayAlmostEqual(expected, returned, delta=0.03)
-
-        # nseries = 2
-        signal = np.array([0., .2, 0., -.2]*5)
-        trend = np.arange(0, 20, 1)
-        amplitude = signal + trend
-        amplitude = np.vstack((amplitude, amplitude))
-        dt = 1
-        tseries = sigpropy.TimeSeries(amplitude, dt)
-        tseries.detrend()
-        expected = signal
-        for returned in tseries.amplitude:
-            self.assertArrayAlmostEqual(expected, returned, delta=0.03)
-
     def test_to_and_from_dict(self):
         dt = 1
         amplitude = np.array([1, 2, 3, 4])
@@ -441,6 +441,15 @@ class Test_TimeSeries(TestCase):
         self.assertEqual(expected.dt, returned.dt)
         self.assertArrayEqual(expected.amplitude, returned.amplitude)
 
+    def test_timeseries(self):
+        # Simple copy.
+        dt = 0.1
+        amplitude = [1.,2,3,4,5,6]
+        original = sigpropy.TimeSeries(amplitude, dt)
+        copy = sigpropy.TimeSeries.from_timeseries(original)
+        self.assertIsNot(original, copy)
+        self.assertEqual(original, copy)
+        
     def test_eq(self):
         a = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3], dt=0.5)
         b = sigpropy.TimeSeries(amplitude=[0, 1, 2, 3], dt=0.5)
