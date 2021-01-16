@@ -18,6 +18,7 @@
 """FourierTransform class definition."""
 
 import logging
+import warnings
 
 import numpy as np
 import scipy.interpolate as sp
@@ -92,14 +93,13 @@ class FourierTransform():
         fft = 2/npts*fftpack.fft(amplitude, **kwargs)[:, :nfrqs]
         return (fft, frq)
 
-    def __init__(self, amplitude, frequency, fnyq=None):
+    def __init__(self, amplitude, frequency, fnyq=None, dtype=complex):
         """Initialize a `FourierTransform` object.
 
         Parameters
         ----------
         amplitude : ndarray
-            Fourier transform amplitude. Refer to attribute `amp`
-            for more details.
+            Fourier transform amplitude.
         frequency : ndarray
             Linearly spaced frequency vector for Fourier transform.
         fnyq : float, optional
@@ -114,9 +114,9 @@ class FourierTransform():
         """
         # amplitude must be castable to ndarray of complex doubles.
         try:
-            self._amp = np.array(amplitude, dtype=np.cdouble)
+            self._amp = np.array(amplitude, dtype=dtype)
         except (TypeError, ValueError) as e:
-            msg = "`amplitude` must be convertable to `ndarray` of `cdouble`s."
+            msg = f"`amplitude` must be convertable to `ndarray` of {dtype}s."
             raise TypeError(msg) from e
 
         # amplitude must have ndim==2.
@@ -144,10 +144,22 @@ class FourierTransform():
         self.fnyq = float(fnyq) if fnyq is not None else float(max(self._frq))
         if self.fnyq <= 0:
             raise ValueError(f"fnyq must be greater than 0, not {self.fnyq}")
+        
+    @property
+    def frq(self):
+        warnings.warn("`frq` is deprecated, use `frequency` instead",
+                      DeprecationWarning)
+        return self._frq
 
     @property
     def frequency(self):
         return self._frq
+
+    @property
+    def amp(self):
+        warnings.warn("`amp` is deprecated, use `amplitude` instead",
+                      DeprecationWarning)
+        return self.amplitude
 
     @property
     def amplitude(self):
@@ -380,8 +392,12 @@ class FourierTransform():
             Initialized with information from `TimeSeries`.
 
         """
-        amp, frq = cls.fft(timeseries._amp, timeseries.dt, **fft_kwargs)
-        return cls(amp, frq, timeseries.fnyq)
+        try:
+            amp, frq = cls.fft(timeseries._amp, timeseries.dt, **fft_kwargs)
+        except AttributeError:
+            msg = f"timeseries must be a TimeSeries, not {type(timeseries)}."
+            raise TypeError(msg)
+        return cls(amp, frq, fnyq=timeseries.fnyq)
 
     @property
     def mag(self):

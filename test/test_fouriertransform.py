@@ -34,8 +34,9 @@ class Test_FourierTransform(TestCase):
 
     def test_fft(self):
         dt = 0.5
-        amplitude = np.array([[[1.,2,3]]])
-        self.assertRaises(TypeError, sigpropy.FourierTransform.fft, amplitude, dt)
+        amplitude = np.array([[[1., 2, 3]]])
+        self.assertRaises(
+            TypeError, sigpropy.FourierTransform.fft, amplitude, dt)
 
     def test_init(self):
         # 1d amplitude
@@ -86,12 +87,25 @@ class Test_FourierTransform(TestCase):
                           amplitude, frequency, fnyq)
 
     def test_properties(self):
-        frq = np.array([1, 2, 3, 4, 5])
+        frq = np.array([1., 2, 3, 4, 5])
         amp = np.array([0+1j, 1+2j, 4+0j, 2j, 5])
         fseries = sigpropy.FourierTransform(amp, frq)
 
         # .amplitude
         self.assertArrayEqual(amp, fseries.amplitude)
+
+        # .amp Deprecated
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.assertArrayEqual(amp, fseries.amp)
+
+        # .frequency
+        self.assertArrayEqual(frq, fseries.frequency)
+
+        # .frq Deprecated
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.assertArrayEqual(frq, fseries.frq)
 
         # .mag
         returned = fseries.mag
@@ -284,9 +298,14 @@ class Test_FourierTransform(TestCase):
         expected = (tseries.nseries, fsuite.frequency.size)
         self.assertTupleEqual(expected, returned)
 
+        # Bad timeseries.
+        self.assertRaises(TypeError,
+                          sigpropy.FourierTransform.from_timeseries,
+                          "bad timeseries")
+
     def test_str_and_repr(self):
-        frequency = [1.,2,3]
-        amplitude = [4.,5,6]
+        frequency = [1., 2, 3]
+        amplitude = [4., 5, 6]
         fseries = sigpropy.FourierTransform(amplitude, frequency)
 
         # str
@@ -297,5 +316,6 @@ class Test_FourierTransform(TestCase):
         expected = f"FourierTransform(amplitude=np.array([ 4.+0.j,  5.+0.j,  6.+0.j]), frequency=np.array([ 1.,  2.,  3.]), fnyq=3.0)"
         self.assertEqual(expected, fseries.__repr__())
 
-if __name__ == "__main__": # pragma: no cover
+
+if __name__ == "__main__":  # pragma: no cover
     unittest.main()
