@@ -3,33 +3,64 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
 version: 2.1
+
 orbs:
   coverage-reporter: codacy/coverage-reporter@7.6.7
+
 workflows:
-  version: 2
-  test:
+  build:
     jobs:
-      - test-36
-      - test-37
-      - test-38
-      - send-coverage-report
+      - test-36:
+          context:
+            - docker          
+      - test-37:
+          context:
+            - docker
+      - test-38:
+          context:
+            - docker
+      # - test-39:
+      #     context:
+      #       - docker
+
 jobs:
-  send-coverage-report:
+  test-36: &test-template
     docker:
-      - image: circleci/python:3.7.5
-    working_directory: ~/repo
+      - image: circleci/python:3.6.9
+        auth:
+          username: jpvantassel
+          password: $DOCKER_PASS
+    working_directory: ~/sigpropy
     steps:
       - checkout
+      # - restore_cache:
+      #     key: pycache-{{ .Branch }}-{{ checksum "requirements.txt" }}  
       - run:
-          name: Prepare Results
+          name: Install Requirements
           command: |
             virtualenv venv
             . venv/bin/activate
             pip install numpy
+            pip install -r requirements.txt
+      # - save_cache:
+      #     key: pycache-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      #     paths:
+      #       - "venv"
+      - run:
+          name: Install sigpropy
+          command: |
+            . venv/bin/activate
             pip install -e .[dev]
+      - run:
+          name: Test
+          command: |
+            . venv/bin/activate
             cd test
             coverage run --source=../sigpropy -m unittest
-            cd ..
+      - run:
+          name: Create Coverage Report
+          command: |
+            . venv/bin/activate
             mkdir test-results
             mv test/.coverage test-results
             cd test-results
@@ -40,56 +71,26 @@ jobs:
           path: test-results
       - coverage-reporter/send_report
 
-  test-36: &test-template
-    docker:
-      - image: circleci/python:3.6.9
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          name: Create virtualenv
-          command: |
-            virtualenv venv
-            . venv/bin/activate
-            mkdir test-results
-      - run:
-          name: Install numpy
-          command: |
-            . venv/bin/activate
-            pip install numpy
-      - run:
-          name: Install sigpropy and dependencies
-          command: |
-            . venv/bin/activate
-            pip install -e .[dev]
-      - run:
-          name: Run tests
-          command: |
-            . venv/bin/activate
-            cd test
-            coverage run --source=../sigpropy -m unittest
-      - run:
-          name: Create coverage xml
-          command: |
-            . venv/bin/activate
-            mv test/.coverage test-results
-            cd test-results
-            coverage xml -o coverage.xml
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: test-results
-      - run:
-          name: Call Codecov
-          command: |
-            . venv/bin/activate
-            pip install codecov
-            codecov
   test-37:
     <<: *test-template
     docker:
       - image: circleci/python:3.7.5
+        auth:
+          username: jpvantassel
+          password: $DOCKER_PASS
+
   test-38:
     <<: *test-template
     docker:
       - image: circleci/python:3.8.0
+        auth:
+          username: jpvantassel
+          password: $DOCKER_PASS
+
+  # test-39:
+  #   <<: *test-template
+  #   docker:
+  #     - image: circleci/python:3.9.0
+  #       auth:
+  #         username: jpvantassel
+  #         password: $DOCKER_PASS

@@ -3,12 +3,16 @@
 
 from setuptools import setup, find_packages
 
+meta = {}
+with open("sigpropy/meta.py") as f:
+    exec(f.read(), meta)
+
 with open("README.md", encoding="utf8") as f:
     long_description = f.read()
 
 setup(
     name='sigpropy',
-    version='0.2.0',
+    version=meta['__version__'],
     description='A Python package for digital signal processing.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -16,7 +20,7 @@ setup(
     author='Joseph P. Vantassel',
     author_email='jvantassel@utexas.edu',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',

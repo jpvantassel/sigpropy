@@ -1,6 +1,5 @@
-# This file is part of SigProPy, a Python package for digital signal
-# processing.
-# Copyright (C) 2019-2020 Joseph P. Vantassel (jvantassel@utexas.edu)
+# This file is part of sigpropy, a Python package for signal processing.
+# Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -31,10 +30,10 @@ def main():
     fname = full_path+"data/a2/UT.STN11.A2_C50.miniseed"
     traces = obspy.read(fname)
     tseries = sp.TimeSeries.from_trace(traces[0])
-    wtseries = sp.WindowedTimeSeries.from_timeseries(tseries, windowlength=360)
-    wtseries.bandpassfilter(flow=0.2, fhigh=45, order=5)
-    wtseries.cosine_taper(width=0.2)
-    fft = sp.FourierTransformSuite.from_timeseries(wtseries)
+    tseries.split(windowlength=360)
+    tseries.bandpassfilter(flow=0.2, fhigh=45, order=5)
+    tseries.cosine_taper(width=0.2)
+    fft = sp.FourierTransform.from_timeseries(tseries)
 
     # Slow smoothing used pre 15 March 2020
     # fft.smooth_konno_ohmachi(bandwidth=40.)
@@ -59,3 +58,4 @@ stat.print_stats(0.01)
 # 2020 - 03 - 15 :  16.47s -> Change from 120s to 360s
 # 2020 - 03 - 15 :  1.342s -> Fast smoothing
 # 2020 - 03 - 19 :  0.254s -> Add cache to njit.
+# 2021 - 20 - 21 :  0.454s -> After removal of WindowedTimeSeries & FourierTransformSuite

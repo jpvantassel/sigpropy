@@ -15,14 +15,18 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../sigpropy'))
 
+meta = {}
+with open("../sigprop/meta.py") as f:
+    exec(f.read(), meta)
+
 # -- Project information -----------------------------------------------------
 
-project = 'SigProPy'
-copyright = '2019-2020, Joseph P. Vantassel'
+project = 'sigpropy'
+copyright = '2019, Joseph P. Vantassel'
 author = 'Joseph P. Vantassel'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.1'
+release = meta['__version__']
 
 # -- General configuration ---------------------------------------------------
 

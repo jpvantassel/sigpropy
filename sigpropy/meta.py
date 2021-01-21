@@ -14,12 +14,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https: //www.gnu.org/licenses/>.
 
-"""Import classes from each module into the sigpropy package."""
+"""Metadata for sigpropy."""
 
-import logging
+__version__ = "0.3.0"
 
-from .timeseries import TimeSeries
-from .fouriertransform import FourierTransform
-from .meta import __version__
-
-logging.getLogger('swprocess').addHandler(logging.NullHandler())

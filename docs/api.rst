@@ -8,5 +8,3 @@ API Reference
 
    timeseries
    fouriertransform
-   windowedtimeseries
-   fouriertransformsuite

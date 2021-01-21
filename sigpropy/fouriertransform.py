@@ -1,6 +1,5 @@
-# This file is part of SigProPy, a Python package for digital signal
-# processing.
-# Copyright (C) 2019-2020 Joseph P. Vantassel (jvantassel@utexas.edu)
+# This file is part of sigpropy, a Python package for signal processing.
+# Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -17,10 +16,15 @@
 
 """FourierTransform class definition."""
 
+import logging
+import warnings
+
 import numpy as np
 import scipy.interpolate as sp
 import scipy.fftpack as fftpack
 from numba import njit
+
+logger = logging.getLogger("sigpropy.fouriertransform")
 
 __all__ = ['FourierTransform']
 
@@ -79,35 +83,27 @@ class FourierTransform():
                 `amplitude`.
 
         """
-        if len(amplitude.shape) > 2:
+        if amplitude.ndim > 2:
             raise TypeError("`amplitude` cannot have dimension > 2.")
 
-        npts = amplitude.shape[-1] if kwargs.get(
-            "n") is None else kwargs.get("n")
+        npts = amplitude.shape[-1] if kwargs.get("n") is None else kwargs.get("n")
         nfrqs = int(npts/2)+1 if (npts % 2) == 0 else int((npts+1)/2)
-        frq = np.abs(np.fft.fftfreq(npts, dt))[0:nfrqs]
-        if len(amplitude.shape) == 1:
-            return(2/npts * fftpack.fft(amplitude, **kwargs)[0:nfrqs], frq)
-        else:
-            fft = np.zeros((amplitude.shape[0], nfrqs), dtype=complex)
-            for cwindow, amplitude in enumerate(amplitude):
-                fft[cwindow] = 2/npts * \
-                    fftpack.fft(amplitude, **kwargs)[0:nfrqs]
-            return (fft, frq)
+        frq = np.abs(np.fft.fftfreq(npts, dt))[:nfrqs]
+        fft = 2/npts*fftpack.fft(amplitude, **kwargs)[:, :nfrqs]
+        return (fft, frq)
 
-    def __init__(self, amplitude, frequency, fnyq=None):
+    def __init__(self, amplitude, frequency, fnyq=None, dtype=complex):
         """Initialize a `FourierTransform` object.
 
         Parameters
         ----------
         amplitude : ndarray
-            Fourier transform amplitude. Refer to attribute `amp`
-            for more details.
+            Fourier transform amplitude.
         frequency : ndarray
             Linearly spaced frequency vector for Fourier transform.
         fnyq : float, optional
             Nyquist frequency of Fourier transform, default is
-            `max(frq)`.
+            `max(frequency)`.
 
         Returns
         -------
@@ -115,49 +111,58 @@ class FourierTransform():
             Initialized with `amplitude` and `frequency` information.
 
         """
-        fnyq = fnyq if fnyq != None else max(frequency)
-        results = self._check_input(amplitude, frequency, fnyq)
-        self.amp, self.frq, self.fnyq = results
+        # amplitude must be castable to ndarray of complex doubles.
+        try:
+            self._amp = np.array(amplitude, dtype=dtype)
+        except (TypeError, ValueError) as e:
+            msg = f"`amplitude` must be convertable to `ndarray` of {dtype}s."
+            raise TypeError(msg) from e
 
-    @staticmethod
-    def _basic_checks(amplitude, frequency, fnyq):
-        amplitude = np.array(amplitude)
-        frequency = np.array(frequency)
-        fnyq = float(fnyq)
+        # amplitude must have ndim==2.
+        if self._amp.ndim == 1:
+            self._amp = np.expand_dims(self._amp, axis=0)
+        elif self._amp.ndim > 2:
+            msg = f"`amplitude` must be 1-D or 2-D, not {self._amp.ndim}-D."
+            raise TypeError(msg)
+        else:
+            pass
 
-        if len(frequency.shape) != 1:
-            msg = f"Frequency must be 1-D not {len(frequency.shape)}-D."
+        # frequency must be castable to ndarray of doubles.
+        try:
+            self._frq = np.array(frequency, dtype=np.double)
+        except ValueError:
+            msg = "`frequency` must be convertable to `ndarray` of `double`s."
             raise TypeError(msg)
 
-        if not fnyq > 0:
-            raise ValueError(f"fnyq must be greater than 0, not {fnyq}")
+        # frequency must have ndim=1.
+        if self._frq.ndim != 1:
+            msg = f"frequency must be 1-D, not {self._frq.ndim} 1-D."
+            raise TypeError(msg)
 
-        return amplitude, frequency, fnyq
-
-    def _check_input(self, amplitude, frequency, fnyq):
-        """Performs checks on input, specifically:
-
-        1. Check that `amplitude` and `frequency` are 1D.
-        2. Checks that fnyq is greater than zero.
-
-        """
-
-        amplitude, frequency, fnyq = self._basic_checks(amplitude, frequency,
-                                                        fnyq)
-
-        if len(amplitude.shape) != 1:
-            msg = f"Amplitude must be 1-D not {len(amplitude.shape)}-D."
-            raise ValueError(msg)
-
-        return amplitude, frequency, fnyq
+        # fnyq (nyquist frequency) must be positive float.
+        self.fnyq = float(fnyq) if fnyq is not None else float(max(self._frq))
+        if self.fnyq <= 0:
+            raise ValueError(f"fnyq must be greater than 0, not {self.fnyq}")
+        
+    @property
+    def frq(self):
+        warnings.warn("`frq` is deprecated, use `frequency` instead",
+                      DeprecationWarning)
+        return self._frq
 
     @property
     def frequency(self):
-        return self.frq
+        return self._frq
+
+    @property
+    def amp(self):
+        warnings.warn("`amp` is deprecated, use `amplitude` instead",
+                      DeprecationWarning)
+        return self.amplitude
 
     @property
     def amplitude(self):
-        return self.amp
+        return np.squeeze(self._amp)
 
     def smooth_konno_ohmachi(self, bandwidth=40.0):
         """Apply Konno and Ohmachi smoothing.
@@ -174,27 +179,21 @@ class FourierTransform():
             smoothed value of `mag`.
 
         """
-        self.amp = self.mag
-        smooth_amp = np.empty_like(self.amp)
-        if len(self.amp.shape) == 1:
-            for cid, cfrq in enumerate(self.frq):
-                smoothing_window = self._k_and_o_window(self.frq, cfrq,
-                                                        bandwidth=bandwidth)
-                smooth_amp[cid] = np.dot(self.amp, smoothing_window)
-        else:
-            for c_col, cfrq in enumerate(self.frq):
-                smoothing_window = self._k_and_o_window(self.frq, cfrq,
-                                                        bandwidth=bandwidth)
-                for c_row, c_amp in enumerate(self.amp):
-                    smooth_amp[c_row, c_col] = np.dot(c_amp, smoothing_window)
-        self.amp = smooth_amp
+        self._amp = np.abs(self._amp)
+        smooth_amp = np.empty_like(self._amp, dtype=np.double)
+
+        for c_col, cfrq in enumerate(self._frq):
+            smoothing_window = self._k_and_o_window(self._frq, cfrq,
+                                                    bandwidth=bandwidth)
+            for c_row, c_amp in enumerate(self._amp):
+                smooth_amp[c_row, c_col] = np.dot(c_amp, smoothing_window)
+
+        self._amp = smooth_amp
 
     @staticmethod
     def _k_and_o_window(frequencies, center_frequency,
                         bandwidth=40.0, normalize=True):
-        if frequencies.dtype != np.float32 and frequencies.dtype != np.float64:
-            msg = 'frequencies needs to have a dtype of float32/64.'
-            raise ValueError(msg)
+        frequencies = np.array(frequencies, dtype=float)
 
         if center_frequency == 0:
             window = np.zeros_like(frequencies)
@@ -221,8 +220,8 @@ class FourierTransform():
         ----------
         frequencies : array-like
             Frequencies at which the smoothing is performed. If you
-            choose to use all of the frequencies from the FFT
-            (i.e., `self.frq`) for this parameter you should not expect
+            choose to use all of the frequencies from the FFT for this
+            parameter you should not expect
             much speedup over `smooth_konno_ohmachi`.
         bandwidth : float, optional
             Width of smoothing window, default is 40.
@@ -234,15 +233,16 @@ class FourierTransform():
             smoothed value of `mag`.
 
         """
-        frequencies = np.array(frequencies)
-        self.amp = self._smooth_konno_ohmachi_fast(self.frequency, self.mag,
-                                                   fcs=frequencies,
-                                                   bandwidth=bandwidth)
-        self.frq = frequencies
+        frequencies = np.array(frequencies, dtype=np.double)
+
+        self._amp = self._smooth_konno_ohmachi_fast(self._frq, np.abs(self._amp),
+                                                    fcs=frequencies,
+                                                    bandwidth=bandwidth)
+        self._frq = frequencies
 
     @staticmethod
     @njit(cache=True)
-    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40):  # pragma: no cover
+    def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40.):  # pragma: no cover
         """Static method for Konno and Ohmachi smoothing.
 
         Parameters
@@ -269,18 +269,22 @@ class FourierTransform():
         upper_limit = np.power(10, +n/bandwidth)
         lower_limit = np.power(10, -n/bandwidth)
 
-        smoothed_spectrum = np.empty_like(fcs)
+        nrows = spectrum.shape[0]
+        ncols = fcs.size
+        smoothed_spectrum = np.empty((nrows, ncols))
 
-        for f_index, fc in enumerate(fcs):
+        for fc_index, fc in enumerate(fcs):
+
             if fc < 1E-6:
-                smoothed_spectrum[f_index] = 0
+                smoothed_spectrum[:, fc_index] = 0
                 continue
 
-            sumproduct = 0
+            sumproduct = np.zeros(nrows)
             sumwindow = 0
 
-            for f, c_spectrum in zip(frequencies, spectrum):
+            for f_index, f in enumerate(frequencies):
                 f_on_fc = f/fc
+
                 if (f < 1E-6) or (f_on_fc > upper_limit) or (f_on_fc < lower_limit):
                     continue
                 elif np.abs(f - fc) < 1e-6:
@@ -290,13 +294,14 @@ class FourierTransform():
                     window = np.sin(window) / window
                     window *= window
                     window *= window
-                sumproduct += window*c_spectrum
+
+                sumproduct += window*spectrum[:, f_index]
                 sumwindow += window
 
             if sumwindow > 0:
-                smoothed_spectrum[f_index] = sumproduct / sumwindow
+                smoothed_spectrum[:, fc_index] = sumproduct / sumwindow
             else:
-                smoothed_spectrum[f_index] = 0
+                smoothed_spectrum[:, fc_index] = 0
 
         return smoothed_spectrum
 
@@ -334,7 +339,7 @@ class FourierTransform():
         ValueError:
             If `maxf`, `minf`, or `nf` are illogical.
         NotImplementedError
-            If `res_type` is not amoung those options specified.
+            If `res_type` is not among those options specified.
 
         """
         if maxf < minf:
@@ -345,7 +350,7 @@ class FourierTransform():
             raise ValueError("`nf` must be positive integer")
         if maxf > self.fnyq*1.05:
             raise ValueError("`maxf` is out of range.")
-        if minf < min(self.frq):
+        if minf < min(self._frq):
             raise ValueError("`minf` is out of range.")
 
         if res_type == "log":
@@ -356,29 +361,28 @@ class FourierTransform():
             msg = f"{res_type} resampling has not been implemented."
             raise NotImplementedError(msg)
 
-        interp_amp = sp.interp1d(self.frq,
-                                 self.amp,
+        interp_amp = sp.interp1d(self._frq,
+                                 self._amp,
                                  kind="linear",
                                  fill_value="extrapolate",
                                  bounds_error=False)
         interped_amp = interp_amp(xx)
 
         if inplace:
-            self.frq = xx
-            self.amp = interped_amp
+            self._frq = xx
+            self._amp = interped_amp
         else:
             return (xx, interped_amp)
 
     @classmethod
-    def from_timeseries(cls, timeseries, **kwargs):
-        """Create a `FourierTransform` object from a `TimeSeries`
-        object.
+    def from_timeseries(cls, timeseries, **fft_kwargs):
+        """Create `FourierTransform` from `TimeSeries`.
 
         Parameters
         ----------
         timeseries : TimeSeries
             `TimeSeries` object to be transformed.
-        **kwargs : dict
+        **fft_kwargs : dict
             Custom settings for fft.
 
         Returns
@@ -387,29 +391,37 @@ class FourierTransform():
             Initialized with information from `TimeSeries`.
 
         """
-        amp, frq = cls.fft(timeseries.amp, timeseries.dt, **kwargs)
-        return cls(amp, frq, timeseries.fnyq)
+        try:
+            amp, frq = cls.fft(timeseries._amp, timeseries.dt, **fft_kwargs)
+        except AttributeError:
+            msg = f"timeseries must be a TimeSeries, not {type(timeseries)}."
+            raise TypeError(msg)
+        return cls(amp, frq, fnyq=timeseries.fnyq)
 
     @property
     def mag(self):
         """Magnitude of complex FFT amplitude."""
-        return np.abs(self.amp)
+        return np.abs(self.amplitude)
 
     @property
     def phase(self):
         """Phase of complex FFT amplitude in radians."""
-        return np.angle(self.amp)
+        return np.angle(self.amplitude)
 
     @property
     def imag(self):
         """Imaginary component of complex FFT amplitude."""
-        return np.imag(self.amp)
+        return np.imag(self.amplitude)
 
     @property
     def real(self):
         """Real component of complex FFT amplitude."""
-        return np.real(self.amp)
+        return np.real(self.amplitude)
+
+    def __str__(self):
+        """Human-readable representation of `FourierTransform`."""
+        return f"FourierTransform of shape {self.amplitude.shape} at {id(self)}"
 
     def __repr__(self):
-        """Unambiguous representation of a `FourierTransform` object."""
-        return f"FourierTransform(amp={str(self.amp[0:3])[:-1]} ... {str(self.amp[-3:])[1:]}, frq={str(self.frq[0:3])[:-1]} ... {str(self.frq[-3:])[1:]})"
+        """Unambiguous representation of `FourierTransform`."""
+        return f"FourierTransform(amplitude=np.{self.amplitude.__repr__()}, frequency=np.{self.frequency.__repr__()}, fnyq={self.fnyq})"
