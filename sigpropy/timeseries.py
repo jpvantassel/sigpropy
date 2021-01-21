@@ -1,6 +1,5 @@
-# This file is part of SigProPy, a Python package for digital signal
-# processing.
-# Copyright (C) 2019-2020 Joseph P. Vantassel (jvantassel@utexas.edu)
+# This file is part of sigpropy, a Python package for signal processing.
+# Copyright (C) 2019 Joseph P. Vantassel (jvantassel@utexas.edu)
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
