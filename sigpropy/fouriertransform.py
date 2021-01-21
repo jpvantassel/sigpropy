@@ -179,7 +179,7 @@ class FourierTransform():
             smoothed value of `mag`.
 
         """
-        self._amp = self.mag
+        self._amp = np.abs(self._amp)
         smooth_amp = np.empty_like(self._amp, dtype=np.double)
 
         for c_col, cfrq in enumerate(self._frq):
@@ -235,7 +235,7 @@ class FourierTransform():
         """
         frequencies = np.array(frequencies, dtype=np.double)
 
-        self._amp = self._smooth_konno_ohmachi_fast(self._frq, self.mag,
+        self._amp = self._smooth_konno_ohmachi_fast(self._frq, np.abs(self._amp),
                                                     fcs=frequencies,
                                                     bandwidth=bandwidth)
         self._frq = frequencies
@@ -401,22 +401,22 @@ class FourierTransform():
     @property
     def mag(self):
         """Magnitude of complex FFT amplitude."""
-        return np.abs(self._amp)
+        return np.abs(self.amplitude)
 
     @property
     def phase(self):
         """Phase of complex FFT amplitude in radians."""
-        return np.angle(self._amp)
+        return np.angle(self.amplitude)
 
     @property
     def imag(self):
         """Imaginary component of complex FFT amplitude."""
-        return np.imag(self._amp)
+        return np.imag(self.amplitude)
 
     @property
     def real(self):
         """Real component of complex FFT amplitude."""
-        return np.real(self._amp)
+        return np.real(self.amplitude)
 
     def __str__(self):
         """Human-readable representation of `FourierTransform`."""
