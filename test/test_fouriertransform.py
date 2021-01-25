@@ -215,7 +215,7 @@ class Test_FourierTransform(TestCase):
             frq.append(float(f))
             amp.append(float(a))
         new_amp = np.vstack((amp, amp, amp, amp, amp))
-        fft = sigpropy.FourierTransform(amp, frq)
+        fft = sigpropy.FourierTransform(new_amp, frq)
         fc = np.logspace(np.log10(0.3), np.log10(40), 2048)
 
         fft.smooth_konno_ohmachi_fast(fc, 40)

@@ -6,6 +6,7 @@ version: 2.1
 
 orbs:
   coverage-reporter: codacy/coverage-reporter@7.6.7
+  codecov: codecov/codecov@1.0.2
 
 workflows:
   build:
@@ -69,6 +70,8 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results
+      - codecov/upload:
+          file: {{ test-results/cobertura.xml }}
       - coverage-reporter/send_report
 
   test-37:
