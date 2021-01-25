@@ -71,7 +71,7 @@ jobs:
       - store_artifacts:
           path: test-results
       - codecov/upload:
-          file: {{ test-results/cobertura.xml }}
+          file: test-results/cobertura.xml
       - coverage-reporter/send_report
 
   test-37:
