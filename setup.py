@@ -3,6 +3,7 @@
 
 from setuptools import setup, find_packages
 
+
 def parse_meta(path_to_meta):
     with open(path_to_meta) as f:
         meta = {}
@@ -10,6 +11,7 @@ def parse_meta(path_to_meta):
             if line.startswith("__version__"):
                 meta["__version__"] = line.split('"')[1]
     return meta
+
 
 meta = parse_meta("sigpropy/meta.py")
 

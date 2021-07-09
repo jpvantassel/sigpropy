@@ -312,7 +312,7 @@ class Test_FourierTransform(TestCase):
         self.assertEqual(expected, fseries.__str__())
 
         # repr
-        expected = f"FourierTransform(amplitude=np.array([ 4.+0.j,  5.+0.j,  6.+0.j]), frequency=np.array([ 1.,  2.,  3.]), fnyq=3.0)"
+        expected = "FourierTransform(amplitude=np.array([ 4.+0.j,  5.+0.j,  6.+0.j]), frequency=np.array([ 1.,  2.,  3.]), fnyq=3.0)"
         self.assertEqual(expected, fseries.__repr__())
 
 

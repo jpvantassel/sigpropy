@@ -30,7 +30,9 @@ __all__ = ['FourierTransform']
 
 
 class FourierTransform():
-    """A class for manipulating Fourier transforms.
+
+    """
+    A class for manipulating Fourier transforms.
 
     Attributes
     ----------
@@ -49,7 +51,8 @@ class FourierTransform():
 
     @staticmethod
     def fft(amplitude, dt, **kwargs):
-        """Compute the fast-Fourier transform (FFT) of a time series.
+        """
+        Compute the fast-Fourier transform (FFT) of a time series.
 
         Parameters
         ----------
@@ -93,7 +96,8 @@ class FourierTransform():
         return (fft, frq)
 
     def __init__(self, amplitude, frequency, fnyq=None, dtype=complex):
-        """Initialize a `FourierTransform` object.
+        """
+        Initialize a `FourierTransform` object.
 
         Parameters
         ----------
@@ -143,7 +147,7 @@ class FourierTransform():
         self.fnyq = float(fnyq) if fnyq is not None else float(max(self._frq))
         if self.fnyq <= 0:
             raise ValueError(f"fnyq must be greater than 0, not {self.fnyq}")
-        
+
     @property
     def frq(self):
         warnings.warn("`frq` is deprecated, use `frequency` instead",
@@ -165,7 +169,8 @@ class FourierTransform():
         return np.squeeze(self._amp)
 
     def smooth_konno_ohmachi(self, bandwidth=40.0):
-        """Apply Konno and Ohmachi smoothing.
+        """
+        Apply Konno and Ohmachi smoothing.
 
         Parameters
         ----------
@@ -214,7 +219,8 @@ class FourierTransform():
         return window
 
     def smooth_konno_ohmachi_fast(self, frequencies, bandwidth=40):
-        """Apply fast Konno and Ohmachi smoothing.
+        """
+        Apply fast Konno and Ohmachi smoothing.
 
         Parameters
         ----------
@@ -243,7 +249,8 @@ class FourierTransform():
     @staticmethod
     @njit(cache=True)
     def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40.):  # pragma: no cover
-        """Static method for Konno and Ohmachi smoothing.
+        """
+        Static method for Konno and Ohmachi smoothing.
 
         Parameters
         ----------
@@ -306,7 +313,8 @@ class FourierTransform():
         return smoothed_spectrum
 
     def resample(self, minf, maxf, nf, res_type="log", inplace=False):
-        """Resample `FourierTransform` over a specified range.
+        """
+        Resample `FourierTransform` over a specified range.
 
         Parameters
         ----------
@@ -376,7 +384,8 @@ class FourierTransform():
 
     @classmethod
     def from_timeseries(cls, timeseries, **fft_kwargs):
-        """Create `FourierTransform` from `TimeSeries`.
+        """
+        Create `FourierTransform` from `TimeSeries`.
 
         Parameters
         ----------
