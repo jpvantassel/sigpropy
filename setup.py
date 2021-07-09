@@ -3,9 +3,15 @@
 
 from setuptools import setup, find_packages
 
-meta = {}
-with open("sigpropy/meta.py") as f:
-    exec(f.read(), meta)
+def parse_meta(path_to_meta):
+    with open(path_to_meta) as f:
+        meta = {}
+        for line in f.readlines():
+            if line.startswith("__version__"):
+                meta["__version__"] = line.split('"')[1]
+    return meta
+
+meta = parse_meta("sigpropy/meta.py")
 
 with open("README.md", encoding="utf8") as f:
     long_description = f.read()

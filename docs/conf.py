@@ -15,9 +15,15 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../sigpropy'))
 
-meta = {}
-with open("../sigpropy/meta.py") as f:
-    exec(f.read(), meta)
+def parse_meta(path_to_meta):
+    with open(path_to_meta) as f:
+        meta = {}
+        for line in f.readlines():
+            if line.startswith("__version__"):
+                meta["__version__"] = line.split('"')[1]
+    return meta
+
+meta = parse_meta("../sigpropy/meta.py")
 
 # -- Project information -----------------------------------------------------
 
@@ -51,7 +57,7 @@ napoleon_use_param = False
 napoleon_use_rtype = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = []
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -78,7 +84,7 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = []
 
 html_sidebars = {
     '**': ['localtoc.html', 'sourcelink.html', 'searchbox.html'],
