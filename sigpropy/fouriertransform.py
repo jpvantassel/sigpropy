@@ -69,15 +69,15 @@ class FourierTransform():
         Tuple
             Of the form (frq, fft) where:
 
-            frq : ndarray
-                Positive frequency vector between zero and the
+            frq
+                ndarray of frequencies between zero and the
                 Nyquist frequency (if even) or near the Nyquist
                 (if odd) in Hz.
 
-            fft : ndarray
-                Complex amplitudes for the frequencies between zero
-                and the Nyquist (if even) or near the Nyquist
-                (if odd) with units of the input amplitude.
+            fft
+                ndarray of complex amplitudes for the frequencies
+                between zero and the Nyquist (if even) or near the
+                Nyquist (if odd) with units of the input amplitude.
                 If `amplitude` is a 2D array `fft` will also be a 2D
                 array where each row is the FFT of each row of
                 `amplitude`.

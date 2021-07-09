@@ -3,7 +3,7 @@
 > Joseph Vantassel, The University of Texas at Austin
 
 [![DOI](https://zenodo.org/badge/218571161.svg)](https://zenodo.org/badge/latestdoi/218571161)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/jpvantassel/sigpropy/blob/master/LICENSE.txt)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/jpvantassel/sigpropy/blob/main/LICENSE.txt)
 [![CircleCI](https://circleci.com/gh/jpvantassel/sigpropy.svg?style=svg)](https://circleci.com/gh/jpvantassel/sigpropy)
 [![Documentation Status](https://readthedocs.org/projects/sigpropy/badge/?version=latest)](https://sigpropy.readthedocs.io/en/latest/?badge=latest)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/jpvantassel/sigpropy.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jpvantassel/sigpropy/context:python)
@@ -58,7 +58,7 @@ plt.ylabel("Amplitude")
 plt.show()
 ```
 
-<img src="https://github.com/jpvantassel/sigpropy/blob/master/figs/example_tseries.png?raw=true" width="425">
+<img src="https://github.com/jpvantassel/sigpropy/blob/master/figs/example_tseries.png?raw=true" width="425" />
 
 ## FourierTransform
 
@@ -86,7 +86,7 @@ plt.ylabel("|FFT Amplitude|")
 plt.show()
 ```
 
-<img src="https://github.com/jpvantassel/sigpropy/blob/master/figs/example_fseries.png?raw=true" width="425">
+<img src="https://github.com/jpvantassel/sigpropy/blob/master/figs/example_fseries.png?raw=true" width="425" />
 
 ## Special Thanks To
 
