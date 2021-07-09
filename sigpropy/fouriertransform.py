@@ -30,7 +30,6 @@ __all__ = ['FourierTransform']
 
 
 class FourierTransform():
-
     """
     A class for manipulating Fourier transforms.
 

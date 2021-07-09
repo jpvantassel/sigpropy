@@ -30,8 +30,8 @@ __all__ = ['TimeSeries']
 
 
 class TimeSeries():
-
-    """A class for manipulating time series.
+    """
+    A class for manipulating time series.
 
     Attributes
     ----------

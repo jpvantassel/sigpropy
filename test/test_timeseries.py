@@ -402,7 +402,7 @@ class Test_TimeSeries(TestCase):
         noise = 0.2*np.sin(2*np.pi*30*time)
         noisy_tseries = sigpropy.TimeSeries(signal+noise, dt)
         noisy_tseries.bandpassfilter(1, 20, order=5)
-        
+
         # Ignore the first 100 samples on either side b/c of boundary effects.
         self.assertArrayAlmostEqual(signal[100:-100], noisy_tseries.amplitude[100:-100], delta=0.05)
         
