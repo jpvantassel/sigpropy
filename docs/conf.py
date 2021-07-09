@@ -33,6 +33,7 @@ author = 'Joseph P. Vantassel'
 
 # The full version, including alpha/beta/rc tags
 release = meta['__version__']
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
