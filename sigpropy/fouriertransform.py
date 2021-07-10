@@ -30,7 +30,8 @@ __all__ = ['FourierTransform']
 
 
 class FourierTransform():
-    """A class for manipulating Fourier transforms.
+    """
+    A class for manipulating Fourier transforms.
 
     Attributes
     ----------
