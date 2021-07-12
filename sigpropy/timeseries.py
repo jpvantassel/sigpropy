@@ -30,7 +30,8 @@ __all__ = ['TimeSeries']
 
 
 class TimeSeries():
-    """A class for manipulating time series.
+    """
+    A class for manipulating time series.
 
     Attributes
     ----------
@@ -44,7 +45,8 @@ class TimeSeries():
     """
 
     def __init__(self, amplitude, dt):
-        """Initialize a `TimeSeries` object.
+        """
+        Initialize a `TimeSeries` object.
 
         Parameters
         ----------
@@ -84,7 +86,7 @@ class TimeSeries():
 
         self._dt = float(dt)
 
-        logger.info(f"Creating a TimeSeries object.")
+        logger.info("Creating a TimeSeries object.")
         logger.info(f"\tnsamples = {self.nsamples}")
         logger.info(f"\tdt = {self._dt}")
 
@@ -94,7 +96,7 @@ class TimeSeries():
 
     @property
     def amp(self):
-        warnings.warn("`amp` is deprecated, use `_amp` instead",
+        warnings.warn("`amp` is deprecated, use `amplitude` instead",
                       DeprecationWarning)
         return self._amp
 
@@ -156,11 +158,12 @@ class TimeSeries():
         for row in range(self.nseries):
             time[row, :] = np.arange(start, start+delta)
             start += delta-1
-        time *= self.dt            
+        time *= self.dt
         return time.squeeze()
 
     def trim(self, start_time, end_time):
-        """Trim time series in the interval [`start_time`, `end_time`].
+        """
+        Trim time series in the interval [`start_time`, `end_time`].
 
         Parameters
         ----------
@@ -172,7 +175,7 @@ class TimeSeries():
         Returns
         -------
         None
-            Updates the attributes `amp` and `nsamples`.
+            Updates the attributes `amplitude` and `nsamples`.
 
         Raises
         ------
@@ -210,18 +213,20 @@ class TimeSeries():
             self.split(windowlength)
 
     def detrend(self):
-        """Remove linear trend from time series.
+        """
+        Remove linear trend from time series.
 
         Returns
         -------
         None
-            Removes linear trend from attribute `amp`.
+            Removes linear trend from attribute `amplitude`.
 
         """
         self._amp = detrend(self._amp)
 
     def split(self, windowlength):
-        """Split record into `n` series of length `windowlength`.
+        """
+        Split record into `n` series of length `windowlength`.
 
         Parameters
         ----------
@@ -272,7 +277,8 @@ class TimeSeries():
         self._amp = np.column_stack((left_col, right_cols))
 
     def join(self):
-        """Rejoin a split `TimeSeries`.
+        """
+        Rejoin a split `TimeSeries`.
 
         Returns
         -------
@@ -287,7 +293,8 @@ class TimeSeries():
         self._amp = np.expand_dims(self._amp.flatten()[keep_ids], axis=0)
 
     def cosine_taper(self, width):
-        """Apply cosine taper to time series.
+        """
+        Apply cosine taper to time series.
 
         Parameters
         ----------
@@ -298,13 +305,14 @@ class TimeSeries():
         Returns
         -------
         None
-            Applies cosine taper to attribute `amp`.
+            Applies cosine taper to attribute `amplitude`.
 
         """
         self._amp = self._amp * tukey(self.nsamples, alpha=width)
 
     def bandpassfilter(self, flow, fhigh, order=5):
-        """Apply bandpass Butterworth filter to time series.
+        """
+        Apply bandpass Butterworth filter to time series.
 
         Parameters
         ----------
@@ -318,7 +326,7 @@ class TimeSeries():
         Returns
         -------
         None
-            Filters attribute `amp`.
+            Filters attribute `amplitude`.
 
         """
         fnyq = self.fnyq
@@ -327,7 +335,8 @@ class TimeSeries():
 
     @classmethod
     def from_trace(cls, trace):
-        """Initialize a `TimeSeries` object from a trace object.
+        """
+        Initialize a `TimeSeries` object from a trace object.
 
         Parameters
         ----------
@@ -346,7 +355,8 @@ class TimeSeries():
 
     @classmethod
     def from_dict(cls, dictionary):
-        """Create `TimeSeries` object from dictionary representation.
+        """
+        Create `TimeSeries` object from dictionary representation.
 
         Parameters
         ----------
@@ -364,12 +374,12 @@ class TimeSeries():
             If any of the required keys (listed above) are missing.
 
         """
-
         return cls(dictionary["amplitude"], dictionary["dt"])
 
     @classmethod
     def from_json(cls, json_str):
-        """Instantiate `TimeSeries` object form Json string.
+        """
+        Instantiate `TimeSeries` object form Json string.
 
         Parameters
         ----------
@@ -388,7 +398,8 @@ class TimeSeries():
 
     @classmethod
     def from_timeseries(cls, timeseries):
-        """Copy constructor for `TimeSeries` object.
+        """
+        Copy constructor for `TimeSeries` object.
 
         Parameters
         ----------
@@ -404,7 +415,8 @@ class TimeSeries():
         return cls(timeseries.amplitude, timeseries.dt)
 
     def to_json(self):
-        """Json string representation of `TimeSeries` object.
+        """
+        Json string representation of `TimeSeries` object.
 
         Returns
         -------
@@ -417,7 +429,8 @@ class TimeSeries():
         return json.dumps(dictionary)
 
     def to_dict(self):
-        """Dictionary representation of `TimeSeries`.
+        """
+        Dictionary representation of `TimeSeries`.
 
         Returns
         -------

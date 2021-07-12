@@ -30,7 +30,8 @@ __all__ = ['FourierTransform']
 
 
 class FourierTransform():
-    """A class for manipulating Fourier transforms.
+    """
+    A class for manipulating Fourier transforms.
 
     Attributes
     ----------
@@ -49,7 +50,8 @@ class FourierTransform():
 
     @staticmethod
     def fft(amplitude, dt, **kwargs):
-        """Compute the fast-Fourier transform (FFT) of a time series.
+        """
+        Compute the fast-Fourier transform (FFT) of a time series.
 
         Parameters
         ----------
@@ -69,15 +71,15 @@ class FourierTransform():
         Tuple
             Of the form (frq, fft) where:
 
-            frq : ndarray
-                Positive frequency vector between zero and the
+            frq
+                ndarray of frequencies between zero and the
                 Nyquist frequency (if even) or near the Nyquist
                 (if odd) in Hz.
 
-            fft : ndarray
-                Complex amplitudes for the frequencies between zero
-                and the Nyquist (if even) or near the Nyquist
-                (if odd) with units of the input amplitude.
+            fft
+                ndarray of complex amplitudes for the frequencies
+                between zero and the Nyquist (if even) or near the
+                Nyquist (if odd) with units of the input amplitude.
                 If `amplitude` is a 2D array `fft` will also be a 2D
                 array where each row is the FFT of each row of
                 `amplitude`.
@@ -93,7 +95,8 @@ class FourierTransform():
         return (fft, frq)
 
     def __init__(self, amplitude, frequency, fnyq=None, dtype=complex):
-        """Initialize a `FourierTransform` object.
+        """
+        Initialize a `FourierTransform` object.
 
         Parameters
         ----------
@@ -143,7 +146,7 @@ class FourierTransform():
         self.fnyq = float(fnyq) if fnyq is not None else float(max(self._frq))
         if self.fnyq <= 0:
             raise ValueError(f"fnyq must be greater than 0, not {self.fnyq}")
-        
+
     @property
     def frq(self):
         warnings.warn("`frq` is deprecated, use `frequency` instead",
@@ -165,7 +168,8 @@ class FourierTransform():
         return np.squeeze(self._amp)
 
     def smooth_konno_ohmachi(self, bandwidth=40.0):
-        """Apply Konno and Ohmachi smoothing.
+        """
+        Apply Konno and Ohmachi smoothing.
 
         Parameters
         ----------
@@ -175,7 +179,7 @@ class FourierTransform():
         Returns
         -------
         None
-            Modifies the internal attribute `amp` to equal the
+            Modifies the internal attribute `amplitude` to equal the
             smoothed value of `mag`.
 
         """
@@ -214,7 +218,8 @@ class FourierTransform():
         return window
 
     def smooth_konno_ohmachi_fast(self, frequencies, bandwidth=40):
-        """Apply fast Konno and Ohmachi smoothing.
+        """
+        Apply fast Konno and Ohmachi smoothing.
 
         Parameters
         ----------
@@ -229,7 +234,7 @@ class FourierTransform():
         Returns
         -------
         None
-            Modifies the internal attribute `amp` to equal the
+            Modifies the internal attribute `amplitude` to equal the
             smoothed value of `mag`.
 
         """
@@ -243,7 +248,8 @@ class FourierTransform():
     @staticmethod
     @njit(cache=True)
     def _smooth_konno_ohmachi_fast(frequencies, spectrum, fcs, bandwidth=40.):  # pragma: no cover
-        """Static method for Konno and Ohmachi smoothing.
+        """
+        Static method for Konno and Ohmachi smoothing.
 
         Parameters
         ----------
@@ -306,7 +312,8 @@ class FourierTransform():
         return smoothed_spectrum
 
     def resample(self, minf, maxf, nf, res_type="log", inplace=False):
-        """Resample `FourierTransform` over a specified range.
+        """
+        Resample `FourierTransform` over a specified range.
 
         Parameters
         ----------
@@ -327,12 +334,12 @@ class FourierTransform():
         -------
         None or Tuple
             If `inplace=True`
-                `None`, method edits the internal attribute `amp`.
+                `None`, method edits the internal attribute `amplitude`.
             If `inplace=False`
                 A tuple of the form (`frequency`, `amplitude`)
                 where `frequency` is the resampled frequency vector and
                 `amplitude` is the resampled amplitude vector if
-                `amp` is 1D or array if `amp` is 2D.
+                `amplitude` is 1D or array if `amplitude` is 2D.
 
         Raises
         ------
@@ -376,7 +383,8 @@ class FourierTransform():
 
     @classmethod
     def from_timeseries(cls, timeseries, **fft_kwargs):
-        """Create `FourierTransform` from `TimeSeries`.
+        """
+        Create `FourierTransform` from `TimeSeries`.
 
         Parameters
         ----------

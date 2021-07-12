@@ -1,5 +1,3 @@
-.. _timeseries:
-
 TimeSeries
 ==========
 

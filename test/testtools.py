@@ -41,7 +41,7 @@ class TestCase(unittest.TestCase):
             raise AssertionError(msg)
 
         for l1, l2 in zip(list1, list2):
-                self.assertListEqual(l1, l2, **kwargs)
+            self.assertListEqual(l1, l2, **kwargs)
 
     def assertArrayEqual(self, array1, array2):
         try:
