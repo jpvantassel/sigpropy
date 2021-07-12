@@ -96,7 +96,7 @@ class TimeSeries():
 
     @property
     def amp(self):
-        warnings.warn("`amp` is deprecated, use `_amp` instead",
+        warnings.warn("`amp` is deprecated, use `amplitude` instead",
                       DeprecationWarning)
         return self._amp
 
@@ -175,7 +175,7 @@ class TimeSeries():
         Returns
         -------
         None
-            Updates the attributes `amp` and `nsamples`.
+            Updates the attributes `amplitude` and `nsamples`.
 
         Raises
         ------
@@ -219,7 +219,7 @@ class TimeSeries():
         Returns
         -------
         None
-            Removes linear trend from attribute `amp`.
+            Removes linear trend from attribute `amplitude`.
 
         """
         self._amp = detrend(self._amp)
@@ -305,7 +305,7 @@ class TimeSeries():
         Returns
         -------
         None
-            Applies cosine taper to attribute `amp`.
+            Applies cosine taper to attribute `amplitude`.
 
         """
         self._amp = self._amp * tukey(self.nsamples, alpha=width)
@@ -326,7 +326,7 @@ class TimeSeries():
         Returns
         -------
         None
-            Filters attribute `amp`.
+            Filters attribute `amplitude`.
 
         """
         fnyq = self.fnyq

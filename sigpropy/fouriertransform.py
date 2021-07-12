@@ -179,7 +179,7 @@ class FourierTransform():
         Returns
         -------
         None
-            Modifies the internal attribute `amp` to equal the
+            Modifies the internal attribute `amplitude` to equal the
             smoothed value of `mag`.
 
         """
@@ -234,7 +234,7 @@ class FourierTransform():
         Returns
         -------
         None
-            Modifies the internal attribute `amp` to equal the
+            Modifies the internal attribute `amplitude` to equal the
             smoothed value of `mag`.
 
         """
@@ -334,12 +334,12 @@ class FourierTransform():
         -------
         None or Tuple
             If `inplace=True`
-                `None`, method edits the internal attribute `amp`.
+                `None`, method edits the internal attribute `amplitude`.
             If `inplace=False`
                 A tuple of the form (`frequency`, `amplitude`)
                 where `frequency` is the resampled frequency vector and
                 `amplitude` is the resampled amplitude vector if
-                `amp` is 1D or array if `amp` is 2D.
+                `amplitude` is 1D or array if `amplitude` is 2D.
 
         Raises
         ------
