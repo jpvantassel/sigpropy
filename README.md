@@ -30,7 +30,7 @@ Python projects, some of which have been released publicly and others are
 still in the development stage, so if you do not see a feature you would like
 it may very well be under development and released in the near future. To be
 notified of future releases, you can either `watch` the repository on
-[Github](https://github.com/jpvantassel/sigpropy) or
+[GitHub](https://github.com/jpvantassel/sigpropy) or
 `Subscribe to releases` on the
 [Python Package Index (PyPI)](https://pypi.org/project/sigpropy/).
 
